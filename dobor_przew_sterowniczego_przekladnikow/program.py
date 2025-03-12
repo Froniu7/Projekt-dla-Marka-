@@ -75,7 +75,8 @@ def spelnienie_warunku():
         #print(f"rzeczywista przekladnia to : {przeklania_rzeczywista}")
         prad_max_na_wtornym = prad/przeklania_rzeczywista
 
-        print(f"I - max prad na uzwojeniu wtornym : {prad_max_na_wtornym} [A]")
+        print(f"I - max prad na uzwojeniu wtornym : {prad_max_na_wtornym} [A],")
+        print("    prad na uzwojeniu wtornym zostal policzony na podstawie danych z faktur.")
         print(f"L - dlugosc przewodu : {dlugos_przewodu} [m]")
         wartosc_z_uzwojenie_wtorne = int(uzwojenie_wtorne)
         #wyciagam przekroj kabla
@@ -139,7 +140,7 @@ def on_entry_change(event):
         print(f"dlugosc przewodu kablowego to, podaj wartosc typu float (czesc ulamkowa oddzielona kropka) : {wpisana_wartosc}")
 
 def obliczenie_pradu_na_fazie(event):
-    global moc_w_sieci, prad
+    global moc_w_sieci, prad, przekladnia
     wpisana_wartosc = entry_moc.get()
     try:
         moc_w_sieci = float(wpisana_wartosc)
@@ -147,6 +148,8 @@ def obliczenie_pradu_na_fazie(event):
         prad = ((moc_w_sieci*1000)/3)/230
         print(f"prad na fazie to : {prad} [A]")
         label_prad.config(text=f"wartosc pradu na faze to : {prad} [A]")
+        if (przekladnia != 0.0):
+            pass
         print("")
     except:
         print(f"dlugosc przewodu kablowego to, podaj wartosc typu float (czesc ulamkowa oddzielona kropka) : {wpisana_wartosc}")
