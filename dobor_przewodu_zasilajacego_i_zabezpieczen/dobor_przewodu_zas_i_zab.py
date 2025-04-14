@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import math
 import csv
+import os
 
 zabezpieczenie = 0
 zabezpieczenie_gG = 0
@@ -13,6 +14,10 @@ prad_nom_przew = 0.0
 dobrane_zabezpieczenie = 0.0
 sprawdzenie_obciazalnosc_dlugotrwala = 0.0
 warunek = ""
+lista_prze_kabl = [2.5,4,6,10,16,25,35,50,70,95,120,150,185,240,300,400,500]
+lista_dostepnych_zabezpieczen_z_A_wybrane_przez_szefa = []
+lista_zabezpieczen = []
+
 
 
 def load_csv_to_list(filename):
@@ -29,7 +34,7 @@ def load_csv_to_list(filename):
     return data
 
 def on_select(event):
-    global lista_SVG, label_svg, entry_moc_standard
+    global lista_SVG, label_svg, entry_moc_standard, lista_dostepne_zab
     selected_index = combo1.current()  # Uzyskanie indeksu wybranego elementu
     selected_index = int(selected_index)
     print(f"Index wybranego elementu: {selected_index}")
@@ -38,6 +43,25 @@ def on_select(event):
         if "entry_moc_standard" in globals():
             entry_moc_standard.grid_forget()
         moc_SVG = ["5kVAr" , "10kVAr", "20kVAr", "30kVAr" , "50kVar","75kVAr","100kVAr"]
+        if "wybor_wspolczynik_k" in globals():
+            wybor_wspolczynik_k.grid_forget()
+        if "linia" in globals():
+            linia.grid_forget()
+        if "label_obliczenia" in globals():
+            label_obliczenia.grid_forget()
+        if "entry_moc_standard" in globals():
+            entry_moc_standard.grid_forget()
+        if "label_z_tabeli_standard" in globals():
+            label_z_tabeli_standard.grid_forget()
+        if "obliczenia_I_nom_przew" in globals():
+            obliczenia_I_nom_przew.grid_forget()
+        if "dobrane_zab" in globals():
+            dobrane_zab.grid_forget()
+        if "rodzaj_dost_zab" in globals():
+            rodzaj_dost_zab.grid_forget()
+        if "sprawdzenie_warunku" in globals():
+            sprawdzenie_warunku.grid_forget()
+        lista_dostepne_zab.clear()
         lista_SVG.config(values=moc_SVG)
         lista_SVG.set('')
         lista_SVG.grid(row=2, column=0, columnspan=3)
@@ -74,24 +98,92 @@ def svg(event):
 
 def standard(event):
     global zabezpieczenie, kabel_zasilajacy, entry_moc_standard, label_z_tabeli_standard, label_obliczenia, linia, moc_przekroj_standard, zabezpieczenie, zabezpieczenie_gG
-    global wybor_wspolczynik_k, wspolczynik_k, prad_nom_urzadzenia
+    global wybor_wspolczynik_k, wspolczynik_k, prad_nom_urzadzenia, lista_prze_kabl, wybor_zabezpieczenia_od_szefa, proponowany_przew_kablowy, rodzaj_zabezpieczen_dla_szefa
+    global lista_dostepnych_zabezpieczen_z_A_wybrane_przez_szefa
     zawartosc = entry_moc_standard.get()
+    print("enter")
+    if "wybor_wspolczynik_k" in globals():
+        wybor_wspolczynik_k.grid_forget()
+    if "linia" in globals():
+        linia.grid_forget()
+    if "label_obliczenia" in globals():
+        label_obliczenia.grid_forget()
+    if "label_z_tabeli_standard" in globals():
+        label_z_tabeli_standard.grid_forget()
+    if "obliczenia_I_nom_przew" in globals():
+        obliczenia_I_nom_przew.grid_forget()
+    if "dobrane_zab" in globals():
+        dobrane_zab.grid_forget()
+    if "rodzaj_dost_zab" in globals():
+        rodzaj_dost_zab.grid_forget()
+    if "sprawdzenie_warunku" in globals():
+        sprawdzenie_warunku.grid_forget()
+
+
+    #wybor_przewodu_kablowego.config(values=)
     print(zawartosc)
     dlugosc_listy = len(moc_przekroj_standard)
+
     for i in range(dlugosc_listy-1):
         if(float(moc_przekroj_standard[i+1][0])<=float(zawartosc)):
             print(f"jestesmy w przedziale : {moc_przekroj_standard[i+1][0]}")
             kabel_zasilajacy = float(moc_przekroj_standard[i+1][2])
-            zabezpieczenie = int(moc_przekroj_standard[i+1][3])
+            try:
+                zabezpieczenie = int(moc_przekroj_standard[i+1][3])
+            except:
+                zabezpieczenie = "0"
             zabezpieczenie_gG = int(moc_przekroj_standard[i + 1][4])
+
 
     label_z_tabeli_standard.config(text="Z tabeli (ustalone z szefem):\n"
                                         f"Kabel o przekroju: {kabel_zasilajacy} mm2\n"
                                         f"Zabezieczenie główne typu C: {zabezpieczenie}\n"
                                         f"Zabezpieczenie główne typu gG: {zabezpieczenie_gG}")
     label_z_tabeli_standard.grid(row=3, column=0)
-    linia.grid(row=3, column=1)
-    linia.create_line(2, 0, 2, 400, width=2, fill="black")
+
+
+    linia.create_line(2, 0, 2, 800, width=2, fill="black")
+    linia.grid(row=3, rowspan=7, column=1)
+
+    opis_wybor_przewodu_kablowego.config(text="wybierz przewod kablowy:\n"
+                                              "(oto zaproponowany z listy)")
+    opis_wybor_przewodu_kablowego.grid(row=4, column=0)
+
+    #tu sa listy do wyboru elementow :
+    # sprawdzenie ktory przewod kablowy ma trafic jako wybrany z listy
+    index_proponowanego_przew_kablowego = 0
+    for i in range(len(lista_prze_kabl)):
+        if kabel_zasilajacy == lista_prze_kabl[i]:
+            index_proponowanego_przew_kablowego = i
+    proponowany_przew_kablowy.set(lista_prze_kabl[index_proponowanego_przew_kablowego])
+
+    wybor_przewodu_kablowego.config(values=lista_prze_kabl , textvariable=proponowany_przew_kablowy)
+    wybor_przewodu_kablowego.grid(row=5, column=0)
+    #tu przypisanie wartosci do listy z zabezpieczeniami - dla wyboru od szefa
+
+    index_proponowanego_zabezpieczenia = 0
+    for i in range(len(zabezpieczenia_C_gG)-1):
+        if float(zabezpieczenie) == float(zabezpieczenia_C_gG[i+1][0]):
+            index_proponowanego_zabezpieczenia = i
+            print("!!!!!!!!!!!!!!!!!!!!!")
+        elif float(zabezpieczenie_gG) == float(zabezpieczenia_C_gG[i+1][0]):
+            index_proponowanego_zabezpieczenia = i
+    proponowane_zabezpieczenie_z_dobrane_przez_szefa.set(lista_zabezpieczen[index_proponowanego_zabezpieczenia])
+
+    opis_zabezpieczenia_od_szefa.config(text="wybierz wielkosc zabezpieczenia:\n"
+                                             "(oto zaproponowany z listy)")
+    opis_zabezpieczenia_od_szefa.grid(row=6 , column=0)
+    wybor_zabezpieczenia_od_szefa.config(values=lista_zabezpieczen , textvariable=proponowane_zabezpieczenie_z_dobrane_przez_szefa)
+    wybor_zabezpieczenia_od_szefa.grid(row=7, column=0)
+    opis_rodzaj_zabezpieczen_dla_szefa.config(text="Wybierz typ/rodzaj zabezpieczenia:")
+    opis_rodzaj_zabezpieczen_dla_szefa.grid(row=8, column=0)
+    print(f"index propnowanego zabezpieczenia to  {index_proponowanego_zabezpieczenia}")
+    for i in range(4):
+        if zabezpieczenia_C_gG[index_proponowanego_zabezpieczenia][i+1] != '':
+            lista_dostepnych_zabezpieczen_z_A_wybrane_przez_szefa.append(zabezpieczenia_C_gG[0][i+1])
+
+    rodzaj_zabezpieczen_dla_szefa.config(values=lista_dostepnych_zabezpieczen_z_A_wybrane_przez_szefa)
+    rodzaj_zabezpieczen_dla_szefa.grid(row=9, column=0)
 
     pierwiastek_z_3 = math.sqrt(3)
     zawartosc_razy_1000 =float(zawartosc)*1000
@@ -127,6 +219,7 @@ def obliczenia_po_wspolczyniku(event):
     print(" jest wybrany wsp:")
     global wybor_wspolczynik_k, wspolczynik_k, obliczenia_I_nom_przew, prad_nom_urzadzenia, zabezpieczenia_C_gG, dobrane_zabezpieczenie, dobrane_zab
     global lista_dostepne_zab, rodzaj_dost_zab
+    lista_dostepne_zab.clear()
     wybrany_wsp_k= wybor_wspolczynik_k.current()
     wspolczynik_k_float = float(wspolczynik_k[wybrany_wsp_k])
     print(wspolczynik_k[wybrany_wsp_k])
@@ -226,10 +319,21 @@ def wybrane_zab_z_obliczen(event):
                                     "_________________")
     sprawdzenie_warunku.grid(row=8, column=2)
 
+# Funkcja do uruchamiania programu
+def uruchom_program(nazwa_pliku):
+    try:
+        os.startfile(nazwa_pliku)  # Działa na Windows
+    except Exception as e:
+        print(f"Błąd: {e}")
+
 # Tworzenie głównego okna aplikacji
 root = tk.Tk()
-root.geometry("600x800")
+root.geometry("600x1000")
 root.title("dobor przewodu kablowego zasilajacego i zabezpieczen")
+
+# ta zmienna musi byc po root :
+proponowany_przew_kablowy = tk.StringVar()
+proponowane_zabezpieczenie_z_dobrane_przez_szefa = tk.StringVar()
 
 label_moc = tk.Label(root, text="wybierz typ urzadzenia ( jezeli szef wybrał na etapie-1 to jest automatycznie wybrane )")
 label_moc.grid(row=0, column=0, columnspan=3)
@@ -243,9 +347,18 @@ combo1.grid(row=1, column= 0, columnspan=3)
 combo1.bind("<<ComboboxSelected>>", on_select)
 
 entry_moc_standard = tk.Entry(root)
+#lewa czesc
 label_z_tabeli_standard = tk.Label(root)
+opis_wybor_przewodu_kablowego = tk.Label(root)
+wybor_przewodu_kablowego = ttk.Combobox(root)
+opis_zabezpieczenia_od_szefa = tk.Label(root)
+wybor_zabezpieczenia_od_szefa = ttk.Combobox(root)
+opis_rodzaj_zabezpieczen_dla_szefa = tk.Label(root)
+rodzaj_zabezpieczen_dla_szefa = ttk.Combobox(root)
+#srodek
+linia = tk.Canvas(root, width=2, height=800)
+# prawa czesc
 label_obliczenia = tk.Label(root)
-linia = tk.Canvas(root, width=2)
 wybor_wspolczynik_k = ttk.Combobox(root)
 obliczenia_I_nom_przew = tk.Label(root)
 dobrane_zab = tk.Label(root)
@@ -256,7 +369,40 @@ sprawdzenie_warunku = tk.Label(root)
 svg_zabezpieczenia = load_csv_to_list('zabezpieczeniaSVGgG[1].csv')
 moc_przekroj_standard = load_csv_to_list('moc_przekroj.csv')
 zabezpieczenia_C_gG = load_csv_to_list('zabezpieczenia_C_gG.csv')
+dlugosc_listy_z_zabezpieczeniami = len(zabezpieczenia_C_gG)-1
+for i in range(dlugosc_listy_z_zabezpieczeniami):
+    lista_zabezpieczen.append(zabezpieczenia_C_gG[i+1][0])
 przewody_B2 = load_csv_to_list('przewody_miedziane_B2.csv')
+
+"""
+#lista dostepnych zabezpieczen :
+dlugosc_listy_z_zabezpieczeniami = len(zabezpieczenia_C_gG)-1
+for i in range(dlugosc_listy_z_zabezpieczeniami):
+    if zabezpieczenia_C_gG[i+1][1] != "":
+        lista_zabezpieczen.append("S ----- C"+zabezpieczenia_C_gG[i+1][1]+" A")
+    if zabezpieczenia_C_gG[i + 1][2] != "":
+        lista_zabezpieczen.append("gG NH00 "+zabezpieczenia_C_gG[i + 1][2]+" A")
+    if zabezpieczenia_C_gG[i + 1][3] != "":
+        lista_zabezpieczen.append("gG NH1  "+zabezpieczenia_C_gG[i + 1][3]+ " A")
+    if zabezpieczenia_C_gG[i + 1][4] != "":
+        lista_zabezpieczen.append("gG NH2  "+zabezpieczenia_C_gG[i + 1][4]+" A")
+    if zabezpieczenia_C_gG[i + 1][5] != "":
+        lista_zabezpieczen.append("gG NH3  "+zabezpieczenia_C_gG[i + 1][5]+ " A")
+
+print(lista_zabezpieczen)
+"""
+#przyciski
+przycisk1 = tk.Button(root, text="Dobrane Szef", command=lambda: uruchom_program("moc_przekroj.csv"))
+przycisk1.grid(row=1, column=3)
+
+przycisk2 = tk.Button(root, text="Dostepne zabezpieczenia", command=lambda: uruchom_program("zabezpieczenia_C_gG.csv"))
+przycisk2.grid(row=2, column=3)
+
+przycisk3 = tk.Button(root, text="Przewody_miedziane_B2", command=lambda: uruchom_program("przewody_miedziane_B2.csv"))
+przycisk3.grid(row=3, column=3)
+
+przycisk4 = tk.Button(root, text="zabezpieczenia SVG", command=lambda: uruchom_program("zabezpieczeniaSVGgG[1].csv"))
+przycisk4.grid(row=4, column=3)
 
 # Uruchomienie aplikacji
 root.mainloop()
