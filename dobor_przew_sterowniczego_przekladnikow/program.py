@@ -199,8 +199,6 @@ root = tk.Tk()
 root.geometry("400x300")
 root.title("Wybór przekładnika")
 
-
-
 # Podaj wartosc mocy zamowionej
 label_moc = tk.Label(root, text="Podaj wartosc mocy wystepujacej w sieci:\n (możesz podac wartosc zamowioną bądz wartosc max wystepującą))")
 label_moc.grid(row=0, column=0)
@@ -210,8 +208,6 @@ entry_moc.bind("<KeyRelease>", obliczenie_pradu_na_fazie)  # Automatyczne wywoł
 
 label_prad = tk.Label(root, text="")
 label_prad.grid(row=2, column=0)
-
-
 
 # Etykieta instrukcyjna
 label = tk.Label(root, text="Wybierz przekładnik:")
