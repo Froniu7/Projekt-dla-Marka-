@@ -1,6 +1,7 @@
 import tkinter as tk
 from PIL import Image
 
+# poniżej są domyslne radio przyciski -
 zab_zew = "typ S - C 3polowe"
 podzespoly_dodatkowe = "tylko łącznik tyrystorowy i 3 dlawiki"
 zabezpieczenie_lacznika = "lacznik i stopnie - wspolne zabezpieczenie"
@@ -26,14 +27,14 @@ root.title("Wybór opcji")
 zabezpieczenia_zew = tk.Label(text="Wybierz rodzaj zabezpieczenia zewnetrznego")
 zabezpieczenia_zew.grid(row=0, column=0)
 
-# Zmienna do przechowywania wybranej wartości
+# Zmienna do przechowywania wybranej wartości - gdzie value to wartość początkowa - może się zmienić podczas pracy z GUI
 wybor = tk.StringVar(value="typ S - C 3polowe")  # Domyślnie wybrana opcja
 
 # Funkcja wywoływana po zmianie wyboru
 def pokaz_wybor():
     global zab_zew
     print("Wybrano:", wybor.get())
-    zab_zew = wybor.get()
+    zab_zew = wybor.get() #
 
 
 # Tworzenie przycisków radiowych
@@ -44,9 +45,12 @@ for opcja in opcje:
     tk.Radiobutton(root, text=opcja, variable=wybor, value=opcja, command=pokaz_wybor).grid(row=i , column=0)
     i = i+1
 
+# fragment ywswietlanego tekstu
 lacznik_tyrystorowy_i_stopnie = tk.Label(text="Ilosc podzespolow")
-lacznik_tyrystorowy_i_stopnie.grid(row=4, column=0)
+lacznik_tyrystorowy_i_stopnie.grid(row=4, column=0) #gdzie umieszczone
 
+
+# Zmienna do przechowywania wybranej wartości - gdzie value to wartość początkowa - może się zmienić podczas pracy z GUI
 wybor3 = tk.StringVar(value="lacznik i stopnie - wspolne zabezpieczenie")
 opcje3 = ["lacznik tyrystorowy ma swoje zabezpieczenie", "lacznik i stopnie - wspolne zabezpieczenie"]
 # Przechowywanie dynamicznie tworzonych widgetów
@@ -127,7 +131,7 @@ def pokaz_wybor2():
         stopien14.grid(row=19, column=4)
         stopien15.grid(row=19, column=5)
 
-# Zmienna do przechowywania wybranej wartości
+# Zmienna do przechowywania wybranej wartości - gdzie value to wartość początkowa - może się zmienić podczas pracy z GUI
 wybor2 = tk.StringVar(value="tylko łącznik tyrystorowy i 3 dlawiki")
 opcje2 = ["tylko łącznik tyrystorowy i 3 dlawiki", "dodatkowe stopnie"]
 i = 5
