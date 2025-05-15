@@ -213,6 +213,7 @@ def pobierz_dane():
     print(s15)
     dodatkowe_stopnie[11] = s15
 
+    #tu do poprawy 
     # ta czesc odpowiedzialna za schematy z termostatem - badz bez , oraz za schematy bez dodatkowych stopni
     if zab_zew == "typ S - C 3polowe" and podzespoly_dodatkowe == "tylko łącznik tyrystorowy i 3 dlawiki":
         schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/SVC_3_stopnie.png")

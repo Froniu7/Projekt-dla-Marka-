@@ -1,0 +1,70 @@
+@startuml
+
+start
+:oto diagram - pokazujący działanie programu od strony wizualnej:;
+:trzy pierwsze przyciski radiowe:;
+note right
+  te przyciski są od wyboru zabezpieczenia zewnętrznego,
+  czyli głównego , które będzie poza skrzynią. Będzie
+  w np: szafie z bezpiecznikami. Jest też opcja - brak
+  zabezpieczenia - bo czasem w szafie nie ma miejsca.
+end note
+switch (wybierasz rodzaj zabezpieczenia zewnętrznego)
+case ( "S" ustawione domyslnie)
+  :typ "S" C - 3poloew";
+case ()
+  :wkładki topikowe gG;
+case ()
+  :brak zabezpieczenia;
+endswitch
+:dwa kolejne przyciski radiowe:;
+note right
+  te przyciski służą do wyboru :
+  -czy brak dodatkowych podzespołow (mamy tylko trzy dałwiki,
+  a więc opcja minimum, moce dławików nalezy uzupełnić
+  w polach poniżej - "podpiete do łącznika tyrystorowego")
+  -czy mamy dodatkowe podzespoły ( jeżeli mamy - wyświetlą
+  się dodatkowe pola do uzupełnienia)
+end note
+
+
+if (Ilość podzespołów)
+  :tylko łącznik tyrystorowy i 3 dławiki;
+else ()
+  switch (dodatkowe stopnie)
+case ()
+  :łącznik tyrystorowy ma swoje zabezpieczenie;
+case ()
+  :łącznik i stopnie - wspólne zabezpieczenie;
+
+endswitch
+
+
+endif
+:podaj wartości trzech dławików podpiętych do łącznika tyrystorowego;
+note right
+wartości zostaną dopisane do legendy pod schematem
+end note
+
+if ( )then( jest zaznaczona opcja : "tylko łącznik tyrystorowy i 3 dławiki" )
+
+else (opcja: "dodatkowe stopnie")
+  :        Podaj wartości stopni jednofazowych       ;
+  note left
+  łącznie jednofazowych i trzy fazowych - wpisujemy max 6, mimo że wolnych jest
+  12 pól. Ponieważ na razie nie planujemy za bardzo rozbudowanych urządzeń SVC.
+  Wartości z minusem są uznane jako dławiki, wartości bez minusa jako kondensatory
+end note
+  :        Podaj wartości stopni trzyfazowych        ;
+endif
+
+:Generuj;
+note right
+  Przycisk który możesz kliknąć aby wygenerować schemat.
+  Będzie taki jak wybraliśmy opcje.
+end note
+
+stop
+
+
+@enduml

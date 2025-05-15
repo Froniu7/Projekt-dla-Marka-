@@ -1,0 +1,44 @@
+@startuml
+
+start
+:Użytkownik wybiera\nrodzaj zabezpieczenia zewnętrznego;
+
+if (Typ zabezpieczenia?) then (S-C)
+  :zab_zew = "typ S - C 3polowe";
+elseif (gG)
+  :zab_zew = "wkladki topikowe gG";
+else
+  :zab_zew = "brak zabezpieczenia glownego";
+endif
+
+:Użytkownik wybiera\nliczbę podzespołów;
+if (Tylko łącznik i dławiki?) then (tak)
+  :podzespoly_dodatkowe = "tylko łącznik tyrystorowy i 3 dlawiki";
+else
+  :podzespoly_dodatkowe = "dodatkowe stopnie";
+  :Użytkownik podaje\nwartości dodatkowych stopni;
+  :Użytkownik wybiera\nmiejsce podłączenia zabezpieczenia;
+endif
+
+:Użytkownik podaje\nwartości 3 dławików;
+
+if (Dodatkowe stopnie?) then (tak)
+  :policz_dodatkowe_stopnie();
+  if (ilość stopni <= 6) then (tak)
+    :załaduj obraz z katalogu "schematy_dodatkowe_stopnie";
+  else
+    stop
+  endif
+else
+  if (zab_zew == S-C) then
+    :załaduj SVC_3_stopnie.png;
+  elseif (zab_zew == gG) then
+    :załaduj SVC_3_stopnie_termostat_zabezpieczenie_zew_gG.png;
+  else
+    :załaduj SVC_3_stopnie_termostat.png;
+  endif
+endif
+
+:Zapisz obraz jako wygenerowany.png;
+stop
+@enduml
