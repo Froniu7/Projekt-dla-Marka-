@@ -1,7 +1,20 @@
 @startuml
 
 start
-:Użytkownik wybiera\nrodzaj zabezpieczenia zewnętrznego;
+:definicje zmiennych, gdzie te zmienne przechowują informacje które potem
+funkcja "pobierz_dane()" - urzyje do wygenerowania schemtu;
+:utworzenie okna GUI - root = tk.Tk() - narazie puste , potem dochadzą elementy ;
+:utworzenie trzech przycisków radiowych - odnoisnie rodzaju zabezpieczdnia głównego
+w pętli for , z iteracja po liscie opcje;
+:ustawnienie wartości początkowej,
+"typ S - C 3polowe";
+:utworzenie dwuch przycisków radiowych - odnosnie podzespołów
+w pętli for , z iteracja po liscie opcje2;
+:ustawienie wartości początkowej:
+"tylko łącznik tyrystorowy i 3 dlawiki";
+
+
+:usta;
 
 if (Typ zabezpieczenia?) then (S-C)
   :zab_zew = "typ S - C 3polowe";
