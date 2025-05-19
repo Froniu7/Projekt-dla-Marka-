@@ -12,46 +12,74 @@ w pętli for , z iteracja po liscie opcje;
 w pętli for , z iteracja po liscie opcje2;
 :ustawienie wartości początkowej:
 "tylko łącznik tyrystorowy i 3 dlawiki";
-
-
-:usta;
-
-if (Typ zabezpieczenia?) then (S-C)
-  :zab_zew = "typ S - C 3polowe";
-elseif (gG)
-  :zab_zew = "wkladki topikowe gG";
-else
-  :zab_zew = "brak zabezpieczenia glownego";
-endif
-
-:Użytkownik wybiera\nliczbę podzespołów;
-if (Tylko łącznik i dławiki?) then (tak)
-  :podzespoly_dodatkowe = "tylko łącznik tyrystorowy i 3 dlawiki";
-else
-  :podzespoly_dodatkowe = "dodatkowe stopnie";
-  :Użytkownik podaje\nwartości dodatkowych stopni;
-  :Użytkownik wybiera\nmiejsce podłączenia zabezpieczenia;
-endif
-
-:Użytkownik podaje\nwartości 3 dławików;
-
-if (Dodatkowe stopnie?) then (tak)
-  :policz_dodatkowe_stopnie();
-  if (ilość stopni <= 6) then (tak)
-    :załaduj obraz z katalogu "schematy_dodatkowe_stopnie";
-  else
-    stop
-  endif
-else
-  if (zab_zew == S-C) then
-    :załaduj SVC_3_stopnie.png;
-  elseif (zab_zew == gG) then
-    :załaduj SVC_3_stopnie_termostat_zabezpieczenie_zew_gG.png;
-  else
-    :załaduj SVC_3_stopnie_termostat.png;
-  endif
-endif
-
-:Zapisz obraz jako wygenerowany.png;
 stop
+
+
+start
+:pobierz_dane()
+opis działania funkcji;
+:BLOK - pobierz_dane - przypisywanie do zmiennych od podzespoly
+
+do zmiennych d1...d3 , s4...s15 przypisujemy wartości podzespołów
+mozliwe braki wartości, wtedy zmienna przechowuje pusty string -> "";
+switch( opcja - dodatkowe stopnie)
+case(  zmienna podzespoly_dodatkowe == "tylko łącznik tyrystorowy i 3 dlawiki")
+:BLOK - pobierz_dane - brak dodatkowych podzespolow
+
+Jest wybrane w GUI :
+"tylko łącznik tyrystorowy i 3 dlawiki";
+switch(zmienna zab_zew == )
+case()
+:typ S - C 3polowe;
+:generowanie grafiki i zapis ;
+case()
+:wkladki topikowe gG;
+:generowanie grafiki i zapis ;
+case()
+:brak zabezpieczenia glownego;
+:generowanie grafiki i zapis ;
+endswitch
+case(  zmienna podzespoly_dodatkoe == "dodatkowe stopnie"\n  zmienna zab_zew = "typ S - C 3polowe")
+:BLOK - pobierz_dane - dodatkowe stopnie
+
+Jest wybrane w GUI -> dodatkowe stopnie;
+    switch(if ilosc_stopni <= 6 \n )
+        case( if ilosc-stopni <= 6 : \n BLOK - pobierz_dane - dodatkowe stopnie -> \n generowanie grafiki z dodatkowymi stopniami )
+
+            :otiweramy grafikę z schematem głównym , gdzie są sciezki na dodatkowe podzespoły
+
+               jest do wyboru 6 grafik - zalezne od ilości stopni;
+               note left
+                :kiedyś będzie więcej grafik;
+                endnote
+            :utworzenie zmiennej :
+            szerokosc_wstawianie_sciezki
+
+            dzieki tej zmiennej - wstawiane grafiki będą mogły być przesuwane w prawo,
+            gdyz zawsze jest dodawana wartośś szerokosci;
+                switch()
+                    case()
+                        :jednofazowe;
+                        note left
+                        do poprawy dla jedno fazowych i trzyfazowych
+                        zrobic licznik stopni zeby Q1....Qn - było liczone
+                        endnote
+                    case()
+                        :trzyfazowe;
+                endswitch
+        case( else : \n BLOK - pobierz_dane - dodatkowe stopnie -> \n nie generujemy schematu , wyswietlamy komunikat )
+            :
+            Nie możemy wygenerować grafik, bo liczba dodatkowych stopni przekroczyła 6
+            na razie nie program jest w wersji podstawowej,
+
+            Wyświetlamy komunikat :
+            "Przekroczono ilosc stopni , aplikacja pozwala na max 6";
+
+
+endswitch
+
+
+endswitch
+stop
+
 @enduml

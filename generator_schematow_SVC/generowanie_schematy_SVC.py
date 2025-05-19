@@ -3,7 +3,7 @@ from PIL import Image
 from tkinter import messagebox
 
 
-#*****************************************************************************************
+#***********************************************************************************************************************
 #BLOK 1
 # w tym bloku są zmienne
 # poniżej są zmienne dla funkcji pobierz_dane() - oraz dla ustawienia wartości początkowych - czyli tych które są
@@ -26,13 +26,13 @@ s14 = ""
 s15 = ""
 dodatkowe_stopnie = ["", "", "", "", "", "", "", "", "", "", "", ""]
 
-#******************************************************************************************
+#***********************************************************************************************************************
 #BLOK 2
 # Tworzymy główne okno - narazie puste , w kolejnych blokach dodajemy elementy
 root = tk.Tk()
 root.title("Wybór opcji")
 
-#******************************************************************************************
+#***********************************************************************************************************************
 #BLOK 3
 #tu blok kodu odpowiedzialny za pierwsze przyciski radiowe i obsługę tych przycisków ( wybranie rodzaju zabezpieczenia zew. inaczej glównego
 #Wyświetlamy informacje nad pierwszymi przyciskami radiowymi
@@ -60,7 +60,7 @@ for opcja in opcje:
 
 #tu koniec bloku odpowiedzialnego za pierwsze przyciski radiowe - odnosnie zabezpieczenia zew. - głównego
 
-#********************************************************************************************
+#***********************************************************************************************************************
 #BLOK 4
 #tu blok  odpowiedzialny za przyciski radiowe - odnosnie - czy są dodatkowe stopnie
 #wyświetlenie pierwszego tekstu
@@ -157,7 +157,7 @@ for opcja2 in opcje2:
     i = i+1
 
 
-#**********************************************************************************************
+#***********************************************************************************************************************
 #BLOK 5
 # trzecia częśc przyciskow radiowych - dostepna jezeli wybiorę opcje - dodatkowe stopnie
 # Zmienna do przechowywania wybranej wartości - gdzie value to wartość początkowa - może się zmienić podczas pracy z GUI
@@ -170,7 +170,7 @@ miejsce_podlaczenia_zab = None
 
 
 
-#**********************************************************************************************
+#***********************************************************************************************************************
 #BLOK 6
 #
 miejsce_podlaczenia_zab = tk.Label(text="Wybierz sposub podlaczenia zabezpieczenia lacznika tyrystorowego")
@@ -186,6 +186,8 @@ dlawik2.grid(row=12,column=0)
 dlawik3= tk.Entry(root, width=30)
 dlawik3.grid(row=13,column=0)
 
+#***********************************************************************************************************************
+#BLOK7
 #dodatkowe_stopnie - wyświetlane jeżeli zostanie wykonana funkcja
 dodatkowe_stopnie_jednfazowe = tk.Label(root, text="Podaj wartosci stopni jednofazowych")
 stopien4= tk.Entry(root, width=30)
@@ -203,12 +205,21 @@ stopien14= tk.Entry(root, width=30)
 stopien15= tk.Entry(root, width=30)
 
 
+#***********************************************************************************************************************
+#BLOK8
+#BLOK - pobierz_dane - tak będę go wewnątrz funkcji opisywał - aby podzielić ją na części
+
 def pobierz_dane():
     global zab_zew, podzespoly_dodatkowe, wybor3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, dodatkowe_stopnie
     print(zab_zew)
     print(podzespoly_dodatkowe)
     zabezpieczenie_lacznika=wybor3.get()
     print(zabezpieczenie_lacznika)
+
+    #-------------------------------------------------------------------------------------------------------------------
+
+    #BLOK - pobierz_dane - przypisywanie do zmiennych od podzespoly - tu pobieramy wartości dla wszystkich mozliwych podzespolów - czyli dłaików i kondensatorów , mogą tez byc puste zmienne - czyli pusty string -> ""
+
     d1 = dlawik1.get()
     print(f"d1 = {d1}")
     d2 = dlawik2.get()
@@ -251,7 +262,12 @@ def pobierz_dane():
     s15 = stopien15.get()
     print(f"s15 = {s15}")
     dodatkowe_stopnie[11] = s15
+    # BLOK - pobierz_dane - schemat podstawowy
+    # jezeli nie została zaznaczona opcja dodatkowe stopnie to zostanie wybrany jedna z ponizszych grafik
 
+    #-------------------------------------------------------------------------------------------------------------------
+
+    #BLOK - pobierz_dane -> brak dodatkowych podzespolow
     #to jest podzielone na czesc
     # ta czesc odpowiedzialna za schematy z termostatem - badz bez , oraz za schematy bez dodatkowych stopni
     if zab_zew == "typ S - C 3polowe" and podzespoly_dodatkowe == "tylko łącznik tyrystorowy i 3 dlawiki":
@@ -278,14 +294,23 @@ def pobierz_dane():
         obraz_do_wygenerowania.paste(schemat_podstawowy,(0,0))
         obraz_do_wygenerowania.save(f"wygenerowany.png")
 
+    #-------------------------------------------------------------------------------------------------------------------
 
+    # BLOK - pobierz_dane -> dodatkowe stopnie
     # dodatkowe stopnie
     if zab_zew == "typ S - C 3polowe" and podzespoly_dodatkowe == "dodatkowe stopnie":
         global ilosc_stopni
         policz_dodatkowe_stopnie()
         print(f"mamy stopni {ilosc_stopni}")
         print(dodatkowe_stopnie)
+
+
+
         if ilosc_stopni <= 6:
+
+            # ----------------------------------------------------------------------------------------------------------
+            # BLOK - pobierz_dane - dodatkowe stopnie -> generowanie grafiki z dodatkowymi stopniami
+
             if ilosc_stopni == 1:
                 schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/SVC_3_termostat_zew_gG_1stopnie_C_wszystkie_stopnie.png")
                 width_podstawowy, height_podstawowy = schemat_podstawowy.size
@@ -312,7 +337,12 @@ def pobierz_dane():
             obraz_do_wygenerowania.paste(schemat_podstawowy,(0,0))
             obraz_do_wygenerowania.paste(siec_i_3_fazy, (0, height_podstawowy))
 
+
+            # zmienna szerokosc_wstawianie_sciezki - bedzie urzywana do przesówania grafik od stopni , po kazdym dodaniu stopnia będzie dodawana jego szerokość
+            # dzieki temu kazdy kolejny stopien będzie przesuniety w prawo na schemacie
+
             szerokosc_wstawianie_sciezki = width_sieci_i_fazy
+
 
 
             for i in range(len(dodatkowe_stopnie)): #liczymy ile jest elementow w tablicy
@@ -320,6 +350,10 @@ def pobierz_dane():
                 if zawartosc== "":
                     print("brak stopnia")
                 else:
+
+                    # --------------------------------------------------------------------------------------------------
+                    # BLOK - pobierz_dane - dodatkowe stopnie -> generowanie grafiki z dodatkowymi stopniami ->
+                    # -> jednofazowe
                     if i <= 5 :
                         print("dodanie sciezek dla elementow jednofazowych")
                         if i == 0:
@@ -335,9 +369,21 @@ def pobierz_dane():
                                 print("na schemacie zostanie umiejscowiony kondensator jednofazowy")
                                 stopien_1 = Image.open(
                                     "pod_3_stopnie_uniwersalny/stopnie/1_jednofazowe_kondensatory/blok_1_fazowy_kondensator.png")
+
+                            w_s1, h_s1 = stopien_1.size
+
                             obraz_do_wygenerowania.paste(stopien_1,
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy+height_sciezki_stopien_1))
+
+
+                            opis_stopien1 = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q4.png")
+                            # w_o_s1, h_o_s1 = opis_stopien1.size
+
+                            obraz_do_wygenerowania.paste(opis_stopien1, (szerokosc_wstawianie_sciezki, height_podstawowy + height_sciezki_stopien_1+ h_s1))
+
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_1
+
+
 
                         if i == 1:
                             sciezki_stopien_2 = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/podlaczenie_stopnie/podlaczenie_faza2.png")
@@ -352,8 +398,18 @@ def pobierz_dane():
                                 print("na schemacie zostanie umiejscowiony kondensator jednofazowy")
                                 stopien_2 = Image.open(
                                     "pod_3_stopnie_uniwersalny/stopnie/1_jednofazowe_kondensatory/blok_1_fazowy_kondensator.png")
+
+                            w_s2, h_s2 = stopien_2.size
+
                             obraz_do_wygenerowania.paste(stopien_2,
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy+height_sciezki_stopien_2))
+
+                            opis_stopien2 = Image.open(
+                                "pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q5.png")
+                            # w_o_s1, h_o_s1 = opis_stopien1.size
+
+                            obraz_do_wygenerowania.paste(opis_stopien2, (szerokosc_wstawianie_sciezki,
+                                                                         height_podstawowy + height_sciezki_stopien_2 + h_s2))
 
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_2
 
@@ -370,9 +426,18 @@ def pobierz_dane():
                                 print("na schemacie zostanie umiejscowiony kondensator jednofazowy")
                                 stopien_3 = Image.open(
                                     "pod_3_stopnie_uniwersalny/stopnie/1_jednofazowe_kondensatory/blok_1_fazowy_kondensator.png")
+
+                            w_s3, h_s3 = stopien_3.size
+
                             obraz_do_wygenerowania.paste(stopien_3,
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy+height_sciezki_stopien_3))
 
+                            opis_stopien3 = Image.open(
+                                "pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q6.png")
+                            # w_o_s1, h_o_s1 = opis_stopien1.size
+
+                            obraz_do_wygenerowania.paste(opis_stopien3, (szerokosc_wstawianie_sciezki,
+                                                                         height_podstawowy + height_sciezki_stopien_3 + h_s3))
 
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_3
 
@@ -389,9 +454,18 @@ def pobierz_dane():
                                 print("na schemacie zostanie umiejscowiony kondensator jednofazowy")
                                 stopien_4 = Image.open(
                                     "pod_3_stopnie_uniwersalny/stopnie/1_jednofazowe_kondensatory/blok_1_fazowy_kondensator.png")
+
+                            w_s4, h_s4 = stopien_4.size
+
                             obraz_do_wygenerowania.paste(stopien_4,
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy+height_sciezki_stopien_4))
 
+                            opis_stopien4 = Image.open(
+                                "pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q7.png")
+                            # w_o_s1, h_o_s1 = opis_stopien1.size
+
+                            obraz_do_wygenerowania.paste(opis_stopien4, (szerokosc_wstawianie_sciezki,
+                                                                         height_podstawowy + height_sciezki_stopien_4 + h_s4))
 
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_4
 
@@ -408,9 +482,18 @@ def pobierz_dane():
                                 print("na schemacie zostanie umiejscowiony kondensator jednofazowy")
                                 stopien_5 = Image.open(
                                     "pod_3_stopnie_uniwersalny/stopnie/1_jednofazowe_kondensatory/blok_1_fazowy_kondensator.png")
+
+                            w_s5, h_s5 = stopien_5.size
+
                             obraz_do_wygenerowania.paste(stopien_5,
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy+height_sciezki_stopien_5))
 
+                            opis_stopien5 = Image.open(
+                                "pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q8.png")
+                            # w_o_s1, h_o_s1 = opis_stopien1.size
+
+                            obraz_do_wygenerowania.paste(opis_stopien5, (szerokosc_wstawianie_sciezki,
+                                                                         height_podstawowy + height_sciezki_stopien_5 + h_s5))
 
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_5
 
@@ -427,13 +510,24 @@ def pobierz_dane():
                                 print("na schemacie zostanie umiejscowiony kondensator jednofazowy")
                                 stopien_6 = Image.open(
                                     "pod_3_stopnie_uniwersalny/stopnie/1_jednofazowe_kondensatory/blok_1_fazowy_kondensator.png")
+
+                            w_s6, h_s6 = stopien_6.size
+
                             obraz_do_wygenerowania.paste(stopien_6,
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy+height_sciezki_stopien_6))
 
+                            opis_stopien6 = Image.open(
+                                "pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q9.png")
+                            # w_o_s1, h_o_s1 = opis_stopien1.size
+
+                            obraz_do_wygenerowania.paste(opis_stopien1, (szerokosc_wstawianie_sciezki,
+                                                                         height_podstawowy + height_sciezki_stopien_6 + h_s6))
 
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_6
 
-
+                    # --------------------------------------------------------------------------------------------------
+                    # BLOK - pobierz_dane - dodatkowe stopnie -> generowanie grafiki z dodatkowymi stopniami ->
+                    # -> trzyfazowe
 
                     if i >= 6 :
 
@@ -443,36 +537,172 @@ def pobierz_dane():
                             width_sciezki_stopien_7, height_sciezki_stopien_7 = sciezki_stopien_7.size
                             obraz_do_wygenerowania.paste(sciezki_stopien_7,
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy))
+
+                            if zawartosc[0] == "-":
+                                print("na schemacie zostanie umiejscowiony dławik jednofazowy")
+                                stopien_7 = Image.open(
+                                    "pod_3_stopnie_uniwersalny/stopnie/3_trzyfazowe_dlawiki/3_fazowy_dlawik.png")
+                            else:
+                                print("na schemacie zostanie umiejscowiony kondensator jednofazowy")
+                                stopien_7 = Image.open(
+                                    "pod_3_stopnie_uniwersalny/stopnie/4_trzyfazowe_kondensatory/blok_3_fazowy_kondensator.png")
+
+                            w_s7, h_s7 = stopien_7.size
+
+                            obraz_do_wygenerowania.paste(stopien_7,
+                                                             (szerokosc_wstawianie_sciezki, height_podstawowy+height_sciezki_stopien_7))
+
+                            opis_stopien7 = Image.open(
+                                "pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q4.png")
+
+
+                            obraz_do_wygenerowania.paste(opis_stopien7, (szerokosc_wstawianie_sciezki,
+                                                                         height_podstawowy + height_sciezki_stopien_7 + h_s7))
+
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_7
+
+
+
                         if i == 7:
                             sciezki_stopien_8 = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/podlaczenie_stopnie/podlaczenie_3_fazowe.png")
                             width_sciezki_stopien_8, height_sciezki_stopien_8 = sciezki_stopien_8.size
                             obraz_do_wygenerowania.paste(sciezki_stopien_8,
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy))
+                            if zawartosc[0] == "-":
+                                print("na schemacie zostanie umiejscowiony dławik jednofazowy")
+                                stopien_8 = Image.open(
+                                    "pod_3_stopnie_uniwersalny/stopnie/3_trzyfazowe_dlawiki/3_fazowy_dlawik.png")
+                            else:
+                                print("na schemacie zostanie umiejscowiony kondensator jednofazowy")
+                                stopien_8 = Image.open(
+                                    "pod_3_stopnie_uniwersalny/stopnie/4_trzyfazowe_kondensatory/blok_3_fazowy_kondensator.png")
+
+                            w_s8, h_s8 = stopien_8.size
+
+                            obraz_do_wygenerowania.paste(stopien_8,
+                                                             (szerokosc_wstawianie_sciezki, height_podstawowy+height_sciezki_stopien_8))
+
+                            opis_stopien8 = Image.open(
+                                "pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q5.png")
+
+
+                            obraz_do_wygenerowania.paste(opis_stopien8, (szerokosc_wstawianie_sciezki,
+                                                                         height_podstawowy + height_sciezki_stopien_8 + h_s8))
+
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_8
+
                         if i == 8:
                             sciezki_stopien_9 = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/podlaczenie_stopnie/podlaczenie_3_fazowe.png")
                             width_sciezki_stopien_9, height_sciezki_stopien_9 = sciezki_stopien_9.size
                             obraz_do_wygenerowania.paste(sciezki_stopien_9,
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy))
+                            if zawartosc[0] == "-":
+                                print("na schemacie zostanie umiejscowiony dławik jednofazowy")
+                                stopien_7 = Image.open(
+                                    "pod_3_stopnie_uniwersalny/stopnie/3_trzyfazowe_dlawiki/3_fazowy_dlawik.png")
+                            else:
+                                print("na schemacie zostanie umiejscowiony kondensator jednofazowy")
+                                stopien_9 = Image.open(
+                                    "pod_3_stopnie_uniwersalny/stopnie/4_trzyfazowe_kondensatory/blok_3_fazowy_kondensator.png")
+
+                            w_s9, h_s9 = stopien_9.size
+
+                            obraz_do_wygenerowania.paste(stopien_9,
+                                                             (szerokosc_wstawianie_sciezki, height_podstawowy+height_sciezki_stopien_9))
+
+                            opis_stopien9 = Image.open(
+                                "pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q6.png")
+
+
+                            obraz_do_wygenerowania.paste(opis_stopien9, (szerokosc_wstawianie_sciezki,
+                                                                         height_podstawowy + height_sciezki_stopien_9 + h_s9))
+
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_9
+
                         if i == 9:
                             sciezki_stopien_10 = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/podlaczenie_stopnie/podlaczenie_3_fazowe.png")
                             width_sciezki_stopien_10, height_sciezki_stopien_10 = sciezki_stopien_10.size
                             obraz_do_wygenerowania.paste(sciezki_stopien_10,
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy))
+                            if zawartosc[0] == "-":
+                                print("na schemacie zostanie umiejscowiony dławik jednofazowy")
+                                stopien_10 = Image.open(
+                                    "pod_3_stopnie_uniwersalny/stopnie/3_trzyfazowe_dlawiki/3_fazowy_dlawik.png")
+                            else:
+                                print("na schemacie zostanie umiejscowiony kondensator jednofazowy")
+                                stopien_10 = Image.open(
+                                    "pod_3_stopnie_uniwersalny/stopnie/4_trzyfazowe_kondensatory/blok_3_fazowy_kondensator.png")
+
+                            w_s10, h_s10 = stopien_10.size
+
+                            obraz_do_wygenerowania.paste(stopien_10,
+                                                             (szerokosc_wstawianie_sciezki, height_podstawowy+height_sciezki_stopien_10))
+
+                            opis_stopien10 = Image.open(
+                                "pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q7.png")
+
+
+                            obraz_do_wygenerowania.paste(opis_stopien10, (szerokosc_wstawianie_sciezki,
+                                                                         height_podstawowy + height_sciezki_stopien_10 + h_s10))
+
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_10
+
                         if i == 10:
                             sciezki_stopien_11 = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/podlaczenie_stopnie/podlaczenie_3_fazowe.png")
                             width_sciezki_stopien_11, height_sciezki_stopien_11 = sciezki_stopien_11.size
                             obraz_do_wygenerowania.paste(sciezki_stopien_11,
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy))
+
+                            if zawartosc[0] == "-":
+                                print("na schemacie zostanie umiejscowiony dławik jednofazowy")
+                                stopien_11 = Image.open(
+                                    "pod_3_stopnie_uniwersalny/stopnie/3_trzyfazowe_dlawiki/3_fazowy_dlawik.png")
+                            else:
+                                print("na schemacie zostanie umiejscowiony kondensator jednofazowy")
+                                stopien_11 = Image.open(
+                                    "pod_3_stopnie_uniwersalny/stopnie/4_trzyfazowe_kondensatory/blok_3_fazowy_kondensator.png")
+
+                            w_s11, h_s11 = stopien_11.size
+
+                            obraz_do_wygenerowania.paste(stopien_11,
+                                                             (szerokosc_wstawianie_sciezki, height_podstawowy+height_sciezki_stopien_11))
+
+                            opis_stopien11 = Image.open(
+                                "pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q8.png")
+
+
+                            obraz_do_wygenerowania.paste(opis_stopien11, (szerokosc_wstawianie_sciezki,
+                                                                         height_podstawowy + height_sciezki_stopien_11 + h_s11))
+
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_11
+
                         if i == 11:
                             sciezki_stopien_12 = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/podlaczenie_stopnie/podlaczenie_3_fazowe.png")
                             width_sciezki_stopien_12, height_sciezki_stopien_12 = sciezki_stopien_12.size
                             obraz_do_wygenerowania.paste(sciezki_stopien_12,
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy))
+
+                            if zawartosc[0] == "-":
+                                print("na schemacie zostanie umiejscowiony dławik jednofazowy")
+                                stopien_12 = Image.open(
+                                    "pod_3_stopnie_uniwersalny/stopnie/3_trzyfazowe_dlawiki/3_fazowy_dlawik.png")
+                            else:
+                                print("na schemacie zostanie umiejscowiony kondensator jednofazowy")
+                                stopien_12 = Image.open(
+                                    "pod_3_stopnie_uniwersalny/stopnie/4_trzyfazowe_kondensatory/blok_3_fazowy_kondensator.png")
+
+                            w_s12, h_s12 = stopien_12.size
+
+                            obraz_do_wygenerowania.paste(stopien_12,
+                                                             (szerokosc_wstawianie_sciezki, height_podstawowy+height_sciezki_stopien_12))
+
+                            opis_stopien12 = Image.open(
+                                "pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q9.png")
+
+
+                            obraz_do_wygenerowania.paste(opis_stopien12, (szerokosc_wstawianie_sciezki,
+                                                                         height_podstawowy + height_sciezki_stopien_12 + h_s12))
+
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_12
 
                 '''
@@ -489,6 +719,9 @@ def pobierz_dane():
 
             obraz_do_wygenerowania.save(f"wygenerowany.png")
             ilosc_stopni = 0
+
+        #---------------------------------------------------------------------------------------------------------------
+        #BLOK - pobierz_dane - dodatkowe stopnie -> nie generujemy schematu , wyswietlamy komunikat
         else :
             messagebox.showinfo("Informacja", "Przekroczono ilosc stopni , aplikacja pozwala na max 6")
             print("przekroczona ilosc stopni")
