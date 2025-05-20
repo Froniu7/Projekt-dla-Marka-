@@ -70,13 +70,16 @@ Jest wybrane w GUI -> dodatkowe stopnie;
 
             będą generowane grafiki z tekstem - z wartosciami stopni
             ;
+            :kozystamy z funkcji :
+            generuj_grafike_z_tekstem()
+
+            wstawiamy grafikę z opisem od stopnia - przypietego do łącznika;
+            note left
+                        zrobic jeszcze funkcje zeby mozna wstawiac wiecej informacji
+            endnote
                 switch()
                     case()
                         :jednofazowe;
-                        note left
-                        do poprawy dla jedno fazowych i trzyfazowych
-                        zrobic licznik stopni zeby Q1....Qn - było liczone
-                        endnote
                         :if i == 0
                         - otwarcie grafiki z podlaczeniem stopnia
                         - umiejscowienie tej grafiki
@@ -88,7 +91,18 @@ Jest wybrane w GUI -> dodatkowe stopnie;
                         ;
                     case()
                         :trzyfazowe;
+                        :if i == 0
+                        - otwarcie grafiki z podlaczeniem stopnia
+                        - umiejscowienie tej grafiki
+                        - otwarcie grafiki od kondensatora badz dławika
+                        - umiejscowienie tej grafiki
+                        - otwarcie grafiki od stopnia
+                        - umiejscowienie tej grafiki
+                        -
+                        ;
+                    case()
                 endswitch
+
         case( else : \n BLOK - pobierz_dane - dodatkowe stopnie -> \n nie generujemy schematu , wyswietlamy komunikat )
             :
             Nie możemy wygenerować grafik, bo liczba dodatkowych stopni przekroczyła 6

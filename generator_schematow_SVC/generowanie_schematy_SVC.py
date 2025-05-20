@@ -33,11 +33,15 @@ dodatkowe_stopnie = ["", "", "", "", "", "", "", "", "", "", "", ""]
 root = tk.Tk()
 root.title("Wybór opcji")
 
+
 #***********************************************************************************************************************
 #BLOK 3
 #tu blok kodu odpowiedzialny za pierwsze przyciski radiowe i obsługę tych przycisków ( wybranie rodzaju zabezpieczenia zew. inaczej glównego
+# === SEKCJA 1 === - kontener z niebieskim tłem
+sekcja1 = tk.Frame(root, bg="lightblue", bd=2, relief="solid", padx=10, pady=10)
+sekcja1.grid(row=0, column=0)
 #Wyświetlamy informacje nad pierwszymi przyciskami radiowymi
-zabezpieczenia_zew = tk.Label(text="Wybierz rodzaj zabezpieczenia zewnetrznego")
+zabezpieczenia_zew = tk.Label(sekcja1,text="Wybierz rodzaj zabezpieczenia zewnetrznego:\n ", bg="lightblue", font=("Verdana", 14))
 zabezpieczenia_zew.grid(row=0, column=0)
 
 #Funkcja do obslugi przyciskow - jest przed deklaracją przyciskow - aby ją widziały
@@ -56,7 +60,7 @@ opcje = ["typ S - C 3polowe", "wkladki topikowe gG", "brak zabezpieczenia glowne
 i = 1
 for opcja in opcje:
 
-    tk.Radiobutton(root, text=opcja, variable=wybor, value=opcja, command=pokaz_wybor).grid(row=i , column=0)
+    tk.Radiobutton(sekcja1, text=opcja, variable=wybor, value=opcja, command=pokaz_wybor, bg="lightblue", font=("Verdana", 11)).grid(row=i , column=0)
     i = i+1
 
 #tu koniec bloku odpowiedzialnego za pierwsze przyciski radiowe - odnosnie zabezpieczenia zew. - głównego
@@ -64,9 +68,12 @@ for opcja in opcje:
 #***********************************************************************************************************************
 #BLOK 4
 #tu blok  odpowiedzialny za przyciski radiowe - odnosnie - czy są dodatkowe stopnie
+# === SEKCJA 1 ===
+sekcja2 = tk.Frame(root, bg="red", bd=2, relief="solid", padx=10, pady=10)
+sekcja2.grid(row=1, column=0)
 #wyświetlenie pierwszego tekstu
-lacznik_tyrystorowy_i_stopnie = tk.Label(text="Ilosc podzespolow")
-lacznik_tyrystorowy_i_stopnie.grid(row=4, column=0) #gdzie umieszczone
+lacznik_tyrystorowy_i_stopnie = tk.Label(sekcja2 ,text="Ilosc podzespolow")
+lacznik_tyrystorowy_i_stopnie.grid(row=0, column=0) #gdzie umieszczone
 
 #funkcja do obsługi wybranego przyciski - funkcja musi być przed deklaracją przyciskow,
 #działanie jeżeli zostanie wybrany przycisk - "dodatkowe stopnie" to funkcja ma umiejscowić w oknie
@@ -154,7 +161,7 @@ opcje2 = ["tylko łącznik tyrystorowy i 3 dlawiki", "dodatkowe stopnie"]
 i = 5
 for opcja2 in opcje2:
 
-    tk.Radiobutton(root, text=opcja2, variable=wybor2, value=opcja2, command=pokaz_wybor2).grid(row=i , column=0)
+    tk.Radiobutton(sekcja2, text=opcja2, variable=wybor2, value=opcja2, command=pokaz_wybor2).grid(row=i , column=0)
     i = i+1
 
 
@@ -331,6 +338,8 @@ def pobierz_dane():
                 schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/SVC_3_termostat_zew_gG_6stopnie_C_wszystkie_stopnie.png")
                 width_podstawowy, height_podstawowy = schemat_podstawowy.size
 
+            print(f"width_podstawowy = {width_podstawowy}")
+
             siec_i_3_fazy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/podlaczenie_stopnie/podlaczenie_glowne_i_siec.png")
             width_sieci_i_fazy, height_sieci_i_fazy = siec_i_3_fazy.size
 
@@ -339,12 +348,54 @@ def pobierz_dane():
             obraz_do_wygenerowania.paste(siec_i_3_fazy, (0, height_podstawowy))
 
 
+
+
+
+
             # zmienna szerokosc_wstawianie_sciezki - bedzie urzywana do przesówania grafik od stopni , po kazdym dodaniu stopnia będzie dodawana jego szerokość
             # dzieki temu kazdy kolejny stopien będzie przesuniety w prawo na schemacie
 
             szerokosc_wstawianie_sciezki = width_sieci_i_fazy
             ilosc_umieszczonych_stopni = 3
             nazwa_pliku = "grafika.png"
+
+            # ... dolaczenie grafiki dla trzech dlawikow - podlaczonych do lacznika tyrystorowego
+            print("generowanie grafiki dla dlawik D3")
+            generuj_grafike_z_tekstem(d3, 1299, 236, 100, nazwa_pliku)
+            print("otwarcie grafiki dla dlawika D3")
+            opis_stopien_d3 = Image.open(nazwa_pliku).convert("RGBA")
+            print("pobranie wymiarow grafiki D3")
+            w_o_s_d3, h_o_s_d3 = opis_stopien_d3.size
+            print(f"width_podstawowy = {width_podstawowy}")
+            print(f"w_o_s_d3 = {w_o_s_d3}")
+            punkt_wstawienia = width_podstawowy - w_o_s_d3
+            print(f"punkt_wstawienia = {punkt_wstawienia}")
+            obraz_do_wygenerowania.paste(opis_stopien_d3,
+                                         (width_podstawowy - w_o_s_d3,
+                                          height_podstawowy - h_o_s_d3 - h_o_s_d3 - h_o_s_d3))
+            # ...
+            # ... dolaczenie grafiki dla trzech dlawikow - podlaczonych do lacznika tyrystorowego
+            print("generowanie grafiki dla dlawik D2")
+            generuj_grafike_z_tekstem(d2, 1299, 236, 100, nazwa_pliku)
+            print("otwarcie grafiki dla dlawika D2")
+            opis_stopien_d2 = Image.open(nazwa_pliku).convert("RGBA")
+            print("pobranie wymiarow grafiki D2")
+            w_o_s_d2, h_o_s_d2 = opis_stopien_d2.size
+            obraz_do_wygenerowania.paste(opis_stopien_d2,
+                                         (width_podstawowy - w_o_s_d3 - w_o_s_d2,
+                                          height_podstawowy - h_o_s_d2 - h_o_s_d2 - h_o_s_d2))
+            # ...
+            # ... dolaczenie grafiki dla trzech dlawikow - podlaczonych do lacznika tyrystorowego
+            print("generowanie grafiki dla dlawik D1")
+            generuj_grafike_z_tekstem(d1, 1299, 236, 100, nazwa_pliku)
+            print("otwarcie grafiki dla dlawika D1")
+            opis_stopien_d1 = Image.open(nazwa_pliku).convert("RGBA")
+            print("pobranie wymiarow grafiki D1")
+            w_o_s_d1, h_o_s_d1 = opis_stopien_d1.size
+            obraz_do_wygenerowania.paste(opis_stopien_d1,
+                                         (width_podstawowy - w_o_s_d3 - w_o_s_d2 - w_o_s_d1,
+                                          height_podstawowy - h_o_s_d1 - h_o_s_d1 - h_o_s_d1))
+            # ...
 
 
 
@@ -385,10 +436,10 @@ def pobierz_dane():
 
                             obraz_do_wygenerowania.paste(opis_stopien1, (szerokosc_wstawianie_sciezki, height_podstawowy + height_sciezki_stopien_1+ h_s1))
 
-                            generuj_grafike_z_tekstem("1",1299,236, 100, nazwa_pliku)
+                            generuj_grafike_z_tekstem(s4,1299,236, 100, nazwa_pliku)
                             opis_moc_stopien = Image.open(nazwa_pliku)
                             obraz_do_wygenerowania.paste(opis_moc_stopien,
-                                  (szerokosc_wstawianie_sciezki, height_podstawowy + height_sciezki_stopien_1 + h_s1))
+                                  (szerokosc_wstawianie_sciezki, height_podstawowy + height_sciezki_stopien_1 + h_s1 + h_o_s1))
 
 
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_1
@@ -416,11 +467,18 @@ def pobierz_dane():
 
                             opis_stopien2 = Image.open(
                                 f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni+1}.png")
-                            # w_o_s1, h_o_s1 = opis_stopien1.size
+                            w_o_s2, h_o_s2 = opis_stopien1.size
                             ilosc_umieszczonych_stopni += 1
 
                             obraz_do_wygenerowania.paste(opis_stopien2, (szerokosc_wstawianie_sciezki,
                                                                          height_podstawowy + height_sciezki_stopien_2 + h_s2))
+                            #...
+                            generuj_grafike_z_tekstem(s5, 1299, 236, 100, nazwa_pliku)
+                            opis_moc_stopien = Image.open(nazwa_pliku)
+                            obraz_do_wygenerowania.paste(opis_moc_stopien,
+                                                         (szerokosc_wstawianie_sciezki,
+                                                          height_podstawowy + height_sciezki_stopien_1 + h_s2 + h_o_s2))
+                            #...
 
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_2
 
@@ -445,11 +503,19 @@ def pobierz_dane():
 
                             opis_stopien3 = Image.open(
                                 f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni + 1}.png")
-                            # w_o_s1, h_o_s1 = opis_stopien1.size
+                            w_o_s3, h_o_s3 = opis_stopien1.size
                             ilosc_umieszczonych_stopni += 1
 
                             obraz_do_wygenerowania.paste(opis_stopien3, (szerokosc_wstawianie_sciezki,
                                                                          height_podstawowy + height_sciezki_stopien_3 + h_s3))
+
+                            # ...
+                            generuj_grafike_z_tekstem(s6, 1299, 236, 100, nazwa_pliku)
+                            opis_moc_stopien = Image.open(nazwa_pliku)
+                            obraz_do_wygenerowania.paste(opis_moc_stopien,
+                                                         (szerokosc_wstawianie_sciezki,
+                                                          height_podstawowy + height_sciezki_stopien_1 + h_s3 + h_o_s3))
+                            # ...
 
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_3
 
@@ -474,11 +540,18 @@ def pobierz_dane():
 
                             opis_stopien4 = Image.open(
                                 f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni + 1}.png")
-                            # w_o_s1, h_o_s1 = opis_stopien1.size
+                            w_o_s4, h_o_s4 = opis_stopien1.size
                             ilosc_umieszczonych_stopni += 1
 
                             obraz_do_wygenerowania.paste(opis_stopien4, (szerokosc_wstawianie_sciezki,
                                                                          height_podstawowy + height_sciezki_stopien_4 + h_s4))
+                            # ...
+                            generuj_grafike_z_tekstem(s7, 1299, 236, 100, nazwa_pliku)
+                            opis_moc_stopien = Image.open(nazwa_pliku)
+                            obraz_do_wygenerowania.paste(opis_moc_stopien,
+                                                         (szerokosc_wstawianie_sciezki,
+                                                          height_podstawowy + height_sciezki_stopien_1 + h_s4 + h_o_s4))
+                            # ...
 
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_4
 
@@ -503,11 +576,19 @@ def pobierz_dane():
 
                             opis_stopien5 = Image.open(
                                 f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni + 1}.png")
-                            # w_o_s1, h_o_s1 = opis_stopien1.size
+                            w_o_s5, h_o_s5 = opis_stopien1.size
                             ilosc_umieszczonych_stopni += 1
 
                             obraz_do_wygenerowania.paste(opis_stopien5, (szerokosc_wstawianie_sciezki,
                                                                          height_podstawowy + height_sciezki_stopien_5 + h_s5))
+
+                            # ...
+                            generuj_grafike_z_tekstem(s8, 1299, 236, 100, nazwa_pliku)
+                            opis_moc_stopien = Image.open(nazwa_pliku)
+                            obraz_do_wygenerowania.paste(opis_moc_stopien,
+                                                         (szerokosc_wstawianie_sciezki,
+                                                          height_podstawowy + height_sciezki_stopien_1 + h_s5 + h_o_s5))
+                            # ...
 
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_5
 
@@ -532,11 +613,19 @@ def pobierz_dane():
 
                             opis_stopien6 = Image.open(
                                 f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni + 1}.png")
-                            # w_o_s1, h_o_s1 = opis_stopien1.size
+                            w_o_s6, h_o_s6 = opis_stopien1.size
                             ilosc_umieszczonych_stopni += 1
 
                             obraz_do_wygenerowania.paste(opis_stopien1, (szerokosc_wstawianie_sciezki,
                                                                          height_podstawowy + height_sciezki_stopien_6 + h_s6))
+
+                            # ...
+                            generuj_grafike_z_tekstem(s9, 1299, 236, 100, nazwa_pliku)
+                            opis_moc_stopien = Image.open(nazwa_pliku)
+                            obraz_do_wygenerowania.paste(opis_moc_stopien,
+                                                         (szerokosc_wstawianie_sciezki,
+                                                          height_podstawowy + height_sciezki_stopien_1 + h_s6 + h_o_s6))
+                            # ...
 
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_6
 
@@ -571,9 +660,19 @@ def pobierz_dane():
                                 f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni + 1}.png")
                             ilosc_umieszczonych_stopni += 1
 
+                            w_o_s7, h_o_s7 = opis_stopien7.size
+
 
                             obraz_do_wygenerowania.paste(opis_stopien7, (szerokosc_wstawianie_sciezki,
                                                                          height_podstawowy + height_sciezki_stopien_7 + h_s7))
+
+                            # ...
+                            generuj_grafike_z_tekstem(s10, 1299, 236, 100, nazwa_pliku)
+                            opis_moc_stopien = Image.open(nazwa_pliku)
+                            obraz_do_wygenerowania.paste(opis_moc_stopien,
+                                                         (szerokosc_wstawianie_sciezki,
+                                                          height_podstawowy + height_sciezki_stopien_7 + h_s7 + h_o_s7))
+                            # ...
 
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_7
 
@@ -602,9 +701,19 @@ def pobierz_dane():
                                 f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni + 1}.png")
                             ilosc_umieszczonych_stopni += 1
 
+                            w_o_s8, h_o_s8 = opis_stopien8.size
+
 
                             obraz_do_wygenerowania.paste(opis_stopien8, (szerokosc_wstawianie_sciezki,
                                                                          height_podstawowy + height_sciezki_stopien_8 + h_s8))
+
+                            # ...
+                            generuj_grafike_z_tekstem(s11, 1299, 236, 100, nazwa_pliku)
+                            opis_moc_stopien = Image.open(nazwa_pliku)
+                            obraz_do_wygenerowania.paste(opis_moc_stopien,
+                                                         (szerokosc_wstawianie_sciezki,
+                                                          height_podstawowy + height_sciezki_stopien_8 + h_s8 + h_o_s8))
+                            # ...
 
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_8
 
@@ -631,9 +740,19 @@ def pobierz_dane():
                                 f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni + 1}.png")
                             ilosc_umieszczonych_stopni += 1
 
+                            w_o_s9, h_o_s9 = opis_stopien9.size
+
 
                             obraz_do_wygenerowania.paste(opis_stopien9, (szerokosc_wstawianie_sciezki,
                                                                          height_podstawowy + height_sciezki_stopien_9 + h_s9))
+
+                            # ...
+                            generuj_grafike_z_tekstem(s12, 1299, 236, 100, nazwa_pliku)
+                            opis_moc_stopien = Image.open(nazwa_pliku)
+                            obraz_do_wygenerowania.paste(opis_moc_stopien,
+                                                         (szerokosc_wstawianie_sciezki,
+                                                          height_podstawowy + height_sciezki_stopien_9 + h_s9 + h_o_s9))
+                            # ...
 
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_9
 
@@ -660,9 +779,19 @@ def pobierz_dane():
                                 f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni + 1}.png")
                             ilosc_umieszczonych_stopni += 1
 
+                            w_o_s10, h_o_s10 = opis_stopien10.size
+
 
                             obraz_do_wygenerowania.paste(opis_stopien10, (szerokosc_wstawianie_sciezki,
                                                                          height_podstawowy + height_sciezki_stopien_10 + h_s10))
+
+                            # ...
+                            generuj_grafike_z_tekstem(s13, 1299, 236, 100, nazwa_pliku)
+                            opis_moc_stopien = Image.open(nazwa_pliku)
+                            obraz_do_wygenerowania.paste(opis_moc_stopien,
+                                                         (szerokosc_wstawianie_sciezki,
+                                                          height_podstawowy + height_sciezki_stopien_10 + h_s10 + h_o_s10))
+                            # ...
 
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_10
 
@@ -690,9 +819,18 @@ def pobierz_dane():
                                 f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni + 1}.png")
                             ilosc_umieszczonych_stopni += 1
 
+                            w_o_s11, h_o_s11= opis_stopien11.size
 
                             obraz_do_wygenerowania.paste(opis_stopien11, (szerokosc_wstawianie_sciezki,
                                                                          height_podstawowy + height_sciezki_stopien_11 + h_s11))
+
+                            # ...
+                            generuj_grafike_z_tekstem(s14, 1299, 236, 100, nazwa_pliku)
+                            opis_moc_stopien = Image.open(nazwa_pliku)
+                            obraz_do_wygenerowania.paste(opis_moc_stopien,
+                                                         (szerokosc_wstawianie_sciezki,
+                                                          height_podstawowy + height_sciezki_stopien_11 + h_s11 + h_o_s11))
+                            # ...
 
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_11
 
@@ -720,23 +858,21 @@ def pobierz_dane():
                                 f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni + 1}.png")
                             ilosc_umieszczonych_stopni += 1
 
+                            w_o_s12, h_o_s12 = opis_stopien12.size
+
 
                             obraz_do_wygenerowania.paste(opis_stopien12, (szerokosc_wstawianie_sciezki,
                                                                          height_podstawowy + height_sciezki_stopien_12 + h_s12))
 
-                            szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_12
+                            # ...
+                            generuj_grafike_z_tekstem(s15, 1299, 236, 100, nazwa_pliku)
+                            opis_moc_stopien = Image.open(nazwa_pliku)
+                            obraz_do_wygenerowania.paste(opis_moc_stopien,
+                                                         (szerokosc_wstawianie_sciezki,
+                                                          height_podstawowy + height_sciezki_stopien_12 + h_s12 + h_o_s12))
+                            # ...
 
-                '''
-                for i in range(len(dodatkowe_stopnie)): #liczymy ile jest elementow w tablicy
-                    zawartosc = dodatkowe_stopnie[i]
-                    if zawartosc== "":
-                        print("brak stopnia")
-                    elif zawartosc.startswith("-"):
-                        print("dławik")
-                        obraz_do_wygenerowania = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/SVC_3_termostat_zew_gG_6stopnie_C_wszystkie_stopnie.png")
-                    else:
-                        print("kondensator")
-                '''
+                            szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_12
 
             obraz_do_wygenerowania.save(f"wygenerowany.png")
             ilosc_stopni = 0

@@ -3,7 +3,7 @@
 def generuj_grafike_z_tekstem(tekst, szerokosc, wysokosc, rozmiar_fonta, nazwa_pliku):
     from PIL import Image, ImageDraw, ImageFont
     # Tworzymy pusty biały obraz
-    obraz = Image.new('RGB', (szerokosc, wysokosc), color='white')
+    obraz = Image.new('RGBA', (szerokosc, wysokosc), color=(0,0,0,0))
 
     # Obiekt do rysowania
     draw = ImageDraw.Draw(obraz)
