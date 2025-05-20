@@ -57,6 +57,19 @@ Jest wybrane w GUI -> dodatkowe stopnie;
 
             dzieki tej zmiennej - wstawiane grafiki będą mogły być przesuwane w prawo,
             gdyz zawsze jest dodawana wartośś szerokosci;
+            :utworzenie zmiennej:
+            ilosc_umieszczonych_stopni
+
+            zmienna rpzsnie o +1 z kazdym dodaniem kolejnego stopnia -
+            dzięki temu możemy podczas ładowania grafik "Q4....Q10"
+            załadować odpowiednią - w sciezce do grafiki podmieniamy wartosc zmiennej
+            ;
+            :
+            utworzenie zmiennej:
+            nazwa_pliku
+
+            będą generowane grafiki z tekstem - z wartosciami stopni
+            ;
                 switch()
                     case()
                         :jednofazowe;
@@ -64,6 +77,15 @@ Jest wybrane w GUI -> dodatkowe stopnie;
                         do poprawy dla jedno fazowych i trzyfazowych
                         zrobic licznik stopni zeby Q1....Qn - było liczone
                         endnote
+                        :if i == 0
+                        - otwarcie grafiki z podlaczeniem stopnia
+                        - umiejscowienie tej grafiki
+                        - otwarcie grafiki od kondensatora badz dławika
+                        - umiejscowienie tej grafiki
+                        - otwarcie grafiki od stopnia
+                        - umiejscowienie tej grafiki
+                        -
+                        ;
                     case()
                         :trzyfazowe;
                 endswitch

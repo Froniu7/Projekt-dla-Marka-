@@ -1,6 +1,7 @@
 import tkinter as tk
 from PIL import Image
 from tkinter import messagebox
+from generator_schematow_SVC.generowanie_grafik import generuj_grafike_z_tekstem
 
 
 #***********************************************************************************************************************
@@ -342,6 +343,8 @@ def pobierz_dane():
             # dzieki temu kazdy kolejny stopien będzie przesuniety w prawo na schemacie
 
             szerokosc_wstawianie_sciezki = width_sieci_i_fazy
+            ilosc_umieszczonych_stopni = 3
+            nazwa_pliku = "grafika.png"
 
 
 
@@ -376,10 +379,17 @@ def pobierz_dane():
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy+height_sciezki_stopien_1))
 
 
-                            opis_stopien1 = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q4.png")
-                            # w_o_s1, h_o_s1 = opis_stopien1.size
+                            opis_stopien1 = Image.open(f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni+1}.png")
+                            w_o_s1, h_o_s1 = opis_stopien1.size
+                            ilosc_umieszczonych_stopni += 1
 
                             obraz_do_wygenerowania.paste(opis_stopien1, (szerokosc_wstawianie_sciezki, height_podstawowy + height_sciezki_stopien_1+ h_s1))
+
+                            generuj_grafike_z_tekstem("1",1299,236, 100, nazwa_pliku)
+                            opis_moc_stopien = Image.open(nazwa_pliku)
+                            obraz_do_wygenerowania.paste(opis_moc_stopien,
+                                  (szerokosc_wstawianie_sciezki, height_podstawowy + height_sciezki_stopien_1 + h_s1))
+
 
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_1
 
@@ -405,8 +415,9 @@ def pobierz_dane():
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy+height_sciezki_stopien_2))
 
                             opis_stopien2 = Image.open(
-                                "pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q5.png")
+                                f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni+1}.png")
                             # w_o_s1, h_o_s1 = opis_stopien1.size
+                            ilosc_umieszczonych_stopni += 1
 
                             obraz_do_wygenerowania.paste(opis_stopien2, (szerokosc_wstawianie_sciezki,
                                                                          height_podstawowy + height_sciezki_stopien_2 + h_s2))
@@ -433,8 +444,9 @@ def pobierz_dane():
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy+height_sciezki_stopien_3))
 
                             opis_stopien3 = Image.open(
-                                "pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q6.png")
+                                f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni + 1}.png")
                             # w_o_s1, h_o_s1 = opis_stopien1.size
+                            ilosc_umieszczonych_stopni += 1
 
                             obraz_do_wygenerowania.paste(opis_stopien3, (szerokosc_wstawianie_sciezki,
                                                                          height_podstawowy + height_sciezki_stopien_3 + h_s3))
@@ -461,8 +473,9 @@ def pobierz_dane():
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy+height_sciezki_stopien_4))
 
                             opis_stopien4 = Image.open(
-                                "pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q7.png")
+                                f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni + 1}.png")
                             # w_o_s1, h_o_s1 = opis_stopien1.size
+                            ilosc_umieszczonych_stopni += 1
 
                             obraz_do_wygenerowania.paste(opis_stopien4, (szerokosc_wstawianie_sciezki,
                                                                          height_podstawowy + height_sciezki_stopien_4 + h_s4))
@@ -489,8 +502,9 @@ def pobierz_dane():
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy+height_sciezki_stopien_5))
 
                             opis_stopien5 = Image.open(
-                                "pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q8.png")
+                                f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni + 1}.png")
                             # w_o_s1, h_o_s1 = opis_stopien1.size
+                            ilosc_umieszczonych_stopni += 1
 
                             obraz_do_wygenerowania.paste(opis_stopien5, (szerokosc_wstawianie_sciezki,
                                                                          height_podstawowy + height_sciezki_stopien_5 + h_s5))
@@ -517,8 +531,9 @@ def pobierz_dane():
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy+height_sciezki_stopien_6))
 
                             opis_stopien6 = Image.open(
-                                "pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q9.png")
+                                f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni + 1}.png")
                             # w_o_s1, h_o_s1 = opis_stopien1.size
+                            ilosc_umieszczonych_stopni += 1
 
                             obraz_do_wygenerowania.paste(opis_stopien1, (szerokosc_wstawianie_sciezki,
                                                                          height_podstawowy + height_sciezki_stopien_6 + h_s6))
@@ -553,7 +568,8 @@ def pobierz_dane():
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy+height_sciezki_stopien_7))
 
                             opis_stopien7 = Image.open(
-                                "pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q4.png")
+                                f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni + 1}.png")
+                            ilosc_umieszczonych_stopni += 1
 
 
                             obraz_do_wygenerowania.paste(opis_stopien7, (szerokosc_wstawianie_sciezki,
@@ -583,7 +599,8 @@ def pobierz_dane():
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy+height_sciezki_stopien_8))
 
                             opis_stopien8 = Image.open(
-                                "pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q5.png")
+                                f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni + 1}.png")
+                            ilosc_umieszczonych_stopni += 1
 
 
                             obraz_do_wygenerowania.paste(opis_stopien8, (szerokosc_wstawianie_sciezki,
@@ -611,7 +628,8 @@ def pobierz_dane():
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy+height_sciezki_stopien_9))
 
                             opis_stopien9 = Image.open(
-                                "pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q6.png")
+                                f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni + 1}.png")
+                            ilosc_umieszczonych_stopni += 1
 
 
                             obraz_do_wygenerowania.paste(opis_stopien9, (szerokosc_wstawianie_sciezki,
@@ -639,7 +657,8 @@ def pobierz_dane():
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy+height_sciezki_stopien_10))
 
                             opis_stopien10 = Image.open(
-                                "pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q7.png")
+                                f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni + 1}.png")
+                            ilosc_umieszczonych_stopni += 1
 
 
                             obraz_do_wygenerowania.paste(opis_stopien10, (szerokosc_wstawianie_sciezki,
@@ -668,7 +687,8 @@ def pobierz_dane():
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy+height_sciezki_stopien_11))
 
                             opis_stopien11 = Image.open(
-                                "pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q8.png")
+                                f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni + 1}.png")
+                            ilosc_umieszczonych_stopni += 1
 
 
                             obraz_do_wygenerowania.paste(opis_stopien11, (szerokosc_wstawianie_sciezki,
@@ -697,7 +717,8 @@ def pobierz_dane():
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy+height_sciezki_stopien_12))
 
                             opis_stopien12 = Image.open(
-                                "pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q9.png")
+                                f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni + 1}.png")
+                            ilosc_umieszczonych_stopni += 1
 
 
                             obraz_do_wygenerowania.paste(opis_stopien12, (szerokosc_wstawianie_sciezki,

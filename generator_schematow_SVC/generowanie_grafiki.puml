@@ -1,0 +1,14 @@
+@startuml
+start
+:funkcja przyjmuje 5 argumentów
+
+tekst , wysokosc , szerokosc , rozmiar_fonta, nazwe pliku;
+
+:utworzenie grafiki o podanych rozmiarach;
+:do zmiennej czcionka - zostaje załadowana "arial";
+:liczymy wymiary tekstu w px - wysokosc i szerokosc ;
+:liczymy środek;
+:Rysujemy text na środku obszaru;
+:Zapisujemy jak grafika.png;
+stop
+@enduml
