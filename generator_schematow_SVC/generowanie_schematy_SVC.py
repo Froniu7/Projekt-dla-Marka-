@@ -320,22 +320,22 @@ def pobierz_dane():
             # BLOK - pobierz_dane - dodatkowe stopnie -> generowanie grafiki z dodatkowymi stopniami
 
             if ilosc_stopni == 1:
-                schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/SVC_3_termostat_zew_gG_1stopnie_C_wszystkie_stopnie.png")
+                schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_gG_1stopnie_C_wszystkie_stopnie.png")
                 width_podstawowy, height_podstawowy = schemat_podstawowy.size
             if ilosc_stopni == 2:
-                schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/SVC_3_termostat_zew_gG_2stopnie_C_wszystkie_stopnie.png")
+                schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_gG_2stopnie_C_wszystkie_stopnie.png")
                 width_podstawowy, height_podstawowy = schemat_podstawowy.size
             if ilosc_stopni == 3:
-                schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/SVC_3_termostat_zew_gG_3stopnie_C_wszystkie_stopnie.png")
+                schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_gG_3stopnie_C_wszystkie_stopnie.png")
                 width_podstawowy, height_podstawowy = schemat_podstawowy.size
             if ilosc_stopni == 4:
-                schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/SVC_3_termostat_zew_gG_4stopnie_C_wszystkie_stopnie.png")
+                schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_gG_4stopnie_C_wszystkie_stopnie.png")
                 width_podstawowy, height_podstawowy = schemat_podstawowy.size
             if ilosc_stopni == 5:
-                schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/SVC_3_termostat_zew_gG_5stopnie_C_wszystkie_stopnie.png")
+                schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_gG_5stopnie_C_wszystkie_stopnie.png")
                 width_podstawowy, height_podstawowy = schemat_podstawowy.size
             if ilosc_stopni == 6:
-                schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/SVC_3_termostat_zew_gG_6stopnie_C_wszystkie_stopnie.png")
+                schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_gG_6stopnie_C_wszystkie_stopnie.png")
                 width_podstawowy, height_podstawowy = schemat_podstawowy.size
 
             print(f"width_podstawowy = {width_podstawowy}")
