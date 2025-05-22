@@ -40,6 +40,8 @@ stopien12 = None
 stopien13 = None
 stopien14 = None
 stopien15 = None
+dodatkowe_stopnie_jednfazowe = None
+dodatkowe_stopnie_trzyfazow = None
 
 #***********************************************************************************************************************
 #BLOK 2
@@ -84,11 +86,11 @@ for opcja in opcje:
 #BLOK 4
 #tu blok  odpowiedzialny za przyciski radiowe - odnosnie - czy są dodatkowe stopnie
 # === SEKCJA 2 ===
-sekcja2 = tk.Frame(root, bg="red", bd=2, relief="solid", padx=10, pady=10, width =480, height=135)
+sekcja2 = tk.Frame(root, bg="grey", bd=2, relief="solid", padx=10, pady=10, width =480, height=135)
 sekcja2.grid(row=1, column=0)
 sekcja2.grid_propagate(False)
 #wyświetlenie pierwszego tekstu
-lacznik_tyrystorowy_i_stopnie = tk.Label(sekcja2 ,text="Ilosc podzespolow:\n ", bg="red", font=("Verdana", 14))
+lacznik_tyrystorowy_i_stopnie = tk.Label(sekcja2 ,text="Ilosc podzespolow:\n ", bg="grey", font=("Verdana", 14))
 lacznik_tyrystorowy_i_stopnie.grid(row=0, column=0, sticky="w") #gdzie umieszczone
 
 #funkcja do obsługi wybranego przyciski - funkcja musi być przed deklaracją przyciskow,
@@ -96,8 +98,9 @@ lacznik_tyrystorowy_i_stopnie.grid(row=0, column=0, sticky="w") #gdzie umieszczo
 #dodatkowe pola na wpisanie wartości - dodatkowych stopni - definicje dodatkowych elementow są w innym BLOKU
 
 def pokaz_wybor2():
-    global miejsce_podlaczenia_zab, radio_buttons, podzespoly_dodatkowe, sekcja2b, sekcja2c, stopien4, stopien5, stopien6, stopien7, stopien8, stopien9, stopien10, stopien11, stopien12, stopien13, stopien14, stopien15
-
+    global miejsce_podlaczenia_zab, radio_buttons, podzespoly_dodatkowe, sekcja2b, sekcja2c
+    global stopien4, stopien5, stopien6, stopien7, stopien8, stopien9, stopien10, stopien11, stopien12, stopien13, stopien14, stopien15
+    global dodatkowe_stopnie_jednfazowe, dodatkowe_stopnie_trzyfazow
     print("Wybrano:", wybor2.get())
     podzespoly_dodatkowe = wybor2.get()
 
@@ -130,41 +133,75 @@ def pokaz_wybor2():
             rb.grid(row=i+8, column=0, sticky="w")
             radio_buttons.append(rb)  # Przechowujemy referencję do przycisku
 
-        sekcja2c = tk.Frame(root, bg="red", bd=2, relief="solid", padx=10, pady=10, width=480, height=150)
+        sekcja2c = tk.Frame(root, bg="red", bd=2, relief="solid", padx=10, pady=10, width=480, height=230)
         sekcja2c.grid(row=4, column=0)
         sekcja2c.grid_propagate(False)
 
         # dodatkowe_stopnie - wyświetlane jeżeli zostanie wykonana funkcja
-        dodatkowe_stopnie_jednfazowe = tk.Label(sekcja2c, text="Podaj wartosci stopni jednofazowych")
+        dodatkowe_stopnie_jednfazowe = tk.Label(sekcja2c, text="Podaj wartosci stopni jednofazowych: \n", bg = "red", font=("Verdana", 12))
+        dodatkowe_stopnie_jednfazowe.grid(row=0, column=0, columnspan=11, sticky="w")
+
+        L1 = tk.Label(sekcja2c, text="L1: ", bg="red")
+        L1.grid(row=1,column=0)
+
         stopien4 = tk.Entry(sekcja2c, width=10)
+        stopien4.grid(row=1, column=1)
+
+        L2 = tk.Label(sekcja2c, text="L2: ", bg="red")
+        L2.grid(row=2, column=0)
+
         stopien5 = tk.Entry(sekcja2c, width=10)
+        stopien5.grid(row=2, column=1)
+
+        L3 = tk.Label(sekcja2c, text="L2: ", bg="red")
+        L3.grid(row=3, column=0)
+
         stopien6 = tk.Entry(sekcja2c, width=10)
+        stopien6.grid(row=3, column=1)
+
+        plusL1 = tk.Label(sekcja2c, text=" + ", bg="red", font=("Verdana", 10))
+        plusL1.grid(row=1, column=2)
         stopien7 = tk.Entry(sekcja2c, width=10)
+        stopien7.grid(row=1, column=3)
+
+        plusL2 = tk.Label(sekcja2c, text=" + ", bg="red", font=("Verdana", 10))
+        plusL2.grid(row=2, column=2)
         stopien8 = tk.Entry(sekcja2c, width=10)
+        stopien8.grid(row=2, column=3)
+
+        plusL3 = tk.Label(sekcja2c, text=" + ", bg="red", font=("Verdana", 10))
+        plusL3.grid(row=3, column=2)
         stopien9 = tk.Entry(sekcja2c, width=10)
-        dodatkowe_stopnie_trzyfazowe = tk.Label(sekcja2c, text="Podaj wartosci stopni trzyfazowych")
-        stopien10 = tk.Entry(sekcja2c, width=10)
-        stopien11 = tk.Entry(sekcja2c, width=10)
-        stopien12 = tk.Entry(sekcja2c, width=10)
-        stopien13 = tk.Entry(sekcja2c, width=10)
-        stopien14 = tk.Entry(sekcja2c, width=10)
-        stopien15 = tk.Entry(sekcja2c, width=10)
+        stopien9.grid(row=3, column=3)
 
+        dodatkowe_stopnie_trzyfazowe = tk.Label(sekcja2c, text="\nPodaj wartosci stopni trzyfazowych:\n", bg ="red", font=("Verdana", 12))
+        dodatkowe_stopnie_trzyfazowe.grid(row=4, column=0, columnspan=11, sticky="w")
 
-        dodatkowe_stopnie_jednfazowe.grid(row=0, column=0, columnspan=3)
-        stopien4.grid(row=1, column=0)
-        stopien5.grid(row=2, column=0)
-        stopien6.grid(row=3, column=0)
-        stopien7.grid(row=1, column=1)
-        stopien8.grid(row=2, column=1)
-        stopien9.grid(row=3, column=1)
-        dodatkowe_stopnie_trzyfazowe.grid(row=4,column=0, columnspan=3)
-        stopien10.grid(row=5, column=0)
-        stopien11.grid(row=5, column=1)
-        stopien12.grid(row=5, column=2)
-        stopien13.grid(row=5, column=3)
-        stopien14.grid(row=5, column=4)
-        stopien15.grid(row=5, column=5)
+        L123 = tk.Label(sekcja2c, text="L123: ", bg="red" )
+        L123.grid(row=5, column= 0)
+        stopien10 = tk.Entry(sekcja2c, width=8)
+        stopien10.grid(row=5, column=1)
+        plusL123 = tk.Label(sekcja2c, text="+", bg="red", font=("Verdana", 10))
+        plusL123.grid(row=5, column=2)
+        stopien11 = tk.Entry(sekcja2c, width=8)
+        stopien11.grid(row=5, column=3)
+        plusL123b = tk.Label(sekcja2c, text="+", bg="red", font=("Verdana", 10))
+        plusL123b.grid(row=5, column=4)
+        stopien12 = tk.Entry(sekcja2c, width=8)
+        stopien12.grid(row=5, column=5)
+        plusL123c = tk.Label(sekcja2c, text="+", bg="red", font=("Verdana", 10))
+        plusL123c.grid(row=5, column=6)
+        stopien13 = tk.Entry(sekcja2c, width=8)
+        stopien13.grid(row=5, column=7)
+        plusL123d = tk.Label(sekcja2c, text="+", bg="red", font=("Verdana", 10))
+        plusL123d.grid(row=5, column=8)
+        stopien14 = tk.Entry(sekcja2c, width=8)
+        stopien14.grid(row=5, column=9)
+        plusL123e = tk.Label(sekcja2c, text="+", bg="red", font=("Verdana", 10))
+        plusL123e.grid(row=5, column=10)
+        stopien15 = tk.Entry(sekcja2c, width=8)
+        stopien15.grid(row=5, column=11)
+
 
     if wybor2.get() == "tylko łącznik tyrystorowy i 3 dlawiki":
         print("wybrana opcja - tylko lacznik tyrystorowy i 3 dlawiki ")
@@ -179,6 +216,7 @@ def pokaz_wybor2():
             sekcja2c.destroy()
             sekcja2c = None
 
+        '''
         if dodatkowe_stopnie_jednfazowe is not None:
             dodatkowe_stopnie_jednfazowe.grid_forget()
         if stopien4 is not None:
@@ -207,6 +245,7 @@ def pokaz_wybor2():
             stopien14.grid_forget()
         if stopien15 is not None:
             stopien15.grid_forget()
+        '''
 
 # Zmienna do przechowywania wybranej wartości - gdzie value to wartość początkowa - może się zmienić podczas pracy z GUI
 wybor2 = tk.StringVar(value=podzespoly_dodatkowe)
@@ -214,7 +253,7 @@ opcje2 = ["tylko łącznik tyrystorowy i 3 dlawiki", "dodatkowe stopnie"]
 i = 5
 for opcja2 in opcje2:
 
-    tk.Radiobutton(sekcja2, text=opcja2, variable=wybor2, value=opcja2, command=pokaz_wybor2, bg="red", font=("Verdana", 11)).grid(row=i , column=0, sticky="w")
+    tk.Radiobutton(sekcja2, text=opcja2, variable=wybor2, value=opcja2, command=pokaz_wybor2, bg="grey", font=("Verdana", 11)).grid(row=i , column=0, sticky="w")
     i = i+1
 
 #***********************************************************************************************************************
@@ -232,20 +271,29 @@ miejsce_podlaczenia_zab = None
 #
 #miejsce_podlaczenia_zab = tk.Label(text="Wybierz sposub podlaczenia zabezpieczenia lacznika tyrystorowego")
 # === SEKCJA 1 === - kontener z niebieskim tłem
-sekcja3 = tk.Frame(root, bg="yellow", bd=2, relief="solid", padx=10, pady=10, width =480, height=120)
+sekcja3 = tk.Frame(root, bg="yellow", bd=2, relief="solid", padx=10, pady=10, width =480, height=130)
 sekcja3.grid(row=3, column=0)
 sekcja3.grid_propagate(False)
 
-opis_dlawiki_lacznik = tk.Label(sekcja3, text="Podaj warosci dławików podpietych do łącznika tyrystorowego:\n", bg="yellow", font=("Verdana", 10))
-opis_dlawiki_lacznik .grid(row=0,column=0)
+opis_dlawiki_lacznik = tk.Label(sekcja3, text="Podaj wartości dławików podpiętych do łącznika tyrystorowego:\n", bg="yellow", font=("Verdana", 10))
+opis_dlawiki_lacznik .grid(row=0,column=0, columnspan=3)
 
 #pola do wpisywania wartości dla trzech dławików - tych co są zawsze , podpięte do łącznika tyrystorowego
+dlawik1_faza = tk.Label(sekcja3, text="                              L1: ", bg = "yellow")
+dlawik1_faza.grid(row=1,column=0, sticky="w")
+#dodane aby wyregulowac odstepy
+dlawik1_faza_puste = tk.Label(sekcja3, text="                          ", bg = "yellow")
+dlawik1_faza_puste.grid(row=1,column=2, sticky="w")
 dlawik1 = tk.Entry(sekcja3, width=30)
-dlawik1.grid(row=1,column=0, sticky="w")
+dlawik1.grid(row=1,column=1, sticky="w")
+dlawik2_faza = tk.Label(sekcja3, text="                              L2: ", bg = "yellow")
+dlawik2_faza.grid(row=2,column=0, sticky="w")
 dlawik2= tk.Entry(sekcja3, width=30)
-dlawik2.grid(row=2,column=0, sticky="w")
+dlawik2.grid(row=2,column=1, sticky="w")
+dlawik3_faza = tk.Label(sekcja3, text="                              L3: " , bg = "yellow")
+dlawik3_faza.grid(row=3,column=0, sticky="w")
 dlawik3= tk.Entry(sekcja3, width=30)
-dlawik3.grid(row=3,column=0, sticky="w")
+dlawik3.grid(row=3,column=1, sticky="w")
 
 #***********************************************************************************************************************
 #BLOK7
@@ -320,7 +368,7 @@ def pobierz_dane():
     # ta czesc odpowiedzialna za schematy z termostatem - badz bez , oraz za schematy bez dodatkowych stopni
     if zab_zew == "typ S - C 3polowe" and podzespoly_dodatkowe == "tylko łącznik tyrystorowy i 3 dlawiki":
         print("jestemy w if ")
-        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/SVC_3_stopnie.png")
+        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/SVC_3_stopnie_termostat_zabezpieczenie_zew.png")
         width_podstawowy, height_podstawowy = schemat_podstawowy.size
         obraz_do_wygenerowania = Image.new("RGBA", (width_podstawowy, height_podstawowy))
         obraz_do_wygenerowania.paste(schemat_podstawowy,(0,0))
@@ -346,9 +394,10 @@ def pobierz_dane():
 
     # BLOK - pobierz_dane -> dodatkowe stopnie
     # dodatkowe stopnie
-    if podzespoly_dodatkowe == "dodatkowe stopnie":
-        global ilosc_stopni
-        policz_dodatkowe_stopnie()
+    policz_dodatkowe_stopnie()
+    global ilosc_stopni
+    if (podzespoly_dodatkowe == "dodatkowe stopnie") and ilosc_stopni > 0 :
+
         print(f"mamy stopni {ilosc_stopni}")
         print(dodatkowe_stopnie)
 
@@ -951,8 +1000,12 @@ def pobierz_dane():
             print(dodatkowe_stopnie)
             ilosc_stopni = 0
 
+    elif (podzespoly_dodatkowe == "dodatkowe stopnie") and ilosc_stopni == 0:
+        messagebox.showinfo("Informacja", "Brak wpisanych dodatkowych stopni")
+
 def policz_dodatkowe_stopnie():
     global ilosc_stopni, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15
+
     if s4 != "":
         ilosc_stopni=ilosc_stopni+1
     if s5 != "":
