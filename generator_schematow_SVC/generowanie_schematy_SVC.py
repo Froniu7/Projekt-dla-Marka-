@@ -256,7 +256,7 @@ dlawik3.grid(row=3,column=0, sticky="w")
 #BLOK - pobierz_dane - tak będę go wewnątrz funkcji opisywał - aby podzielić ją na części
 
 def pobierz_dane():
-    global zab_zew, podzespoly_dodatkowe, wybor3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, dodatkowe_stopnie
+    global zab_zew, podzespoly_dodatkowe, wybor3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, dodatkowe_stopnie, stopien4, stopien5, stopien6, stopien7, stopien8, stopien9, stopien10, stopien11, stopien12, stopien13, stopien14, stopien15
     print(zab_zew)
     print(podzespoly_dodatkowe)
     zabezpieczenie_lacznika=wybor3.get()
@@ -272,42 +272,44 @@ def pobierz_dane():
     print(f"d2 = {d2}")
     d3 = dlawik3.get()
     print(f"d3 = {d3}")
-    s4 = stopien4.get()
-    print(f"s4 = {s4}")
-    dodatkowe_stopnie[0] = s4
-    s5 = stopien5.get()
-    print(f"s5 = {s5}")
-    dodatkowe_stopnie[1] = s5
-    s6 = stopien6.get()
-    print(f"s6 = {s6}")
-    dodatkowe_stopnie[2] = s6
-    s7 = stopien7.get()
-    print(f"s7 = {s7}")
-    dodatkowe_stopnie[3] = s7
-    s8 = stopien8.get()
-    print(f"s8 = {s8}")
-    dodatkowe_stopnie[4] = s8
-    s9 = stopien9.get()
-    print(f"s9 = {s9}")
-    dodatkowe_stopnie[5] = s9
-    s10 = stopien10.get()
-    print(f"s10 = {s10}")
-    dodatkowe_stopnie[6] = s10
-    s11 = stopien11.get()
-    print(f"s11 = {s11}")
-    dodatkowe_stopnie[7] = s11
-    s12 = stopien12.get()
-    print(f"s12 = {s12}")
-    dodatkowe_stopnie[8] = s12
-    s13 = stopien13.get()
-    print(f"s13 = {s13}")
-    dodatkowe_stopnie[9] = s13
-    s14 = stopien14.get()
-    print(f"s14 = {s14}")
-    dodatkowe_stopnie[10] = s14
-    s15 = stopien15.get()
-    print(f"s15 = {s15}")
-    dodatkowe_stopnie[11] = s15
+    if sekcja2b:
+
+        s4 = stopien4.get()
+        print(f"s4 = {s4}")
+        dodatkowe_stopnie[0] = s4
+        s5 = stopien5.get()
+        print(f"s5 = {s5}")
+        dodatkowe_stopnie[1] = s5
+        s6 = stopien6.get()
+        print(f"s6 = {s6}")
+        dodatkowe_stopnie[2] = s6
+        s7 = stopien7.get()
+        print(f"s7 = {s7}")
+        dodatkowe_stopnie[3] = s7
+        s8 = stopien8.get()
+        print(f"s8 = {s8}")
+        dodatkowe_stopnie[4] = s8
+        s9 = stopien9.get()
+        print(f"s9 = {s9}")
+        dodatkowe_stopnie[5] = s9
+        s10 = stopien10.get()
+        print(f"s10 = {s10}")
+        dodatkowe_stopnie[6] = s10
+        s11 = stopien11.get()
+        print(f"s11 = {s11}")
+        dodatkowe_stopnie[7] = s11
+        s12 = stopien12.get()
+        print(f"s12 = {s12}")
+        dodatkowe_stopnie[8] = s12
+        s13 = stopien13.get()
+        print(f"s13 = {s13}")
+        dodatkowe_stopnie[9] = s13
+        s14 = stopien14.get()
+        print(f"s14 = {s14}")
+        dodatkowe_stopnie[10] = s14
+        s15 = stopien15.get()
+        print(f"s15 = {s15}")
+        dodatkowe_stopnie[11] = s15
     # BLOK - pobierz_dane - schemat podstawowy
     # jezeli nie została zaznaczona opcja dodatkowe stopnie to zostanie wybrany jedna z ponizszych grafik
 
