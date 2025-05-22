@@ -27,6 +27,19 @@ s15 = ""
 dodatkowe_stopnie = ["", "", "", "", "", "", "", "", "", "", "", ""]
 sekcja2b = None  # kontener na dodatkowe opcje
 sekcja2c = None # kontener na dodatkowe stopnie
+# dodatkowe_stopnie - wyświetlane jeżeli zostanie wykonana funkcja
+stopien4 = None
+stopien5 = None
+stopien6 = None
+stopien7 = None
+stopien8 = None
+stopien9 = None
+stopien10 = None
+stopien11 = None
+stopien12 = None
+stopien13 = None
+stopien14 = None
+stopien15 = None
 
 #***********************************************************************************************************************
 #BLOK 2
@@ -83,7 +96,7 @@ lacznik_tyrystorowy_i_stopnie.grid(row=0, column=0, sticky="w") #gdzie umieszczo
 #dodatkowe pola na wpisanie wartości - dodatkowych stopni - definicje dodatkowych elementow są w innym BLOKU
 
 def pokaz_wybor2():
-    global miejsce_podlaczenia_zab, radio_buttons, podzespoly_dodatkowe, sekcja2b, sekcja2c
+    global miejsce_podlaczenia_zab, radio_buttons, podzespoly_dodatkowe, sekcja2b, sekcja2c, stopien4, stopien5, stopien6, stopien7, stopien8, stopien9, stopien10, stopien11, stopien12, stopien13, stopien14, stopien15
 
     print("Wybrano:", wybor2.get())
     podzespoly_dodatkowe = wybor2.get()
