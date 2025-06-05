@@ -305,6 +305,7 @@ dlawik3.grid(row=3,column=1, sticky="w")
 
 def pobierz_dane():
     global zab_zew, podzespoly_dodatkowe, wybor3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, dodatkowe_stopnie, stopien4, stopien5, stopien6, stopien7, stopien8, stopien9, stopien10, stopien11, stopien12, stopien13, stopien14, stopien15
+    global zabezpieczenie_lacznika
     print(zab_zew)
     print(podzespoly_dodatkowe)
     zabezpieczenie_lacznika=wybor3.get()
@@ -405,65 +406,127 @@ def pobierz_dane():
 
             # ----------------------------------------------------------------------------------------------------------
             # BLOK - pobierz_dane - dodatkowe stopnie -> generowanie grafiki z dodatkowymi stopniami
-            if zab_zew == "typ S - C 3polowe":
-                if ilosc_stopni == 1:
-                    schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_C_1stopnie_C_wszystkie_stopnie.png")
-                    width_podstawowy, height_podstawowy = schemat_podstawowy.size
-                if ilosc_stopni == 2:
-                    schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_C_2stopnie_C_wszystkie_stopnie.png")
-                    width_podstawowy, height_podstawowy = schemat_podstawowy.size
-                if ilosc_stopni == 3:
-                    schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_C_3stopnie_C_wszystkie_stopnie.png")
-                    width_podstawowy, height_podstawowy = schemat_podstawowy.size
-                if ilosc_stopni == 4:
-                    schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_C_4stopnie_C_wszystkie_stopnie.png")
-                    width_podstawowy, height_podstawowy = schemat_podstawowy.size
-                if ilosc_stopni == 5:
-                    schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_C_5stopnie_C_wszystkie_stopnie.png")
-                    width_podstawowy, height_podstawowy = schemat_podstawowy.size
-                if ilosc_stopni == 6:
-                    schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_C_6stopnie_C_wszystkie_stopnie.png")
-                    width_podstawowy, height_podstawowy = schemat_podstawowy.size
+            if zabezpieczenie_lacznika == "lacznik i stopnie - wspolne zabezpieczenie":
+                if zab_zew == "typ S - C 3polowe":
+                    if ilosc_stopni == 1:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_C_1stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 2:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_C_2stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 3:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_C_3stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 4:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_C_4stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 5:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_C_5stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 6:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_C_6stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
 
-            if zab_zew == "wkladki topikowe gG":
-                if ilosc_stopni == 1:
-                    schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_gG_1stopnie_C_wszystkie_stopnie.png")
-                    width_podstawowy, height_podstawowy = schemat_podstawowy.size
-                if ilosc_stopni == 2:
-                    schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_gG_2stopnie_C_wszystkie_stopnie.png")
-                    width_podstawowy, height_podstawowy = schemat_podstawowy.size
-                if ilosc_stopni == 3:
-                    schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_gG_3stopnie_C_wszystkie_stopnie.png")
-                    width_podstawowy, height_podstawowy = schemat_podstawowy.size
-                if ilosc_stopni == 4:
-                    schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_gG_4stopnie_C_wszystkie_stopnie.png")
-                    width_podstawowy, height_podstawowy = schemat_podstawowy.size
-                if ilosc_stopni == 5:
-                    schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_gG_5stopnie_C_wszystkie_stopnie.png")
-                    width_podstawowy, height_podstawowy = schemat_podstawowy.size
-                if ilosc_stopni == 6:
-                    schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_gG_6stopnie_C_wszystkie_stopnie.png")
-                    width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                if zab_zew == "wkladki topikowe gG":
+                    if ilosc_stopni == 1:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_gG_1stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 2:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_gG_2stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 3:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_gG_3stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 4:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_gG_4stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 5:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_gG_5stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 6:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_gG_6stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
 
-            if zab_zew == "brak zabezpieczenia glownego":
-                if ilosc_stopni == 1:
-                    schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_b_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_b_1stopnie_C_wszystkie_stopnie.png")
-                    width_podstawowy, height_podstawowy = schemat_podstawowy.size
-                if ilosc_stopni == 2:
-                    schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_b_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_b_2stopnie_C_wszystkie_stopnie.png")
-                    width_podstawowy, height_podstawowy = schemat_podstawowy.size
-                if ilosc_stopni == 3:
-                    schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_b_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_b_3stopnie_C_wszystkie_stopnie.png")
-                    width_podstawowy, height_podstawowy = schemat_podstawowy.size
-                if ilosc_stopni == 4:
-                    schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_b_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_b_4stopnie_C_wszystkie_stopnie.png")
-                    width_podstawowy, height_podstawowy = schemat_podstawowy.size
-                if ilosc_stopni == 5:
-                    schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_b_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_b_5stopnie_C_wszystkie_stopnie.png")
-                    width_podstawowy, height_podstawowy = schemat_podstawowy.size
-                if ilosc_stopni == 6:
-                    schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_b_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_b_6stopnie_C_wszystkie_stopnie.png")
-                    width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                if zab_zew == "brak zabezpieczenia glownego":
+                    if ilosc_stopni == 1:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_b_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_b_1stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 2:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_b_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_b_2stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 3:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_b_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_b_3stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 4:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_b_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_b_4stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 5:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_b_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_b_5stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 6:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_b_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_b_6stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+
+            if zabezpieczenie_lacznika == "lacznik tyrystorowy ma swoje zabezpieczenie":
+                if zab_zew == "typ S - C 3polowe":
+                    if ilosc_stopni == 1:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_lacznik_zab/SVC_3_termostat_zew_C_1stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 2:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_lacznik_zab/SVC_3_termostat_zew_C_2stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 3:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_lacznik_zab/SVC_3_termostat_zew_C_3stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 4:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_lacznik_zab/SVC_3_termostat_zew_C_4stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 5:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_lacznik_zab/SVC_3_termostat_zew_C_5stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 6:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_lacznik_zab/SVC_3_termostat_zew_C_6stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+
+                if zab_zew == "wkladki topikowe gG":
+                    if ilosc_stopni == 1:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_lacznik_zab/SVC_3_termostat_zew_gG_1stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 2:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_lacznik_zab/SVC_3_termostat_zew_gG_2stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 3:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_lacznik_zab/SVC_3_termostat_zew_gG_3stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 4:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_lacznik_zab/SVC_3_termostat_zew_gG_4stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 5:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_lacznik_zab/SVC_3_termostat_zew_gG_5stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 6:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_lacznik_zab/SVC_3_termostat_zew_gG_6stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+
+                if zab_zew == "brak zabezpieczenia glownego":
+                    if ilosc_stopni == 1:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_brak_lacznik_zab/SVC_3_termostat_zew_b_1stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 2:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_brak_lacznik_zab/SVC_3_termostat_zew_b_2stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 3:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_brak_lacznik_zab/SVC_3_termostat_zew_b_3stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 4:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_brak_lacznik_zab/SVC_3_termostat_zew_b_4stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 5:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_brak_lacznik_zab/SVC_3_termostat_zew_b_5stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 6:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_brak_lacznik_zab/SVC_3_termostat_zew_b_6stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
 
             print(f"width_podstawowy = {width_podstawowy}")
 
