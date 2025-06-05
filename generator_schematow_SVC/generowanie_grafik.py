@@ -29,5 +29,5 @@ def generuj_grafike_z_tekstem(tekst, szerokosc, wysokosc, rozmiar_fonta, nazwa_p
     obraz.save(nazwa_pliku)
     print(f"Grafika zapisana jako {nazwa_pliku}")
 
-generuj_grafike_z_tekstem("4",1299, 300,100,"grafika.png")
+#generuj_grafike_z_tekstem("4",1299, 300,100,"grafika.png")
 

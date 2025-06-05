@@ -1,5 +1,5 @@
 import tkinter as tk
-from PIL import Image
+from PIL import Image, ImageTk
 from tkinter import messagebox
 from generator_schematow_SVC.generowanie_grafik import generuj_grafike_z_tekstem
 
@@ -54,7 +54,7 @@ root.title("Wybór opcji")
 #tu blok kodu odpowiedzialny za pierwsze przyciski radiowe i obsługę tych przycisków ( wybranie rodzaju zabezpieczenia zew. inaczej glównego
 # === SEKCJA 1 === - kontener z niebieskim tłem
 sekcja1 = tk.Frame(root, bg="lightblue", bd=2, relief="solid", padx=10, pady=10, width =480, height=170)
-sekcja1.grid(row=0, column=0)
+sekcja1.grid(row=1, column=0)
 sekcja1.grid_propagate(False)
 
 #Wyświetlamy informacje nad pierwszymi przyciskami radiowymi
@@ -87,7 +87,7 @@ for opcja in opcje:
 #tu blok  odpowiedzialny za przyciski radiowe - odnosnie - czy są dodatkowe stopnie
 # === SEKCJA 2 ===
 sekcja2 = tk.Frame(root, bg="grey", bd=2, relief="solid", padx=10, pady=10, width =480, height=135)
-sekcja2.grid(row=1, column=0)
+sekcja2.grid(row=2, column=0)
 sekcja2.grid_propagate(False)
 #wyświetlenie pierwszego tekstu
 lacznik_tyrystorowy_i_stopnie = tk.Label(sekcja2 ,text="Ilosc podzespolow:\n ", bg="grey", font=("Verdana", 14))
@@ -120,7 +120,7 @@ def pokaz_wybor2():
     if wybor2.get() == "dodatkowe stopnie":
 
         sekcja2b = tk.Frame(root, bg="lightgreen", bd=2, relief="solid", padx=10, pady=10, width=480, height=135)
-        sekcja2b.grid(row=2, column=0)
+        sekcja2b.grid(row=3, column=0)
         sekcja2b.grid_propagate(False)
 
         miejsce_podlaczenia_zab = tk.Label(sekcja2b,
@@ -134,7 +134,7 @@ def pokaz_wybor2():
             radio_buttons.append(rb)  # Przechowujemy referencję do przycisku
 
         sekcja2c = tk.Frame(root, bg="red", bd=2, relief="solid", padx=10, pady=10, width=480, height=230)
-        sekcja2c.grid(row=4, column=0)
+        sekcja2c.grid(row=5, column=0)
         sekcja2c.grid_propagate(False)
 
         # dodatkowe_stopnie - wyświetlane jeżeli zostanie wykonana funkcja
@@ -272,7 +272,7 @@ miejsce_podlaczenia_zab = None
 #miejsce_podlaczenia_zab = tk.Label(text="Wybierz sposub podlaczenia zabezpieczenia lacznika tyrystorowego")
 # === SEKCJA 1 === - kontener z niebieskim tłem
 sekcja3 = tk.Frame(root, bg="yellow", bd=2, relief="solid", padx=10, pady=10, width =480, height=130)
-sekcja3.grid(row=3, column=0)
+sekcja3.grid(row=4, column=0)
 sekcja3.grid_propagate(False)
 
 opis_dlawiki_lacznik = tk.Label(sekcja3, text="Podaj wartości dławików podpiętych do łącznika tyrystorowego:\n", bg="yellow", font=("Verdana", 10))
@@ -1031,8 +1031,37 @@ def policz_dodatkowe_stopnie():
     if s15 != "":
         ilosc_stopni=ilosc_stopni+1
 
-generuj_schemat = tk.Button(root, text="Generuj", command=pobierz_dane)
-generuj_schemat.grid(row=1, column=1)
+obraz_przycisk_generuj = Image.open("grafiki_GUI/strzalka.png")
+obraz_przycisk_generuj = obraz_przycisk_generuj.resize((24,24))
+ikonka1 = ImageTk.PhotoImage(obraz_przycisk_generuj)
+generuj_schemat = tk.Button(root, image=ikonka1, text="Generuj schemat", compound="left", command=pobierz_dane, font=("Helvetica", 10), padx=5, pady=5)
+generuj_schemat.grid(row=0, column=0, sticky="w")
+
+
+
+
+def podglad_obrazu():
+    import os
+    import subprocess
+    # Ścieżka do folderu, w którym jest ten skrypt
+    folder_skryptu = os.path.dirname(os.path.abspath(__file__))
+    print(folder_skryptu)
+    # Tworzymy pełną ścieżkę do pliku w podanym folderze
+    #sciezka_do_pliku = os.path.join(folder, nazwa_pliku)
+    sciezka_dla_XnView = 'r"'+folder_skryptu+'\wygenerowany.png"'
+    print("sciezka:" + sciezka_dla_XnView)
+    s = r"C:\repozytorium\Projekt dla Marka\Projekt-dla-Marka-\generator_schematow_SVC\wygenerowany.png"
+    #Ścieżka do programu XnView MP
+    sciezka_do_xnview = r"C:\Program Files\XnViewMP\xnviewmp.exe"
+
+    # Uruchamiamy XnView MP z podanym plikiem, nie czekamy na zakończenie
+    subprocess.Popen([sciezka_do_xnview, s])
+
+
+podglad = tk.Button(root, text="Podglad", command=podglad_obrazu, font=("Helvetica", 10), padx=5, pady=5)
+podglad.grid(row=0, column=1, sticky="w")
+
+
 
 # Uruchomienie pętli głównej
 root.mainloop()

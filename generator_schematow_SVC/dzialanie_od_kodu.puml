@@ -22,6 +22,8 @@ opis działania funkcji;
 
 do zmiennych d1...d3 , s4...s15 przypisujemy wartości podzespołów
 mozliwe braki wartości, wtedy zmienna przechowuje pusty string -> "";
+:if sekcja2b:
+sprawdzamy czy istnieje sekcja2b - czyli kontener - gdzie wybieramy - sposub zabezpieczenia łącznika tyrystorowego;
 switch( opcja - dodatkowe stopnie)
 case(  zmienna podzespoly_dodatkowe == "tylko łącznik tyrystorowy i 3 dlawiki")
 :BLOK - pobierz_dane - brak dodatkowych podzespolow
