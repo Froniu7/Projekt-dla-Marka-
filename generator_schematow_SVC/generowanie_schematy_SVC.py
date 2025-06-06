@@ -46,8 +46,11 @@ dodatkowe_stopnie_trzyfazow = None
 #***********************************************************************************************************************
 #BLOK 2
 # Tworzymy główne okno - narazie puste , w kolejnych blokach dodajemy elementy
+# tworzymy górne przyciski
 root = tk.Tk()
 root.title("Wybór opcji")
+
+
 
 #***********************************************************************************************************************
 #BLOK 3
@@ -1094,14 +1097,20 @@ def policz_dodatkowe_stopnie():
     if s15 != "":
         ilosc_stopni=ilosc_stopni+1
 
+#***********************************************************************************************************************
+
+# BLOK 9 - od przycisków - gorna czesc GUI
 obraz_przycisk_generuj = Image.open("grafiki_GUI/strzalka.png")
 obraz_przycisk_generuj = obraz_przycisk_generuj.resize((24,24))
 ikonka1 = ImageTk.PhotoImage(obraz_przycisk_generuj)
-generuj_schemat = tk.Button(root, image=ikonka1, text="Generuj schemat", compound="left", command=pobierz_dane, font=("Helvetica", 10), padx=5, pady=5)
+
+
+sekcja0 = tk.Frame(root, width =480, height=36)
+sekcja0.grid(row=0, column=0)
+sekcja0.grid_propagate(False)
+
+generuj_schemat = tk.Button(sekcja0, text="Generuj schemat", compound="left", command=pobierz_dane, font=("Helvetica", 10), padx=5, pady=5)
 generuj_schemat.grid(row=0, column=0, sticky="w")
-
-
-
 
 def podglad_obrazu():
     import os
@@ -1121,7 +1130,7 @@ def podglad_obrazu():
     subprocess.Popen([sciezka_do_xnview, s])
 
 
-podglad = tk.Button(root, text="Podglad", command=podglad_obrazu, font=("Helvetica", 10), padx=5, pady=5)
+podglad = tk.Button(sekcja0, text="Podglad", command=podglad_obrazu, font=("Helvetica", 10), padx=5, pady=5)
 podglad.grid(row=0, column=1, sticky="w")
 
 
