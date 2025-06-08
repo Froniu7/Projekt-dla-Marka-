@@ -31,3 +31,34 @@ def generuj_grafike_z_tekstem(tekst, szerokosc, wysokosc, rozmiar_fonta, nazwa_p
 
 #generuj_grafike_z_tekstem("4",1299, 300,100,"grafika.png")
 
+def generuj_plik_docx(sciezka_obrazu, sciezka_docx):
+    from docx import Document
+    from docx.shared import Inches
+    doc = Document()
+    doc.add_paragraph("To jest obrazek:")
+    doc.add_picture(sciezka_obrazu, width=Inches(4))
+    doc.save(sciezka_docx)
+
+
+
+def konwertuj_docx_na_pdf(sciezka_docx):
+    import subprocess
+    import os
+    sciezka_docx = os.path.abspath(sciezka_docx)
+    katalog_wyjscia = os.path.dirname(sciezka_docx)
+
+    # PEŁNA ŚCIEŻKA do LibreOffice w Windows
+    libreoffice_path = r"C:\Program Files\LibreOffice\program\soffice.exe"
+
+    subprocess.run([
+        libreoffice_path,
+        "--headless",
+        "--convert-to", "pdf",
+        "--outdir", katalog_wyjscia,
+        sciezka_docx
+    ], check=True)
+
+    print(f"PDF zapisany w katalogu: {katalog_wyjscia}")
+
+
+

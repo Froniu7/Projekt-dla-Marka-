@@ -1,7 +1,8 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter import messagebox
-from generator_schematow_SVC.generowanie_grafik import generuj_grafike_z_tekstem
+from generator_schematow_SVC.generowanie_grafik import generuj_grafike_z_tekstem, generuj_plik_docx, konwertuj_docx_na_pdf
+from tooltip import ToolTip
 
 #***********************************************************************************************************************
 #BLOK 1
@@ -1119,6 +1120,9 @@ def pobierz_dane():
             obraz_do_wygenerowania.save(f"wygenerowany.png")
             ilosc_stopni = 0
 
+            generuj_plik_docx("wygenerowany.png", "schemat.docx")
+            konwertuj_docx_na_pdf("schemat.docx")
+
         #---------------------------------------------------------------------------------------------------------------
         #BLOK - pobierz_dane - dodatkowe stopnie -> nie generujemy schematu , wyswietlamy komunikat
         else :
@@ -1193,7 +1197,10 @@ def podglad_obrazu():
 
 podglad = tk.Button(sekcja0, text="Podglad", command=podglad_obrazu, font=("Helvetica", 10), padx=5, pady=5)
 podglad.grid(row=0, column=1, sticky="w")
+tooltip = ToolTip(podglad, "Zostanie otwarty podgląd pliku pdf.\nPodgląd jest odświerzany co 1 sekundę.\nPrzyciskając Ctrl + pokrętło na myszce możesz zmieniać rozmiar.", delay=1000)
 
+
+root.bind('<Return>', lambda event: pobierz_dane())
 
 
 # Uruchomienie pętli głównej
