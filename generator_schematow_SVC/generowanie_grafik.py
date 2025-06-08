@@ -31,15 +31,34 @@ def generuj_grafike_z_tekstem(tekst, szerokosc, wysokosc, rozmiar_fonta, nazwa_p
 
 #generuj_grafike_z_tekstem("4",1299, 300,100,"grafika.png")
 
+from docx.shared import Cm
+
 def generuj_plik_docx(sciezka_obrazu, sciezka_docx):
     from docx import Document
-    from docx.shared import Inches
+    from docx.shared import Inches, Cm
+
     doc = Document()
-    doc.add_paragraph("To jest obrazek:")
-    doc.add_picture(sciezka_obrazu, width=Inches(4))
+
+    # Ustaw marginesy na 1 cm
+    sections = doc.sections
+    for section in sections:
+        section.top_margin = Cm(1)
+        section.bottom_margin = Cm(1)
+        section.left_margin = Cm(1)
+        section.right_margin = Cm(1)
+
+    # Oblicz szerokość do wykorzystania: szerokość strony - marginesy
+    section = doc.sections[0]
+    szerokosc_strony = section.page_width  # w EMU
+    lewy_margin = section.left_margin
+    prawy_margin = section.right_margin
+    szerokosc_do_wykorzystania = szerokosc_strony - lewy_margin - prawy_margin
+
+    doc.add_paragraph("Schemat urządzenia SVC:")
+
+    # Dodaj obraz o maksymalnej szerokości (EMU to jednostka używana przez python-docx)
+    doc.add_picture(sciezka_obrazu, width=szerokosc_do_wykorzystania)
     doc.save(sciezka_docx)
-
-
 
 def konwertuj_docx_na_pdf(sciezka_docx):
     import subprocess
@@ -60,5 +79,36 @@ def konwertuj_docx_na_pdf(sciezka_docx):
 
     print(f"PDF zapisany w katalogu: {katalog_wyjscia}")
 
+
+import shutil
+import os
+from tkinter import filedialog
+from tkinter import Tk
+
+def zapisz_plik_do_katalogu(sciezka_pliku):
+    # Ukryj główne okno Tkintera
+    root = Tk()
+    root.withdraw()
+
+    # Domyślna nazwa pliku
+    domyslna_nazwa = os.path.basename(sciezka_pliku)
+
+    # Okno do wyboru lokalizacji i nazwy pliku
+    sciezka_docelowa = filedialog.asksaveasfilename(
+        title="Zapisz plik jako",
+        initialfile=domyslna_nazwa,
+        defaultextension=os.path.splitext(domyslna_nazwa)[1],
+        filetypes=[("Wszystkie pliki", "*.*")]
+    )
+
+    if not sciezka_docelowa:
+        print("Anulowano zapis.")
+        return
+
+    try:
+        shutil.copy2(sciezka_pliku, sciezka_docelowa)
+        print(f"Plik zapisany do: {sciezka_docelowa}")
+    except Exception as e:
+        print(f"Błąd podczas zapisu pliku: {e}")
 
 

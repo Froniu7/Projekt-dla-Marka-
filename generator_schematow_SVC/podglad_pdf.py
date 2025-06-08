@@ -1,13 +1,18 @@
-import os
+
 import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
 import fitz  # PyMuPDF
 
-try:
+import sys
+import os
+
+if getattr(sys, 'frozen', False):
+    # Program uruchomiony jako .exe
+    current_dir = os.path.dirname(sys.executable)
+else:
+    # Program uruchomiony jako .py
     current_dir = os.path.dirname(os.path.abspath(__file__))
-except NameError:
-    current_dir = os.getcwd()
 
 TEMP_PDF = os.path.join(current_dir, "schemat.pdf")
 

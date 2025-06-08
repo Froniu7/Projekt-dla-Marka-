@@ -1,8 +1,9 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter import messagebox
-from generator_schematow_SVC.generowanie_grafik import generuj_grafike_z_tekstem, generuj_plik_docx, konwertuj_docx_na_pdf
+from generator_schematow_SVC.generowanie_grafik import generuj_grafike_z_tekstem, generuj_plik_docx, konwertuj_docx_na_pdf, zapisz_plik_do_katalogu
 from tooltip import ToolTip
+import os
 
 #***********************************************************************************************************************
 #BLOK 1
@@ -1121,6 +1122,7 @@ def pobierz_dane():
             ilosc_stopni = 0
 
             generuj_plik_docx("wygenerowany.png", "schemat.docx")
+
             konwertuj_docx_na_pdf("schemat.docx")
 
         #---------------------------------------------------------------------------------------------------------------
@@ -1170,34 +1172,32 @@ obraz_przycisk_generuj = obraz_przycisk_generuj.resize((24,24))
 ikonka1 = ImageTk.PhotoImage(obraz_przycisk_generuj)
 
 
-sekcja0 = tk.Frame(root, width =480, height=36)
+sekcja0 = tk.Frame(root, width =480, height=33)
 sekcja0.grid(row=0, column=0)
 sekcja0.grid_propagate(False)
 
-generuj_schemat = tk.Button(sekcja0, text="Generuj schemat", compound="left", command=pobierz_dane, font=("Helvetica", 10), padx=5, pady=5)
+generuj_schemat = tk.Button(sekcja0, text="Generuj schemat", compound="left", command=pobierz_dane, font=("Helvetica", 8), padx=5, pady=5)
 generuj_schemat.grid(row=0, column=0, sticky="w")
 
 def podglad_obrazu():
-    import os
-    import subprocess
-    # Ścieżka do folderu, w którym jest ten skrypt
-    folder_skryptu = os.path.dirname(os.path.abspath(__file__))
-    print(folder_skryptu)
-    # Tworzymy pełną ścieżkę do pliku w podanym folderze
-    #sciezka_do_pliku = os.path.join(folder, nazwa_pliku)
-    sciezka_dla_XnView = 'r"'+folder_skryptu+'\wygenerowany.png"'
-    print("sciezka:" + sciezka_dla_XnView)
-    s = r"C:\repozytorium\Projekt dla Marka\Projekt-dla-Marka-\generator_schematow_SVC\wygenerowany.png"
-    #Ścieżka do programu XnView MP
-    sciezka_do_xnview = r"C:\Program Files\XnViewMP\xnviewmp.exe"
-
-    # Uruchamiamy XnView MP z podanym plikiem, nie czekamy na zakończenie
-    subprocess.Popen([sciezka_do_xnview, s])
 
 
-podglad = tk.Button(sekcja0, text="Podglad", command=podglad_obrazu, font=("Helvetica", 10), padx=5, pady=5)
+    # Ścieżka do pliku .exe, który jest w katalogu projektu (np. w tym samym folderze co skrypt)
+    exe_path = os.path.join(os.getcwd(), "podglad_pdf.exe")
+
+    # Otwieramy plik .exe
+    os.startfile(exe_path)
+
+
+podglad = tk.Button(sekcja0, text="Podglad", command=podglad_obrazu, font=("Helvetica", 8), padx=5, pady=5)
 podglad.grid(row=0, column=1, sticky="w")
 tooltip = ToolTip(podglad, "Zostanie otwarty podgląd pliku pdf.\nPodgląd jest odświerzany co 1 sekundę.\nPrzyciskając Ctrl + pokrętło na myszce możesz zmieniać rozmiar.", delay=1000)
+zapisz_grafike = tk.Button(sekcja0, text="Zapisz grafikę", command=lambda: zapisz_plik_do_katalogu("wygenerowany.png"), font=("Helvetica", 8), padx=5, pady=5)
+zapisz_grafike.grid(row=0, column=2, sticky="w")
+zapisz_docx = tk.Button(sekcja0, text="Zapisz plik WORD", command=lambda: zapisz_plik_do_katalogu("schemat.docx"), font=("Helvetica", 8), padx=5, pady=5)
+zapisz_docx.grid(row=0, column=3, sticky="w")
+zapisz_pdf = tk.Button(sekcja0, text="Zapisz PDF", command=lambda: zapisz_plik_do_katalogu("schemat.pdf"), font=("Helvetica", 8), padx=5, pady=5)
+zapisz_pdf.grid(row=0, column=4, sticky="w")
 
 
 root.bind('<Return>', lambda event: pobierz_dane())
