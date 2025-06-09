@@ -1,7 +1,7 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter import messagebox
-from generator_schematow_SVC.generowanie_grafik import generuj_grafike_z_tekstem, generuj_plik_docx, konwertuj_docx_na_pdf, zapisz_plik_do_katalogu
+from generator_schematow_SVC.generowanie_grafik import generuj_grafike_z_tekstem, generuj_plik_docx, konwertuj_docx_na_pdf, zapisz_plik_do_katalogu, show_non_blocking_message, close_message_window
 from tooltip import ToolTip
 import os
 
@@ -311,6 +311,9 @@ dlawik3.grid(row=3,column=1, sticky="w")
 def pobierz_dane():
     global zab_zew, podzespoly_dodatkowe, wybor3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, dodatkowe_stopnie, stopien4, stopien5, stopien6, stopien7, stopien8, stopien9, stopien10, stopien11, stopien12, stopien13, stopien14, stopien15
     global zabezpieczenie_lacznika
+    popup = show_non_blocking_message(root, "Przetwarzanie danych...")
+    root.update_idletasks()  # <-- odświeża GUI natychmiast
+
     print(zab_zew)
     print(podzespoly_dodatkowe)
     zabezpieczenie_lacznika=wybor3.get()
@@ -969,7 +972,7 @@ def pobierz_dane():
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy))
                             if zawartosc[0] == "-":
                                 print("na schemacie zostanie umiejscowiony dławik jednofazowy")
-                                stopien_7 = Image.open(
+                                stopien_9 = Image.open(
                                     "pod_3_stopnie_uniwersalny/stopnie/3_trzyfazowe_dlawiki/3_fazowy_dlawik.png")
                             else:
                                 print("na schemacie zostanie umiejscowiony kondensator jednofazowy")
@@ -1122,8 +1125,8 @@ def pobierz_dane():
             ilosc_stopni = 0
 
             generuj_plik_docx("wygenerowany.png", "schemat.docx")
-
             konwertuj_docx_na_pdf("schemat.docx")
+            close_message_window(popup)
 
         #---------------------------------------------------------------------------------------------------------------
         #BLOK - pobierz_dane - dodatkowe stopnie -> nie generujemy schematu , wyswietlamy komunikat
@@ -1178,6 +1181,7 @@ sekcja0.grid_propagate(False)
 
 generuj_schemat = tk.Button(sekcja0, text="Generuj schemat", compound="left", command=pobierz_dane, font=("Helvetica", 8), padx=5, pady=5)
 generuj_schemat.grid(row=0, column=0, sticky="w")
+tooltip0 = ToolTip(generuj_schemat, "Zostanie wygenerowany schemat na podstawie wybranych opcji.\nMożesz też nacisnąć enter na klawiaturze - aby wygenerować schemat.", delay=1000)
 
 def podglad_obrazu():
 
@@ -1191,13 +1195,18 @@ def podglad_obrazu():
 
 podglad = tk.Button(sekcja0, text="Podglad", command=podglad_obrazu, font=("Helvetica", 8), padx=5, pady=5)
 podglad.grid(row=0, column=1, sticky="w")
-tooltip = ToolTip(podglad, "Zostanie otwarty podgląd pliku pdf.\nPodgląd jest odświerzany co 1 sekundę.\nPrzyciskając Ctrl + pokrętło na myszce możesz zmieniać rozmiar.", delay=1000)
+tooltip1 = ToolTip(podglad, "Zostanie otwarty podgląd pliku pdf.\nPodgląd jest odświerzany co 1 sekundę.\nZoom: Kliknij raz na obszar wyświetlanego podglądu,\n"
+                            "przyciskając Ctrl + pokrętło na myszce - możesz zmieniać rozmiar wyświetlanej kartki.", delay=1000)
 zapisz_grafike = tk.Button(sekcja0, text="Zapisz grafikę", command=lambda: zapisz_plik_do_katalogu("wygenerowany.png"), font=("Helvetica", 8), padx=5, pady=5)
 zapisz_grafike.grid(row=0, column=2, sticky="w")
+tooltip2 = ToolTip(zapisz_grafike, "Zostanie zapisana ostatnia grafika z schematem.\nZapis jest w formacie png.\nMożesz wybrać lokalizacje zapisu.", delay=1000)
 zapisz_docx = tk.Button(sekcja0, text="Zapisz plik WORD", command=lambda: zapisz_plik_do_katalogu("schemat.docx"), font=("Helvetica", 8), padx=5, pady=5)
 zapisz_docx.grid(row=0, column=3, sticky="w")
+tooltip3 = ToolTip(zapisz_docx, "Zostanie zapisany plik WORD - edytowalny.\nMożesz wybrać lokalizacje zapisu.", delay=1000)
 zapisz_pdf = tk.Button(sekcja0, text="Zapisz PDF", command=lambda: zapisz_plik_do_katalogu("schemat.pdf"), font=("Helvetica", 8), padx=5, pady=5)
 zapisz_pdf.grid(row=0, column=4, sticky="w")
+tooltip4 = ToolTip(zapisz_pdf, "Zostanie zapisany plik PDF.\nMożesz wybrać lokalizacje zapisu.", delay=1000)
+
 
 
 root.bind('<Return>', lambda event: pobierz_dane())

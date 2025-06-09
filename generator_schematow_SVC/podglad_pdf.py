@@ -1,4 +1,4 @@
-
+import time
 import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
@@ -18,6 +18,7 @@ TEMP_PDF = os.path.join(current_dir, "schemat.pdf")
 
 scale = 0.3
 modyfikacja_scale = False
+pierwsze_otwarcie = 1
 
 class PDFViewer:
     def __init__(self, master):
@@ -58,8 +59,10 @@ class PDFViewer:
         self.window.bind_all("<Control_R>", self._ctrl_down)
         self.window.bind_all("<KeyRelease-Control_R>", self._ctrl_up)
 
+
+
     def update_pdf(self):
-        global modyfikacja_scale, TEMP_PDF
+        global modyfikacja_scale, TEMP_PDF, pierwsze_otwarcie
 
         print(TEMP_PDF)
         print("Start update pdf")
@@ -70,7 +73,14 @@ class PDFViewer:
             print("znaleziono plik pdf")
 
         mtime = os.path.getmtime(TEMP_PDF)
-        if (mtime == self.last_mtime) and (modyfikacja_scale==False):
+        print(f"mtime {mtime}")
+        teraz = time.time()
+        print(f"czas teraz {teraz}")
+
+        if ( pierwsze_otwarcie == 1) and ((teraz-mtime) <=30 ):
+            print("otwieramy plik pdf")
+
+        elif (mtime == self.last_mtime) and (modyfikacja_scale==False):
             print("nie nastapiła zmiana")
             return  # brak zmian
 

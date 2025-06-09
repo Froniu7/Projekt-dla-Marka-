@@ -111,4 +111,18 @@ def zapisz_plik_do_katalogu(sciezka_pliku):
     except Exception as e:
         print(f"Błąd podczas zapisu pliku: {e}")
 
+import tkinter as tk
+def show_non_blocking_message(parent, message):
+    win = tk.Toplevel(parent)
+    win.title("Ładowanie")
+    win.transient(parent)
+    win.geometry("250x100")
+    #tk.Label(win, text=message).pack(pady=20)
+    #tk.Button(win, text="Zamknij", command=win.destroy).pack()
+    return win
+
+def close_message_window(window):
+    if window.winfo_exists():
+        window.destroy()
+
 
