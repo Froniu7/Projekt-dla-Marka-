@@ -112,14 +112,35 @@ def zapisz_plik_do_katalogu(sciezka_pliku):
         print(f"Błąd podczas zapisu pliku: {e}")
 
 import tkinter as tk
+from tkinter import Label
+from PIL import Image, ImageTk  # Użyj PIL
+
 def show_non_blocking_message(parent, message):
+    # Wczytaj JPG przez PIL
+    pil_image = Image.open("grafiki_GUI/loading.jpg")
+    image = ImageTk.PhotoImage(pil_image)
+
     win = tk.Toplevel(parent)
     win.title("Ładowanie")
     win.transient(parent)
-    win.geometry("250x100")
-    #tk.Label(win, text=message).pack(pady=20)
-    #tk.Button(win, text="Zamknij", command=win.destroy).pack()
+
+    window_width = 250
+    window_height = 100
+
+    screen_width = win.winfo_screenwidth()
+    screen_height = win.winfo_screenheight()
+
+    center_x = int(screen_width / 2 - window_width / 2)
+    center_y = int(screen_height / 2 - window_height / 2)
+
+    win.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
+
+    label = Label(win, image=image)
+    label.image = image  # 🔴 zachowaj referencję!
+    label.pack()
+
     return win
+
 
 def close_message_window(window):
     if window.winfo_exists():

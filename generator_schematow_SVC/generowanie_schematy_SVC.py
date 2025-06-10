@@ -109,6 +109,8 @@ def pokaz_wybor2():
     print("Wybrano:", wybor2.get())
     podzespoly_dodatkowe = wybor2.get()
 
+
+
     # Jeśli były wcześniej dodane przyciski, usuwamy je
     for rb in radio_buttons:
         rb.destroy()
@@ -123,6 +125,14 @@ def pokaz_wybor2():
 
     # Jeśli wybrano "dodatkowe stopnie", tworzymy nowe widgety
     if wybor2.get() == "dodatkowe stopnie":
+
+        # Usowanie nawet jezeli nie istnieją bo jak klikniesz przez przypadek to powstanie dwa razy ten sam kontener 
+        if sekcja2b:
+            sekcja2b.destroy()
+            sekcja2b = None
+        if sekcja2c:
+            sekcja2c.destroy()
+            sekcja2c = None
 
         sekcja2b = tk.Frame(root, bg="lightgreen", bd=2, relief="solid", padx=10, pady=10, width=480, height=135)
         sekcja2b.grid(row=3, column=0)
