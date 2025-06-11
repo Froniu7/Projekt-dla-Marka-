@@ -204,7 +204,7 @@ class ToolTip:
         if self.image_path:
             try:
                 pil_image = Image.open(self.image_path)
-                pil_image = pil_image.resize((50, 50), Image.Resampling.LANCZOS)
+                #pil_image = pil_image.resize((150, 150), Image.Resampling.LANCZOS)
                 self.image = ImageTk.PhotoImage(pil_image)
                 image_label = tk.Label(frame, image=self.image, background="white")
                 image_label.pack(padx=5, pady=3)

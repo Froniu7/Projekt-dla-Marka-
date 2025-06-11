@@ -67,7 +67,7 @@ zabezpieczenia_zew = tk.Label(sekcja1,text="Wybierz rodzaj zabezpieczenia zewnet
 zabezpieczenia_zew.grid(row=0, column=0)
 pusty_label_pod_zabezpieczenia_zew = tk.Label(sekcja1, text = "   ", bg="lightblue", font=("Verdana", 14))
 pusty_label_pod_zabezpieczenia_zew.grid(row=1, column=0)
-tooltip_zabezpieczenie_zew=ToolTip(zabezpieczenia_zew,"Zabezpieczenie zewnętrzne - czyli to poza skrzynką.\nJest umieszczone np: w szafie w rozdzielni.", delay=1000, image_path="grafiki_GUI/strzalka.png")
+tooltip_zabezpieczenie_zew=ToolTip(zabezpieczenia_zew,"Zabezpieczenie zewnętrzne - czyli to poza skrzynką.\nJest umieszczone np: w szafie w rozdzielni.", delay=1000, image_path="grafiki_GUI/zab_zew.png")
 
 #Funkcja do obslugi przyciskow - jest przed deklaracją przyciskow - aby ją widziały
 #będzie wywoływana przez wybranie jedengo z przycisków
