@@ -1,2 +1,4 @@
 .venv/
 .idea/
+generator_schematow_SVC/build
+generator_schematow_SVC/dist

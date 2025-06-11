@@ -1,7 +1,8 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter import messagebox
-from generator_schematow_SVC.generowanie_grafik import generuj_grafike_z_tekstem
+from generator_schematow_SVC.generowanie_grafik import ToolTip, generuj_grafike_z_tekstem, generuj_plik_docx, konwertuj_docx_na_pdf, zapisz_plik_do_katalogu, show_non_blocking_message, close_message_window
+import os
 
 #***********************************************************************************************************************
 #BLOK 1
@@ -10,7 +11,7 @@ from generator_schematow_SVC.generowanie_grafik import generuj_grafike_z_tekstem
 #zaznaczone zaraz po uruchomieniu programu - przypisanie tych wartości do przycisków w funkcji tk.StringVar(value="nazwa zmiennej")
 zab_zew = "typ S - C 3polowe"
 podzespoly_dodatkowe = "tylko łącznik tyrystorowy i 3 dlawiki"
-zabezpieczenie_lacznika = "lacznik i stopnie - wspolne zabezpieczenie"
+zabezpieczenie_lacznika = "główne zab. oraz zabezpieczenia stopni"
 ilosc_stopni = 0
 s4 = ""
 s5 = ""
@@ -43,6 +44,7 @@ stopien15 = None
 dodatkowe_stopnie_jednfazowe = None
 dodatkowe_stopnie_trzyfazow = None
 
+
 #***********************************************************************************************************************
 #BLOK 2
 # Tworzymy główne okno - narazie puste , w kolejnych blokach dodajemy elementy
@@ -61,8 +63,11 @@ sekcja1.grid(row=1, column=0)
 sekcja1.grid_propagate(False)
 
 #Wyświetlamy informacje nad pierwszymi przyciskami radiowymi
-zabezpieczenia_zew = tk.Label(sekcja1,text="Wybierz rodzaj zabezpieczenia zewnetrznego:\n ", bg="lightblue", font=("Verdana", 14))
+zabezpieczenia_zew = tk.Label(sekcja1,text="Wybierz rodzaj zabezpieczenia zewnetrznego:", bg="lightblue", font=("Verdana", 14))
 zabezpieczenia_zew.grid(row=0, column=0)
+pusty_label_pod_zabezpieczenia_zew = tk.Label(sekcja1, text = "   ", bg="lightblue", font=("Verdana", 14))
+pusty_label_pod_zabezpieczenia_zew.grid(row=1, column=0)
+tooltip_zabezpieczenie_zew=ToolTip(zabezpieczenia_zew,"Zabezpieczenie zewnętrzne - czyli to poza skrzynką.\nJest umieszczone np: w szafie w rozdzielni.", delay=1000, image_path="grafiki_GUI/strzalka.png")
 
 #Funkcja do obslugi przyciskow - jest przed deklaracją przyciskow - aby ją widziały
 #będzie wywoływana przez wybranie jedengo z przycisków
@@ -77,7 +82,7 @@ wybor = tk.StringVar(value=zab_zew)  # Domyślnie wybrana opcja, zmienna zab_zew
 
 # Tworzenie przycisków radiowych
 opcje = ["typ S - C 3polowe", "wkladki topikowe gG", "brak zabezpieczenia glownego"]
-i = 1
+i = 2
 for opcja in opcje:
 
     tk.Radiobutton(sekcja1, text=opcja, variable=wybor, value=opcja, command=pokaz_wybor, bg="lightblue", font=("Verdana", 11)).grid(row=i , column=0, sticky="w")
@@ -107,6 +112,8 @@ def pokaz_wybor2():
     print("Wybrano:", wybor2.get())
     podzespoly_dodatkowe = wybor2.get()
 
+
+
     # Jeśli były wcześniej dodane przyciski, usuwamy je
     for rb in radio_buttons:
         rb.destroy()
@@ -122,6 +129,14 @@ def pokaz_wybor2():
     # Jeśli wybrano "dodatkowe stopnie", tworzymy nowe widgety
     if wybor2.get() == "dodatkowe stopnie":
 
+        # Usowanie nawet jezeli nie istnieją bo jak klikniesz przez przypadek to powstanie dwa razy ten sam kontener 
+        if sekcja2b:
+            sekcja2b.destroy()
+            sekcja2b = None
+        if sekcja2c:
+            sekcja2c.destroy()
+            sekcja2c = None
+
         sekcja2b = tk.Frame(root, bg="lightgreen", bd=2, relief="solid", padx=10, pady=10, width=480, height=135)
         sekcja2b.grid(row=3, column=0)
         sekcja2b.grid_propagate(False)
@@ -132,7 +147,7 @@ def pokaz_wybor2():
 
         for i, opcja in enumerate(opcje3):
 
-            rb = tk.Radiobutton(sekcja2b, text=opcja, variable=wybor3, value=opcja, bg="lightgreen", font=("Verdana", 11))
+            rb = tk.Radiobutton(sekcja2b, text=opcja, variable=wybor3, value=opcja, bg="lightgreen", font=("Verdana", 10))
             rb.grid(row=i+8, column=0, sticky="w")
             radio_buttons.append(rb)  # Przechowujemy referencję do przycisku
 
@@ -264,7 +279,7 @@ for opcja2 in opcje2:
 # trzecia częśc przyciskow radiowych - dostepna jezeli wybiorę opcje - dodatkowe stopnie
 # Zmienna do przechowywania wybranej wartości - gdzie value to wartość początkowa - może się zmienić podczas pracy z GUI
 wybor3 = tk.StringVar(value=zabezpieczenie_lacznika)
-opcje3 = ["lacznik tyrystorowy ma swoje zabezpieczenie", "lacznik i stopnie - wspolne zabezpieczenie"]
+opcje3 = ["główne zab. oraz wszystkie podzespoły mają zab.", "główne zab. oraz zabezpieczenia stopni", "brak głównego zab. oraz wszystkie podzespoły mają zab."]
 # Przechowywanie dynamicznie tworzonych widgetów
 radio_buttons = []
 miejsce_podlaczenia_zab = None
@@ -308,7 +323,8 @@ dlawik3.grid(row=3,column=1, sticky="w")
 
 def pobierz_dane():
     global zab_zew, podzespoly_dodatkowe, wybor3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, dodatkowe_stopnie, stopien4, stopien5, stopien6, stopien7, stopien8, stopien9, stopien10, stopien11, stopien12, stopien13, stopien14, stopien15
-    global zabezpieczenie_lacznika
+    global zabezpieczenie_lacznika, gotowe
+
     print(zab_zew)
     print(podzespoly_dodatkowe)
     zabezpieczenie_lacznika=wybor3.get()
@@ -409,7 +425,7 @@ def pobierz_dane():
 
             # ----------------------------------------------------------------------------------------------------------
             # BLOK - pobierz_dane - dodatkowe stopnie -> generowanie grafiki z dodatkowymi stopniami
-            if zabezpieczenie_lacznika == "lacznik i stopnie - wspolne zabezpieczenie":
+            if zabezpieczenie_lacznika == "główne zab. oraz zabezpieczenia stopni":
                 if zab_zew == "typ S - C 3polowe":
                     if ilosc_stopni == 1:
                         schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_C_1stopnie_C_wszystkie_stopnie.png")
@@ -470,7 +486,7 @@ def pobierz_dane():
                         schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_b_podlaczenie_stopnie_zab_na_szystkie_stop/SVC_3_termostat_zew_b_6stopnie_C_wszystkie_stopnie.png")
                         width_podstawowy, height_podstawowy = schemat_podstawowy.size
 
-            if zabezpieczenie_lacznika == "lacznik tyrystorowy ma swoje zabezpieczenie":
+            if zabezpieczenie_lacznika == "główne zab. oraz wszystkie podzespoły mają zab.":
                 if zab_zew == "typ S - C 3polowe":
                     if ilosc_stopni == 1:
                         schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_lacznik_zab/SVC_3_termostat_zew_C_1stopnie_C_wszystkie_stopnie.png")
@@ -529,6 +545,67 @@ def pobierz_dane():
                         width_podstawowy, height_podstawowy = schemat_podstawowy.size
                     if ilosc_stopni == 6:
                         schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_brak_lacznik_zab/SVC_3_termostat_zew_b_6stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+
+            if zabezpieczenie_lacznika == "brak głównego zab. oraz wszystkie podzespoły mają zab.":
+                if zab_zew == "typ S - C 3polowe":
+                    if ilosc_stopni == 1:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_lacznik_zab_brak_zab_glow_wew/SVC_3_termostat_zew_C_1stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 2:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_lacznik_zab_brak_zab_glow_wew/SVC_3_termostat_zew_C_2stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 3:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_lacznik_zab_brak_zab_glow_wew/SVC_3_termostat_zew_C_3stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 4:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_lacznik_zab_brak_zab_glow_wew/SVC_3_termostat_zew_C_4stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 5:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_lacznik_zab_brak_zab_glow_wew/SVC_3_termostat_zew_C_5stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 6:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_C_lacznik_zab_brak_zab_glow_wew/SVC_3_termostat_zew_C_6stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+
+                if zab_zew == "wkladki topikowe gG":
+                    if ilosc_stopni == 1:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_lacznik_zab_brak_zab_glow_wew/SVC_3_termostat_zew_gG_1stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 2:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_lacznik_zab_brak_zab_glow_wew/SVC_3_termostat_zew_gG_2stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 3:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_lacznik_zab_brak_zab_glow_wew/SVC_3_termostat_zew_gG_3stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 4:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_lacznik_zab_brak_zab_glow_wew/SVC_3_termostat_zew_gG_4stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 5:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_lacznik_zab_brak_zab_glow_wew/SVC_3_termostat_zew_gG_5stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 6:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_gG_lacznik_zab_brak_zab_glow_wew/SVC_3_termostat_zew_gG_6stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+
+                if zab_zew == "brak zabezpieczenia glownego":
+                    if ilosc_stopni == 1:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_brak_lacznik_zab_brak_zab_glow_wew/SVC_3_termostat_zew_b_1stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 2:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_brak_lacznik_zab_brak_zab_glow_wew/SVC_3_termostat_zew_b_2stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 3:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_brak_lacznik_zab_brak_zab_glow_wew/SVC_3_termostat_zew_b_3stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 4:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_brak_lacznik_zab_brak_zab_glow_wew/SVC_3_termostat_zew_b_4stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 5:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_brak_lacznik_zab_brak_zab_glow_wew/SVC_3_termostat_zew_b_5stopnie_C_wszystkie_stopnie.png")
+                        width_podstawowy, height_podstawowy = schemat_podstawowy.size
+                    if ilosc_stopni == 6:
+                        schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/schematy_brak_lacznik_zab_brak_zab_glow_wew/SVC_3_termostat_zew_b_6stopnie_C_wszystkie_stopnie.png")
                         width_podstawowy, height_podstawowy = schemat_podstawowy.size
 
             print(f"width_podstawowy = {width_podstawowy}")
@@ -906,7 +983,7 @@ def pobierz_dane():
                                                              (szerokosc_wstawianie_sciezki, height_podstawowy))
                             if zawartosc[0] == "-":
                                 print("na schemacie zostanie umiejscowiony dławik jednofazowy")
-                                stopien_7 = Image.open(
+                                stopien_9 = Image.open(
                                     "pod_3_stopnie_uniwersalny/stopnie/3_trzyfazowe_dlawiki/3_fazowy_dlawik.png")
                             else:
                                 print("na schemacie zostanie umiejscowiony kondensator jednofazowy")
@@ -1058,6 +1135,11 @@ def pobierz_dane():
             obraz_do_wygenerowania.save(f"wygenerowany.png")
             ilosc_stopni = 0
 
+            generuj_plik_docx("wygenerowany.png", "schemat.docx")
+            konwertuj_docx_na_pdf("schemat.docx")
+
+
+
         #---------------------------------------------------------------------------------------------------------------
         #BLOK - pobierz_dane - dodatkowe stopnie -> nie generujemy schematu , wyswietlamy komunikat
         else :
@@ -1068,6 +1150,7 @@ def pobierz_dane():
 
     elif (podzespoly_dodatkowe == "dodatkowe stopnie") and ilosc_stopni == 0:
         messagebox.showinfo("Informacja", "Brak wpisanych dodatkowych stopni")
+
 
 def policz_dodatkowe_stopnie():
     global ilosc_stopni, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15
@@ -1100,39 +1183,60 @@ def policz_dodatkowe_stopnie():
 #***********************************************************************************************************************
 
 # BLOK 9 - od przycisków - gorna czesc GUI
+
+def podglad():
+    import threading
+
+    popup = show_non_blocking_message(root, "Generowanie png , docx, pdf")
+
+    def watek():
+        pobierz_dane()  # to działa w tle
+        # po zakończeniu pobierania, zamknij okno z głównego wątku
+        root.after(0, lambda: close_message_window(popup))
+
+    threading.Thread(target=watek, daemon=True).start()
+
+
 obraz_przycisk_generuj = Image.open("grafiki_GUI/strzalka.png")
 obraz_przycisk_generuj = obraz_przycisk_generuj.resize((24,24))
 ikonka1 = ImageTk.PhotoImage(obraz_przycisk_generuj)
 
 
-sekcja0 = tk.Frame(root, width =480, height=36)
+sekcja0 = tk.Frame(root, width =480, height=33)
 sekcja0.grid(row=0, column=0)
 sekcja0.grid_propagate(False)
 
-generuj_schemat = tk.Button(sekcja0, text="Generuj schemat", compound="left", command=pobierz_dane, font=("Helvetica", 10), padx=5, pady=5)
+generuj_schemat = tk.Button(sekcja0, text="Generuj schemat", compound="left", command=podglad, font=("Helvetica", 8), padx=5, pady=5)
 generuj_schemat.grid(row=0, column=0, sticky="w")
+tooltip0 = ToolTip(generuj_schemat, "Zostanie wygenerowany schemat na podstawie wybranych opcji.\nMożesz też nacisnąć enter na klawiaturze - aby wygenerować schemat.", delay=1000)
 
 def podglad_obrazu():
-    import os
-    import subprocess
-    # Ścieżka do folderu, w którym jest ten skrypt
-    folder_skryptu = os.path.dirname(os.path.abspath(__file__))
-    print(folder_skryptu)
-    # Tworzymy pełną ścieżkę do pliku w podanym folderze
-    #sciezka_do_pliku = os.path.join(folder, nazwa_pliku)
-    sciezka_dla_XnView = 'r"'+folder_skryptu+'\wygenerowany.png"'
-    print("sciezka:" + sciezka_dla_XnView)
-    s = r"C:\repozytorium\Projekt dla Marka\Projekt-dla-Marka-\generator_schematow_SVC\wygenerowany.png"
-    #Ścieżka do programu XnView MP
-    sciezka_do_xnview = r"C:\Program Files\XnViewMP\xnviewmp.exe"
-
-    # Uruchamiamy XnView MP z podanym plikiem, nie czekamy na zakończenie
-    subprocess.Popen([sciezka_do_xnview, s])
 
 
-podglad = tk.Button(sekcja0, text="Podglad", command=podglad_obrazu, font=("Helvetica", 10), padx=5, pady=5)
+    # Ścieżka do pliku .exe, który jest w katalogu projektu (np. w tym samym folderze co skrypt)
+    exe_path = os.path.join(os.getcwd(), "podglad_pdf.exe")
+
+    # Otwieramy plik .exe
+    os.startfile(exe_path)
+
+
+podglad = tk.Button(sekcja0, text="Podglad", command=podglad_obrazu, font=("Helvetica", 8), padx=5, pady=5)
 podglad.grid(row=0, column=1, sticky="w")
+tooltip1 = ToolTip(podglad, "Zostanie otwarty podgląd pliku pdf.\nPodgląd jest odświerzany co 1 sekundę.\nZoom: Kliknij raz na obszar wyświetlanego podglądu,\n"
+                            "przyciskając Ctrl + pokrętło na myszce - możesz zmieniać rozmiar wyświetlanej kartki.", delay=1000)
+zapisz_grafike = tk.Button(sekcja0, text="Zapisz grafikę", command=lambda: zapisz_plik_do_katalogu("wygenerowany.png"), font=("Helvetica", 8), padx=5, pady=5)
+zapisz_grafike.grid(row=0, column=2, sticky="w")
+tooltip2 = ToolTip(zapisz_grafike, "Zostanie zapisana ostatnia grafika z schematem.\nZapis jest w formacie png.\nMożesz wybrać lokalizacje zapisu.", delay=1000)
+zapisz_docx = tk.Button(sekcja0, text="Zapisz plik WORD", command=lambda: zapisz_plik_do_katalogu("schemat.docx"), font=("Helvetica", 8), padx=5, pady=5)
+zapisz_docx.grid(row=0, column=3, sticky="w")
+tooltip3 = ToolTip(zapisz_docx, "Zostanie zapisany plik WORD - edytowalny.\nMożesz wybrać lokalizacje zapisu.", delay=1000)
+zapisz_pdf = tk.Button(sekcja0, text="Zapisz PDF", command=lambda: zapisz_plik_do_katalogu("schemat.pdf"), font=("Helvetica", 8), padx=5, pady=5)
+zapisz_pdf.grid(row=0, column=4, sticky="w")
+tooltip4 = ToolTip(zapisz_pdf, "Zostanie zapisany plik PDF.\nMożesz wybrać lokalizacje zapisu.", delay=1000)
 
+
+
+root.bind('<Return>', lambda event: pobierz_dane())
 
 
 # Uruchomienie pętli głównej
