@@ -98,8 +98,11 @@ sekcja2 = tk.Frame(root, bg="grey", bd=2, relief="solid", padx=10, pady=10, widt
 sekcja2.grid(row=2, column=0)
 sekcja2.grid_propagate(False)
 #wyświetlenie pierwszego tekstu
-lacznik_tyrystorowy_i_stopnie = tk.Label(sekcja2 ,text="Ilosc podzespolow:\n ", bg="grey", font=("Verdana", 14))
+lacznik_tyrystorowy_i_stopnie = tk.Label(sekcja2 ,text="Ilosc podzespolow:", bg="grey", font=("Verdana", 14))
 lacznik_tyrystorowy_i_stopnie.grid(row=0, column=0, sticky="w") #gdzie umieszczone
+pusty_label_pod_lacznik_tyrystorowy_i_stopnie= tk.Label(sekcja2, text=" ", bg="grey", font=("Verdana", 14))
+pusty_label_pod_lacznik_tyrystorowy_i_stopnie.grid(row=1, column=0)
+tooltip_ilosc_podzespolow = ToolTip(lacznik_tyrystorowy_i_stopnie, "Wybierasz jedną z dwuch opcji, jeżeli wybierzesz \nopcje dodatkowe stopnie to zostaną rozwinięta dodatkowe pola.", delay=1000, image_path="grafiki_GUI/dodatkowe_stopnie.png")
 
 #funkcja do obsługi wybranego przyciski - funkcja musi być przed deklaracją przyciskow,
 #działanie jeżeli zostanie wybrany przycisk - "dodatkowe stopnie" to funkcja ma umiejscowić w oknie
@@ -142,13 +145,17 @@ def pokaz_wybor2():
         sekcja2b.grid_propagate(False)
 
         miejsce_podlaczenia_zab = tk.Label(sekcja2b,
-                                           text="Wybierz sposób podłączenia zabezpieczenia łącznika tyrystorowego:\n ", bg="lightgreen", font=("Verdana", 10))
-        miejsce_podlaczenia_zab.grid(row=7, column=0, sticky="w")
+                                           text="Wybierz sposób podłączenia zabezpieczenia łącznika tyrystorowego:", bg="lightgreen", font=("Verdana", 10))
+        miejsce_podlaczenia_zab.grid(row=0, column=0, sticky="w")
+        pusty_label_pod_podlaczenie_zab = tk.Label(sekcja2b, text=" ", bg = "lightgreen", font=("Verdana", 10))
+        pusty_label_pod_podlaczenie_zab.grid(row=1, column=0)
+        tolltip_miejsce_podlaczenia_zab = ToolTip(miejsce_podlaczenia_zab, "Opis opcji :\n 1 opcja - oznacza że wewnątrz skrzynki jest zabezpieczenie główne na\n wszystkie stopnie, wraz z łącznikiem tyrystorowym\n \n 2 opcja - jest zabezpiecznie główne wewnętrzne, są zabezpieczenia stopni,\n ale łącznik tyrystorowy nie ma zabezpieczenia\n \n 3 opcja - nie ma zabezpieczenia głównego wewnątrz skrzyni, stopnie mają swoje zabezpieczenia,\n oraz łącznik tyrystorowy ma zabezpieczenia.", delay=1000, image_path="grafiki_GUI/podlaczenie_lacznik.png")
+
 
         for i, opcja in enumerate(opcje3):
 
             rb = tk.Radiobutton(sekcja2b, text=opcja, variable=wybor3, value=opcja, bg="lightgreen", font=("Verdana", 10))
-            rb.grid(row=i+8, column=0, sticky="w")
+            rb.grid(row=i+2, column=0, sticky="w")
             radio_buttons.append(rb)  # Przechowujemy referencję do przycisku
 
         sekcja2c = tk.Frame(root, bg="red", bd=2, relief="solid", padx=10, pady=10, width=480, height=230)
@@ -156,69 +163,76 @@ def pokaz_wybor2():
         sekcja2c.grid_propagate(False)
 
         # dodatkowe_stopnie - wyświetlane jeżeli zostanie wykonana funkcja
-        dodatkowe_stopnie_jednfazowe = tk.Label(sekcja2c, text="Podaj wartosci stopni jednofazowych: \n", bg = "red", font=("Verdana", 12))
+        dodatkowe_stopnie_jednfazowe = tk.Label(sekcja2c, text="Podaj wartosci stopni jednofazowych:", bg = "red", font=("Verdana", 12))
         dodatkowe_stopnie_jednfazowe.grid(row=0, column=0, columnspan=11, sticky="w")
+        pusty_label_pod_dodatkowe_stopnie_jednofazowe = tk.Label(sekcja2c, text=" ", bg="red", font=("Vernada", 10))
+        pusty_label_pod_dodatkowe_stopnie_jednofazowe.grid(row=1, column=0)
+        tooltip_dodatkowe_stopnie_jednofazowe = ToolTip(dodatkowe_stopnie_jednfazowe, "Podane wartości stopni będą na schemacie.\nPodanie wartości z minusem oznacza dławik.\n Wartości z częścią ułamkową oddzielamy przecinkiem.", delay=1000)
+
 
         L1 = tk.Label(sekcja2c, text="L1: ", bg="red")
-        L1.grid(row=1,column=0)
+        L1.grid(row=2,column=0)
 
         stopien4 = tk.Entry(sekcja2c, width=10)
-        stopien4.grid(row=1, column=1)
+        stopien4.grid(row=2, column=1)
 
         L2 = tk.Label(sekcja2c, text="L2: ", bg="red")
-        L2.grid(row=2, column=0)
+        L2.grid(row=3, column=0)
 
         stopien5 = tk.Entry(sekcja2c, width=10)
-        stopien5.grid(row=2, column=1)
+        stopien5.grid(row=3, column=1)
 
         L3 = tk.Label(sekcja2c, text="L2: ", bg="red")
-        L3.grid(row=3, column=0)
+        L3.grid(row=4, column=0)
 
         stopien6 = tk.Entry(sekcja2c, width=10)
-        stopien6.grid(row=3, column=1)
+        stopien6.grid(row=4, column=1)
 
         plusL1 = tk.Label(sekcja2c, text=" + ", bg="red", font=("Verdana", 10))
-        plusL1.grid(row=1, column=2)
+        plusL1.grid(row=2, column=2)
         stopien7 = tk.Entry(sekcja2c, width=10)
-        stopien7.grid(row=1, column=3)
+        stopien7.grid(row=2, column=3)
 
         plusL2 = tk.Label(sekcja2c, text=" + ", bg="red", font=("Verdana", 10))
-        plusL2.grid(row=2, column=2)
+        plusL2.grid(row=3, column=2)
         stopien8 = tk.Entry(sekcja2c, width=10)
-        stopien8.grid(row=2, column=3)
+        stopien8.grid(row=3, column=3)
 
         plusL3 = tk.Label(sekcja2c, text=" + ", bg="red", font=("Verdana", 10))
-        plusL3.grid(row=3, column=2)
+        plusL3.grid(row=4, column=2)
         stopien9 = tk.Entry(sekcja2c, width=10)
-        stopien9.grid(row=3, column=3)
+        stopien9.grid(row=4, column=3)
 
-        dodatkowe_stopnie_trzyfazowe = tk.Label(sekcja2c, text="\nPodaj wartosci stopni trzyfazowych:\n", bg ="red", font=("Verdana", 12))
-        dodatkowe_stopnie_trzyfazowe.grid(row=4, column=0, columnspan=11, sticky="w")
+        dodatkowe_stopnie_trzyfazowe = tk.Label(sekcja2c, text="\nPodaj wartosci stopni trzyfazowych:", bg ="red", font=("Verdana", 12))
+        dodatkowe_stopnie_trzyfazowe.grid(row=5, column=0, columnspan=11, sticky="w")
+        pusty_label_pod_dodatkowe_stopnie_trzyfazowe = tk.Label(sekcja2c, text=" ", bg="red", font=("Verdana", 14))
+        pusty_label_pod_dodatkowe_stopnie_trzyfazowe.grid(row=6, column=0)
+        tooltip_dodatkowe_stopnie_trzyfazowe = ToolTip(dodatkowe_stopnie_trzyfazowe, "Podane wartości stopni będą na schemacie.\nPodanie wartości z minusem oznacza dławik.\n Wartości z częścią ułamkową oddzielamy przecinkiem.", delay=1000)
 
         L123 = tk.Label(sekcja2c, text="L123: ", bg="red" )
-        L123.grid(row=5, column= 0)
+        L123.grid(row=7, column= 0)
         stopien10 = tk.Entry(sekcja2c, width=8)
-        stopien10.grid(row=5, column=1)
+        stopien10.grid(row=7, column=1)
         plusL123 = tk.Label(sekcja2c, text="+", bg="red", font=("Verdana", 10))
-        plusL123.grid(row=5, column=2)
+        plusL123.grid(row=7, column=2)
         stopien11 = tk.Entry(sekcja2c, width=8)
-        stopien11.grid(row=5, column=3)
+        stopien11.grid(row=7, column=3)
         plusL123b = tk.Label(sekcja2c, text="+", bg="red", font=("Verdana", 10))
-        plusL123b.grid(row=5, column=4)
+        plusL123b.grid(row=7, column=4)
         stopien12 = tk.Entry(sekcja2c, width=8)
-        stopien12.grid(row=5, column=5)
+        stopien12.grid(row=7, column=5)
         plusL123c = tk.Label(sekcja2c, text="+", bg="red", font=("Verdana", 10))
-        plusL123c.grid(row=5, column=6)
+        plusL123c.grid(row=7, column=6)
         stopien13 = tk.Entry(sekcja2c, width=8)
-        stopien13.grid(row=5, column=7)
+        stopien13.grid(row=7, column=7)
         plusL123d = tk.Label(sekcja2c, text="+", bg="red", font=("Verdana", 10))
-        plusL123d.grid(row=5, column=8)
+        plusL123d.grid(row=7, column=8)
         stopien14 = tk.Entry(sekcja2c, width=8)
-        stopien14.grid(row=5, column=9)
+        stopien14.grid(row=7, column=9)
         plusL123e = tk.Label(sekcja2c, text="+", bg="red", font=("Verdana", 10))
-        plusL123e.grid(row=5, column=10)
+        plusL123e.grid(row=7, column=10)
         stopien15 = tk.Entry(sekcja2c, width=8)
-        stopien15.grid(row=5, column=11)
+        stopien15.grid(row=7, column=11)
 
 
     if wybor2.get() == "tylko łącznik tyrystorowy i 3 dlawiki":
@@ -293,25 +307,28 @@ sekcja3 = tk.Frame(root, bg="yellow", bd=2, relief="solid", padx=10, pady=10, wi
 sekcja3.grid(row=4, column=0)
 sekcja3.grid_propagate(False)
 
-opis_dlawiki_lacznik = tk.Label(sekcja3, text="Podaj wartości dławików podpiętych do łącznika tyrystorowego:\n", bg="yellow", font=("Verdana", 10))
+opis_dlawiki_lacznik = tk.Label(sekcja3, text="Podaj wartości dławików podpiętych do łącznika tyrystorowego:", bg="yellow", font=("Verdana", 10))
 opis_dlawiki_lacznik .grid(row=0,column=0, columnspan=3)
+pusty_label_pod_opis_dlawiki_lacznik = tk.Label(sekcja3, text=" ", bg = "yellow", font=("Verdana", 10))
+pusty_label_pod_opis_dlawiki_lacznik.grid(row=1, column=0)
+tooltip_opis_dlawik_lacznik = ToolTip(opis_dlawiki_lacznik, "Wpisz wartości dla dławikoów podpiętych\ndo łącznika tyrystorowego. Nalezy podać minus przed wartością.\n Jeżeli wartośc posiada częśc ułamkową np: -3.3 kVAr\n nalezy zastosować kropkę. ", delay=1000, image_path="grafiki_GUI/wartosci_dlawiki_lacznik.png")
 
 #pola do wpisywania wartości dla trzech dławików - tych co są zawsze , podpięte do łącznika tyrystorowego
 dlawik1_faza = tk.Label(sekcja3, text="                              L1: ", bg = "yellow")
-dlawik1_faza.grid(row=1,column=0, sticky="w")
+dlawik1_faza.grid(row=2,column=0, sticky="w")
 #dodane aby wyregulowac odstepy
 dlawik1_faza_puste = tk.Label(sekcja3, text="                          ", bg = "yellow")
-dlawik1_faza_puste.grid(row=1,column=2, sticky="w")
+dlawik1_faza_puste.grid(row=2,column=2, sticky="w")
 dlawik1 = tk.Entry(sekcja3, width=30)
-dlawik1.grid(row=1,column=1, sticky="w")
+dlawik1.grid(row=2,column=1, sticky="w")
 dlawik2_faza = tk.Label(sekcja3, text="                              L2: ", bg = "yellow")
-dlawik2_faza.grid(row=2,column=0, sticky="w")
+dlawik2_faza.grid(row=3,column=0, sticky="w")
 dlawik2= tk.Entry(sekcja3, width=30)
-dlawik2.grid(row=2,column=1, sticky="w")
+dlawik2.grid(row=3,column=1, sticky="w")
 dlawik3_faza = tk.Label(sekcja3, text="                              L3: " , bg = "yellow")
-dlawik3_faza.grid(row=3,column=0, sticky="w")
+dlawik3_faza.grid(row=4,column=0, sticky="w")
 dlawik3= tk.Entry(sekcja3, width=30)
-dlawik3.grid(row=3,column=1, sticky="w")
+dlawik3.grid(row=4,column=1, sticky="w")
 
 #***********************************************************************************************************************
 #BLOK7
@@ -1184,7 +1201,7 @@ def policz_dodatkowe_stopnie():
 
 # BLOK 9 - od przycisków - gorna czesc GUI
 
-def podglad():
+def generuj_grafike():
     import threading
 
     popup = show_non_blocking_message(root, "Generowanie png , docx, pdf")
@@ -1206,9 +1223,9 @@ sekcja0 = tk.Frame(root, width =480, height=33)
 sekcja0.grid(row=0, column=0)
 sekcja0.grid_propagate(False)
 
-generuj_schemat = tk.Button(sekcja0, text="Generuj schemat", compound="left", command=podglad, font=("Helvetica", 8), padx=5, pady=5)
+generuj_schemat = tk.Button(sekcja0, text="Generuj schemat", compound="left", command=generuj_grafike, font=("Helvetica", 8), padx=5, pady=5)
 generuj_schemat.grid(row=0, column=0, sticky="w")
-tooltip0 = ToolTip(generuj_schemat, "Zostanie wygenerowany schemat na podstawie wybranych opcji.\nMożesz też nacisnąć enter na klawiaturze - aby wygenerować schemat.", delay=1000)
+tooltip0 = ToolTip(generuj_schemat, "Zostanie wygenerowany schemat na podstawie wybranych opcji.\nMożesz też nacisnąć enter na klawiaturze - aby wygenerować schemat.\nPamiętaj aby wypełnić pola.", delay=1000, image_path="grafiki_GUI/enter.png")
 
 def podglad_obrazu():
 
@@ -1223,7 +1240,7 @@ def podglad_obrazu():
 podglad = tk.Button(sekcja0, text="Podglad", command=podglad_obrazu, font=("Helvetica", 8), padx=5, pady=5)
 podglad.grid(row=0, column=1, sticky="w")
 tooltip1 = ToolTip(podglad, "Zostanie otwarty podgląd pliku pdf.\nPodgląd jest odświerzany co 1 sekundę.\nZoom: Kliknij raz na obszar wyświetlanego podglądu,\n"
-                            "przyciskając Ctrl + pokrętło na myszce - możesz zmieniać rozmiar wyświetlanej kartki.", delay=1000)
+                            "przyciskając Ctrl + pokrętło na myszce - możesz zmieniać rozmiar wyświetlanej kartki.", delay=1000, image_path="grafiki_GUI/podglad.png")
 zapisz_grafike = tk.Button(sekcja0, text="Zapisz grafikę", command=lambda: zapisz_plik_do_katalogu("wygenerowany.png"), font=("Helvetica", 8), padx=5, pady=5)
 zapisz_grafike.grid(row=0, column=2, sticky="w")
 tooltip2 = ToolTip(zapisz_grafike, "Zostanie zapisana ostatnia grafika z schematem.\nZapis jest w formacie png.\nMożesz wybrać lokalizacje zapisu.", delay=1000)
@@ -1236,7 +1253,9 @@ tooltip4 = ToolTip(zapisz_pdf, "Zostanie zapisany plik PDF.\nMożesz wybrać lok
 
 
 
-root.bind('<Return>', lambda event: pobierz_dane())
+root.bind('<Return>', lambda event: generuj_grafike())
+root.bind('<Control-Return>', lambda event: podglad_obrazu())
+
 
 
 # Uruchomienie pętli głównej
