@@ -1,8 +1,7 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter import messagebox
-from generator_schematow_SVC.generowanie_grafik import generuj_grafike_z_tekstem, generuj_plik_docx, konwertuj_docx_na_pdf, zapisz_plik_do_katalogu, show_non_blocking_message, close_message_window
-from tooltip import ToolTip
+from generator_schematow_SVC.generowanie_grafik import ToolTip, generuj_grafike_z_tekstem, generuj_plik_docx, konwertuj_docx_na_pdf, zapisz_plik_do_katalogu, show_non_blocking_message, close_message_window
 import os
 
 #***********************************************************************************************************************
@@ -45,6 +44,7 @@ stopien15 = None
 dodatkowe_stopnie_jednfazowe = None
 dodatkowe_stopnie_trzyfazow = None
 
+
 #***********************************************************************************************************************
 #BLOK 2
 # Tworzymy główne okno - narazie puste , w kolejnych blokach dodajemy elementy
@@ -63,8 +63,11 @@ sekcja1.grid(row=1, column=0)
 sekcja1.grid_propagate(False)
 
 #Wyświetlamy informacje nad pierwszymi przyciskami radiowymi
-zabezpieczenia_zew = tk.Label(sekcja1,text="Wybierz rodzaj zabezpieczenia zewnetrznego:\n ", bg="lightblue", font=("Verdana", 14))
+zabezpieczenia_zew = tk.Label(sekcja1,text="Wybierz rodzaj zabezpieczenia zewnetrznego:", bg="lightblue", font=("Verdana", 14))
 zabezpieczenia_zew.grid(row=0, column=0)
+pusty_label_pod_zabezpieczenia_zew = tk.Label(sekcja1, text = "   ", bg="lightblue", font=("Verdana", 14))
+pusty_label_pod_zabezpieczenia_zew.grid(row=1, column=0)
+tooltip_zabezpieczenie_zew=ToolTip(zabezpieczenia_zew,"Zabezpieczenie zewnętrzne - czyli to poza skrzynką.\nJest umieszczone np: w szafie w rozdzielni.", delay=1000, image_path="grafiki_GUI/strzalka.png")
 
 #Funkcja do obslugi przyciskow - jest przed deklaracją przyciskow - aby ją widziały
 #będzie wywoływana przez wybranie jedengo z przycisków
@@ -79,7 +82,7 @@ wybor = tk.StringVar(value=zab_zew)  # Domyślnie wybrana opcja, zmienna zab_zew
 
 # Tworzenie przycisków radiowych
 opcje = ["typ S - C 3polowe", "wkladki topikowe gG", "brak zabezpieczenia glownego"]
-i = 1
+i = 2
 for opcja in opcje:
 
     tk.Radiobutton(sekcja1, text=opcja, variable=wybor, value=opcja, command=pokaz_wybor, bg="lightblue", font=("Verdana", 11)).grid(row=i , column=0, sticky="w")
@@ -320,9 +323,7 @@ dlawik3.grid(row=3,column=1, sticky="w")
 
 def pobierz_dane():
     global zab_zew, podzespoly_dodatkowe, wybor3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, dodatkowe_stopnie, stopien4, stopien5, stopien6, stopien7, stopien8, stopien9, stopien10, stopien11, stopien12, stopien13, stopien14, stopien15
-    global zabezpieczenie_lacznika
-    popup = show_non_blocking_message(root, "Przetwarzanie danych...")
-    root.update_idletasks()  # <-- odświeża GUI natychmiast
+    global zabezpieczenie_lacznika, gotowe
 
     print(zab_zew)
     print(podzespoly_dodatkowe)
@@ -1136,7 +1137,8 @@ def pobierz_dane():
 
             generuj_plik_docx("wygenerowany.png", "schemat.docx")
             konwertuj_docx_na_pdf("schemat.docx")
-            close_message_window(popup)
+
+
 
         #---------------------------------------------------------------------------------------------------------------
         #BLOK - pobierz_dane - dodatkowe stopnie -> nie generujemy schematu , wyswietlamy komunikat
@@ -1148,6 +1150,7 @@ def pobierz_dane():
 
     elif (podzespoly_dodatkowe == "dodatkowe stopnie") and ilosc_stopni == 0:
         messagebox.showinfo("Informacja", "Brak wpisanych dodatkowych stopni")
+
 
 def policz_dodatkowe_stopnie():
     global ilosc_stopni, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15
@@ -1180,6 +1183,20 @@ def policz_dodatkowe_stopnie():
 #***********************************************************************************************************************
 
 # BLOK 9 - od przycisków - gorna czesc GUI
+
+def podglad():
+    import threading
+
+    popup = show_non_blocking_message(root, "Generowanie png , docx, pdf")
+
+    def watek():
+        pobierz_dane()  # to działa w tle
+        # po zakończeniu pobierania, zamknij okno z głównego wątku
+        root.after(0, lambda: close_message_window(popup))
+
+    threading.Thread(target=watek, daemon=True).start()
+
+
 obraz_przycisk_generuj = Image.open("grafiki_GUI/strzalka.png")
 obraz_przycisk_generuj = obraz_przycisk_generuj.resize((24,24))
 ikonka1 = ImageTk.PhotoImage(obraz_przycisk_generuj)
@@ -1189,7 +1206,7 @@ sekcja0 = tk.Frame(root, width =480, height=33)
 sekcja0.grid(row=0, column=0)
 sekcja0.grid_propagate(False)
 
-generuj_schemat = tk.Button(sekcja0, text="Generuj schemat", compound="left", command=pobierz_dane, font=("Helvetica", 8), padx=5, pady=5)
+generuj_schemat = tk.Button(sekcja0, text="Generuj schemat", compound="left", command=podglad, font=("Helvetica", 8), padx=5, pady=5)
 generuj_schemat.grid(row=0, column=0, sticky="w")
 tooltip0 = ToolTip(generuj_schemat, "Zostanie wygenerowany schemat na podstawie wybranych opcji.\nMożesz też nacisnąć enter na klawiaturze - aby wygenerować schemat.", delay=1000)
 
