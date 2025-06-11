@@ -37,7 +37,7 @@ def spelnienie_warunku():
         Cu=56
         P = (wartosc_z_uzwojenie_wtorne*wartosc_z_uzwojenie_wtorne*2*dlugos_przewodu)/(przekroj_float*Cu)
         print(f"Obliczenia :")
-        print(f"P= {uzwojenie_wtorne}*{uzwojenie_wtorne}*2{dlugos_przewodu} / {przekroj_float}*{Cu} [VA]")
+        print(f"P= {uzwojenie_wtorne}*{uzwojenie_wtorne}*2*{dlugos_przewodu} / {przekroj_float}*{Cu} [VA]")
 
         print(f"moc wydzielona na przewodzie kablowym P= {P} [VA]")
         if (float(VA) >= P):
@@ -88,7 +88,7 @@ def spelnienie_warunku():
         Cu=56
         P = (prad_max_na_wtornym*prad_max_na_wtornym*2*dlugos_przewodu)/(przekroj_float*Cu)
         print(f"Obliczenia :")
-        print(f"P= {uzwojenie_wtorne}*{uzwojenie_wtorne}*2{dlugos_przewodu} / {przekroj_float}*{Cu} [VA]")
+        print(f"P= {prad_max_na_wtornym}*{prad_max_na_wtornym}*2*{dlugos_przewodu} / {przekroj_float}*{Cu} [VA]")
         print(f"moc wydzielona na przewodzie kablowym: {P} [VA]")
         if (float(VA) >= P):
             print("P(przekladnika)>P(przewod kablowy)")
