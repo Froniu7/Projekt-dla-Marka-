@@ -1,7 +1,7 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter import messagebox
-from generator_schematow_SVC.generowanie_grafik import ToolTip, generuj_grafike_z_tekstem, generuj_plik_docx, konwertuj_docx_na_pdf, zapisz_plik_do_katalogu, show_non_blocking_message, close_message_window
+from generowanie_grafik import czy_mozna_na_float_prosty_z_minus_obowiazkowo, czy_mozna_na_float_prosty, podglad_obrazu, ToolTip, generuj_grafike_z_tekstem, generuj_plik_docx, konwertuj_docx_na_pdf, zapisz_plik_do_katalogu, show_non_blocking_message, close_message_window
 import os
 
 #***********************************************************************************************************************
@@ -43,6 +43,7 @@ stopien14 = None
 stopien15 = None
 dodatkowe_stopnie_jednfazowe = None
 dodatkowe_stopnie_trzyfazow = None
+czy_schemat_jest_wygenerowany = 0
 
 
 #***********************************************************************************************************************
@@ -115,8 +116,6 @@ def pokaz_wybor2():
     print("Wybrano:", wybor2.get())
     podzespoly_dodatkowe = wybor2.get()
 
-
-
     # Jeśli były wcześniej dodane przyciski, usuwamy je
     for rb in radio_buttons:
         rb.destroy()
@@ -126,8 +125,6 @@ def pokaz_wybor2():
     if miejsce_podlaczenia_zab:
         miejsce_podlaczenia_zab.destroy()
         miejsce_podlaczenia_zab = None
-
-
 
     # Jeśli wybrano "dodatkowe stopnie", tworzymy nowe widgety
     if wybor2.get() == "dodatkowe stopnie":
@@ -151,7 +148,6 @@ def pokaz_wybor2():
         pusty_label_pod_podlaczenie_zab.grid(row=1, column=0)
         tolltip_miejsce_podlaczenia_zab = ToolTip(miejsce_podlaczenia_zab, "Opis opcji :\n 1 opcja - oznacza że wewnątrz skrzynki jest zabezpieczenie główne na\n wszystkie stopnie, wraz z łącznikiem tyrystorowym\n \n 2 opcja - jest zabezpiecznie główne wewnętrzne, są zabezpieczenia stopni,\n ale łącznik tyrystorowy nie ma zabezpieczenia\n \n 3 opcja - nie ma zabezpieczenia głównego wewnątrz skrzyni, stopnie mają swoje zabezpieczenia,\n oraz łącznik tyrystorowy ma zabezpieczenia.", delay=1000, image_path="grafiki_GUI/podlaczenie_lacznik.png")
 
-
         for i, opcja in enumerate(opcje3):
 
             rb = tk.Radiobutton(sekcja2b, text=opcja, variable=wybor3, value=opcja, bg="lightgreen", font=("Verdana", 10))
@@ -168,7 +164,6 @@ def pokaz_wybor2():
         pusty_label_pod_dodatkowe_stopnie_jednofazowe = tk.Label(sekcja2c, text=" ", bg="red", font=("Vernada", 10))
         pusty_label_pod_dodatkowe_stopnie_jednofazowe.grid(row=1, column=0)
         tooltip_dodatkowe_stopnie_jednofazowe = ToolTip(dodatkowe_stopnie_jednfazowe, "Podane wartości stopni będą na schemacie.\nPodanie wartości z minusem oznacza dławik.\n Wartości z częścią ułamkową oddzielamy przecinkiem.", delay=1000)
-
 
         L1 = tk.Label(sekcja2c, text="L1: ", bg="red")
         L1.grid(row=2,column=0)
@@ -234,7 +229,6 @@ def pokaz_wybor2():
         stopien15 = tk.Entry(sekcja2c, width=8)
         stopien15.grid(row=7, column=11)
 
-
     if wybor2.get() == "tylko łącznik tyrystorowy i 3 dlawiki":
         print("wybrana opcja - tylko lacznik tyrystorowy i 3 dlawiki ")
 
@@ -247,37 +241,6 @@ def pokaz_wybor2():
             print("usowamy kontener sekcja2b")
             sekcja2c.destroy()
             sekcja2c = None
-
-        '''
-        if dodatkowe_stopnie_jednfazowe is not None:
-            dodatkowe_stopnie_jednfazowe.grid_forget()
-        if stopien4 is not None:
-            stopien4.grid_forget()
-        if stopien5 is not None:
-            stopien5.grid_forget()
-        if stopien6 is not None:
-            stopien6.grid_forget()
-        if stopien7 is not None:
-            stopien7.grid_forget()
-        if stopien8 is not None:
-            stopien8.grid_forget()
-        if stopien9 is not None:
-            stopien9.grid_forget()
-        if dodatkowe_stopnie_trzyfazowe is not None:
-            dodatkowe_stopnie_trzyfazowe.grid_forget()
-        if stopien10 is not None:
-            stopien10.grid_forget()
-        if stopien11 is not None:
-            stopien11.grid_forget()
-        if stopien12 is not None:
-            stopien12.grid_forget()
-        if stopien13 is not None:
-            stopien13.grid_forget()
-        if stopien14 is not None:
-            stopien14.grid_forget()
-        if stopien15 is not None:
-            stopien15.grid_forget()
-        '''
 
 # Zmienna do przechowywania wybranej wartości - gdzie value to wartość początkowa - może się zmienić podczas pracy z GUI
 wybor2 = tk.StringVar(value=podzespoly_dodatkowe)
@@ -340,7 +303,7 @@ dlawik3.grid(row=4,column=1, sticky="w")
 
 def pobierz_dane():
     global zab_zew, podzespoly_dodatkowe, wybor3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, dodatkowe_stopnie, stopien4, stopien5, stopien6, stopien7, stopien8, stopien9, stopien10, stopien11, stopien12, stopien13, stopien14, stopien15
-    global zabezpieczenie_lacznika, gotowe
+    global zabezpieczenie_lacznika, czy_schemat_jest_wygenerowany
 
     print(zab_zew)
     print(podzespoly_dodatkowe)
@@ -353,10 +316,17 @@ def pobierz_dane():
 
     d1 = dlawik1.get()
     print(f"d1 = {d1}")
+    pierwszy_dlawik = czy_mozna_na_float_prosty_z_minus_obowiazkowo(d1)
+    print(pierwszy_dlawik)
     d2 = dlawik2.get()
     print(f"d2 = {d2}")
+    drugi_dlawik = czy_mozna_na_float_prosty_z_minus_obowiazkowo(d2)
+    print(drugi_dlawik)
     d3 = dlawik3.get()
     print(f"d3 = {d3}")
+    trzeci_dlawik = czy_mozna_na_float_prosty_z_minus_obowiazkowo(d3)
+    print(trzeci_dlawik)
+
     if sekcja2b:
 
         s4 = stopien4.get()
@@ -403,6 +373,7 @@ def pobierz_dane():
     #BLOK - pobierz_dane -> brak dodatkowych podzespolow
     #to jest podzielone na czesc
     # ta czesc odpowiedzialna za schematy z termostatem - badz bez , oraz za schematy bez dodatkowych stopni
+
     if zab_zew == "typ S - C 3polowe" and podzespoly_dodatkowe == "tylko łącznik tyrystorowy i 3 dlawiki":
         print("jestemy w if ")
         schemat_podstawowy = Image.open("pod_3_stopnie_uniwersalny/SVC_3_stopnie_termostat_zabezpieczenie_zew.png")
@@ -427,13 +398,22 @@ def pobierz_dane():
         obraz_do_wygenerowania.paste(schemat_podstawowy,(0,0))
         obraz_do_wygenerowania.save(f"wygenerowany.png")
 
+    if (podzespoly_dodatkowe == "tylko łącznik tyrystorowy i 3 dlawiki") and (pierwszy_dlawik == True) and (drugi_dlawik == True) and (trzeci_dlawik == True):
+        print("generujemy schemat - tylko dla łącznika tyrystorowego")
+
+        generuj_plik_docx("wygenerowany.png", "schemat.docx", q1=d1, q2=d2, q3=d3, lista=dodatkowe_stopnie)
+        konwertuj_docx_na_pdf("schemat.docx")
+        czy_schemat_jest_wygenerowany = 1
+    elif podzespoly_dodatkowe == "tylko łącznik tyrystorowy i 3 dlawiki":
+        messagebox.showinfo("Informacja", "Błędnie wpisane stopnie")
     #-------------------------------------------------------------------------------------------------------------------
 
     # BLOK - pobierz_dane -> dodatkowe stopnie
     # dodatkowe stopnie
-    policz_dodatkowe_stopnie()
+    if podzespoly_dodatkowe == "dodatkowe stopnie":
+        policz_dodatkowe_stopnie()
     global ilosc_stopni
-    if (podzespoly_dodatkowe == "dodatkowe stopnie") and ilosc_stopni > 0 :
+    if (podzespoly_dodatkowe == "dodatkowe stopnie") and ilosc_stopni > 0 and (pierwszy_dlawik == True) and (drugi_dlawik == True) and (trzeci_dlawik == True):
 
         print(f"mamy stopni {ilosc_stopni}")
         print(dodatkowe_stopnie)
@@ -1150,52 +1130,67 @@ def pobierz_dane():
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_12
 
             obraz_do_wygenerowania.save(f"wygenerowany.png")
+
+            generuj_plik_docx("wygenerowany.png", "schemat.docx", q1=d1, q2=d2, q3=d3, lista=dodatkowe_stopnie)
             ilosc_stopni = 0
-
-            generuj_plik_docx("wygenerowany.png", "schemat.docx")
+            dodatkowe_stopnie = ["", "", "", "", "", "", "", "", "", "", "", ""]
             konwertuj_docx_na_pdf("schemat.docx")
-
-
+            czy_schemat_jest_wygenerowany = 1
 
         #---------------------------------------------------------------------------------------------------------------
         #BLOK - pobierz_dane - dodatkowe stopnie -> nie generujemy schematu , wyswietlamy komunikat
         else :
-            messagebox.showinfo("Informacja", "Przekroczono ilosc stopni , aplikacja pozwala na max 6")
+            messagebox.showinfo("Informacja", "Przekroczono ilosc stopni , aplikacja pozwala na max 6\nbądz stopnie wpisane niepoprawnie.")
             print("przekroczona ilosc stopni")
             print(dodatkowe_stopnie)
             ilosc_stopni = 0
 
     elif (podzespoly_dodatkowe == "dodatkowe stopnie") and ilosc_stopni == 0:
-        messagebox.showinfo("Informacja", "Brak wpisanych dodatkowych stopni")
-
+        messagebox.showinfo("Informacja", "Brak wpisanych dodatkowych stopni,\nbądz stopnie wpisane niepoprawnie.")
 
 def policz_dodatkowe_stopnie():
-    global ilosc_stopni, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15
+    global ilosc_stopni, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, dodatkowe_stopnie
+
+    #czyscimy liste z dodatkowymi stopniami
 
     if s4 != "":
+        #dodatkowe_stopnie[ilosc_stopni] = s4
         ilosc_stopni=ilosc_stopni+1
     if s5 != "":
+        #dodatkowe_stopnie[ilosc_stopni] = s5
         ilosc_stopni=ilosc_stopni+1
     if s6 != "":
+        #dodatkowe_stopnie[ilosc_stopni] = s6
         ilosc_stopni=ilosc_stopni+1
     if s7 != "":
+        #dodatkowe_stopnie[ilosc_stopni] = s7
         ilosc_stopni=ilosc_stopni+1
     if s8 != "":
+        #dodatkowe_stopnie[ilosc_stopni] = s8
         ilosc_stopni=ilosc_stopni+1
     if s9 != "":
+        #dodatkowe_stopnie[ilosc_stopni] = s9
         ilosc_stopni=ilosc_stopni+1
     if s10 != "":
+        #dodatkowe_stopnie[ilosc_stopni] = s10
         ilosc_stopni=ilosc_stopni+1
     if s11 != "":
+        #dodatkowe_stopnie[ilosc_stopni] = s11
         ilosc_stopni=ilosc_stopni+1
     if s12 != "":
+        #dodatkowe_stopnie[ilosc_stopni] = s12
         ilosc_stopni=ilosc_stopni+1
     if s13 != "":
+        #dodatkowe_stopnie[ilosc_stopni] = s13
         ilosc_stopni=ilosc_stopni+1
     if s14 != "":
+        #dodatkowe_stopnie[ilosc_stopni] = s14
         ilosc_stopni=ilosc_stopni+1
     if s15 != "":
+        #dodatkowe_stopnie[ilosc_stopni] = s15
         ilosc_stopni=ilosc_stopni+1
+
+    #print(f"dodatkowe stopnie na liscie : dodatkowe_stopnie {dodatkowe_stopnie}")
 
 #***********************************************************************************************************************
 
@@ -1213,11 +1208,9 @@ def generuj_grafike():
 
     threading.Thread(target=watek, daemon=True).start()
 
-
 obraz_przycisk_generuj = Image.open("grafiki_GUI/strzalka.png")
 obraz_przycisk_generuj = obraz_przycisk_generuj.resize((24,24))
 ikonka1 = ImageTk.PhotoImage(obraz_przycisk_generuj)
-
 
 sekcja0 = tk.Frame(root, width =480, height=33)
 sekcja0.grid(row=0, column=0)
@@ -1227,17 +1220,7 @@ generuj_schemat = tk.Button(sekcja0, text="Generuj schemat", compound="left", co
 generuj_schemat.grid(row=0, column=0, sticky="w")
 tooltip0 = ToolTip(generuj_schemat, "Zostanie wygenerowany schemat na podstawie wybranych opcji.\nMożesz też nacisnąć enter na klawiaturze - aby wygenerować schemat.\nPamiętaj aby wypełnić pola.", delay=1000, image_path="grafiki_GUI/enter.png")
 
-def podglad_obrazu():
-
-
-    # Ścieżka do pliku .exe, który jest w katalogu projektu (np. w tym samym folderze co skrypt)
-    exe_path = os.path.join(os.getcwd(), "podglad_pdf.exe")
-
-    # Otwieramy plik .exe
-    os.startfile(exe_path)
-
-
-podglad = tk.Button(sekcja0, text="Podglad", command=podglad_obrazu, font=("Helvetica", 8), padx=5, pady=5)
+podglad = tk.Button(sekcja0, text="Podglad", command= lambda : podglad_obrazu("podglad_pdf.exe", czy_schemat_jest_wygenerowany), font=("Helvetica", 8), padx=5, pady=5)
 podglad.grid(row=0, column=1, sticky="w")
 tooltip1 = ToolTip(podglad, "Zostanie otwarty podgląd pliku pdf.\nPodgląd jest odświerzany co 1 sekundę.\nZoom: Kliknij raz na obszar wyświetlanego podglądu,\n"
                             "przyciskając Ctrl + pokrętło na myszce - możesz zmieniać rozmiar wyświetlanej kartki.", delay=1000, image_path="grafiki_GUI/podglad.png")
@@ -1251,12 +1234,9 @@ zapisz_pdf = tk.Button(sekcja0, text="Zapisz PDF", command=lambda: zapisz_plik_d
 zapisz_pdf.grid(row=0, column=4, sticky="w")
 tooltip4 = ToolTip(zapisz_pdf, "Zostanie zapisany plik PDF.\nMożesz wybrać lokalizacje zapisu.", delay=1000)
 
-
-
 root.bind('<Return>', lambda event: generuj_grafike())
-root.bind('<Control-Return>', lambda event: podglad_obrazu())
-
-
+root.bind('<Control-Return>', lambda event : podglad_obrazu("podglad_pdf.exe", czy_schemat_jest_wygenerowany))
 
 # Uruchomienie pętli głównej
 root.mainloop()
+

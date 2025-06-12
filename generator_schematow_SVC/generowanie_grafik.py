@@ -33,7 +33,7 @@ def generuj_grafike_z_tekstem(tekst, szerokosc, wysokosc, rozmiar_fonta, nazwa_p
 
 from docx.shared import Cm
 
-def generuj_plik_docx(sciezka_obrazu, sciezka_docx):
+def generuj_plik_docx(sciezka_obrazu, sciezka_docx, q1, q2, q3, lista):
     from docx import Document
     from docx.shared import Inches, Cm
 
@@ -58,6 +58,53 @@ def generuj_plik_docx(sciezka_obrazu, sciezka_docx):
 
     # Dodaj obraz o maksymalnej szerokości (EMU to jednostka używana przez python-docx)
     doc.add_picture(sciezka_obrazu, width=szerokosc_do_wykorzystania)
+    legenda = doc.add_paragraph("Legenda:\n")
+    run = legenda.add_run(f"Q1 - dławik 1 fazowy, moc {q1} kVAr").add_break()
+    run = legenda.add_run(f"Q2 - dławik 1 fazowy, moc {q2} kVAr").add_break()
+    run = legenda.add_run(f"Q3 - dławik 1 fazowy, moc {q3} kVAr").add_break()
+    liczymy_stopnie = 3
+    for i in range(12):
+
+        if lista[i] != "":
+            liczymy_stopnie += 1
+            if i <= 5:
+                if lista[i].startswith("-"):
+                    run = legenda.add_run(f"Q{liczymy_stopnie} - dławik 1 fazowy, moc {lista[i]} kVAr").add_break()
+                    print(f" doloczono do docx opis dla dlawik 1 fazowy Q{liczymy_stopnie} - dławik 1 fazowy, moc {lista[i]} kVAr")
+                else:
+                    run = legenda.add_run(f"Q{liczymy_stopnie} - kondensator 1 fazowy, moc {lista[i]} kVAr").add_break()
+                    print(
+                        f" doloczono do docx opis dla kondensator 1 fazowy Q{liczymy_stopnie} - dławik 1 fazowy, moc {lista[i]} kVAr")
+            if i > 5:
+                if lista[i].startswith("-"):
+                    run = legenda.add_run(f"Q{liczymy_stopnie} - dławik 3 fazowy, moc {lista[i]} kVAr").add_break()
+                    print(f" doloczono do docx opis dla dlawik 1 fazowy Q{liczymy_stopnie} - dławik 1 fazowy, moc {lista[i]} kVAr")
+                else:
+                    run = legenda.add_run(f"Q{liczymy_stopnie} - kondensator 3 fazowy, moc {lista[i]} kVAr").add_break()
+                    print(
+                        f" doloczono do docx opis dla kondensator 1 fazowy Q{liczymy_stopnie} - dławik 1 fazowy, moc {lista[i]} kVAr")
+
+    float_d1 = float(q1)
+    float_d2 = float(q2)
+    float_d3 = float(q3)
+    suma_mocy_lacznik_tyrystorowy = (float_d1 + float_d2 + float_d3)*(-1)
+    print(f"suma mocy dla łącznika tyrystorowego to : {suma_mocy_lacznik_tyrystorowy}")
+    if suma_mocy_lacznik_tyrystorowy < 5:
+        run = legenda.add_run("Łącznik tyrystorowy o mocy 5 kVAr" ).add_break()
+    elif (suma_mocy_lacznik_tyrystorowy > 5) and (suma_mocy_lacznik_tyrystorowy <= 10):
+        run = legenda.add_run("Łącznik tyrystorowy o mocy 10 kVAr").add_break()
+    elif (suma_mocy_lacznik_tyrystorowy > 10) and (suma_mocy_lacznik_tyrystorowy <= 15):
+        run = legenda.add_run("Łącznik tyrystorowy o mocy 15 kVAr").add_break()
+    elif (suma_mocy_lacznik_tyrystorowy > 15) and (suma_mocy_lacznik_tyrystorowy <= 20):
+        run = legenda.add_run("Łącznik tyrystorowy o mocy 20 kVAr").add_break()
+    run = legenda.add_run("Sterownik z funkcją SVC").add_break()
+    run = legenda.add_run("Wentylator 230V 0.12A, załączany termostatem KTS 011").add_break()
+
+
+
+
+
+
     doc.save(sciezka_docx)
 
 def konwertuj_docx_na_pdf(sciezka_docx):
@@ -216,4 +263,28 @@ class ToolTip:
         if self.tipwindow:
             self.tipwindow.destroy()
             self.tipwindow = None
+
+def podglad_obrazu(program, czy_schemat_gotowy):
+    import subprocess
+
+    # Ścieżka do pliku .exe, który jest w katalogu projektu (np. w tym samym folderze co skrypt)
+    exe_path = os.path.join(os.getcwd(), program)
+    argument = str(czy_schemat_gotowy)
+    # Otwieramy plik .exe
+    #os.startfile(exe_path)
+    print(exe_path)
+    subprocess.Popen([exe_path, "--schemat_ready", argument])
+
+
+
+def czy_mozna_na_float_prosty(s):
+    import re
+    wzorzec = r'^-?\d+(\.\d+)?$'
+    return bool(re.match(wzorzec, s))
+
+def czy_mozna_na_float_prosty_z_minus_obowiazkowo(s):
+    import re
+    wzorzec = r'^-\d+(\.\d+)?$'
+    return bool(re.match(wzorzec, s))
+
 

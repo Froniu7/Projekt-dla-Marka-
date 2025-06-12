@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
 import fitz  # PyMuPDF
+import argparse
 
 import sys
 import os
@@ -18,7 +19,7 @@ TEMP_PDF = os.path.join(current_dir, "schemat.pdf")
 
 scale = 0.3
 modyfikacja_scale = False
-pierwsze_otwarcie = 1
+jest_schemat = 0
 
 class PDFViewer:
     def __init__(self, master):
@@ -62,7 +63,7 @@ class PDFViewer:
 
 
     def update_pdf(self):
-        global modyfikacja_scale, TEMP_PDF, pierwsze_otwarcie
+        global modyfikacja_scale, TEMP_PDF, pierwsze_otwarcie, jest_schemat
 
         print(TEMP_PDF)
         print("Start update pdf")
@@ -77,7 +78,10 @@ class PDFViewer:
         teraz = time.time()
         print(f"czas teraz {teraz}")
 
-        if ( pierwsze_otwarcie == 1) and ((teraz-mtime) <=30 ):
+        if jest_schemat == 1:
+            print("otwieramy plik pdf")
+
+        elif (teraz - mtime) <= 30:
             print("otwieramy plik pdf")
 
         elif (mtime == self.last_mtime) and (modyfikacja_scale==False):
@@ -176,6 +180,18 @@ class PDFViewer:
 
 
 def main():
+    global jest_schemat
+
+    parser = argparse.ArgumentParser(description="Podgląd PDF z argumentami.")
+    parser.add_argument("--schemat_ready", type=int, help="Flaga informująca czy schemat gotowy (1 = tak)", default=0)
+
+    args = parser.parse_args()
+    print(f"schemat_ready = {args.schemat_ready}")
+
+    if args.schemat_ready == 1:
+        print("Schemat gotowy, uruchamiamy tryb podglądu.")
+        jest_schemat = args.schemat_ready
+
     root = tk.Tk()
 
     # Ustawienie geometrii okna (szerokość 800px, wysokość 600px, pozycja na ekranie 10px od lewej i 10px od góry)
