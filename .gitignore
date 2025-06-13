@@ -2,4 +2,17 @@
 .idea/
 generator_schematow_SVC/build
 generator_schematow_SVC/dist
+generator_schematow_SVC/generowanie_schematy_SVC.exe
+generator_schematow_SVC/generator_schematow_SVC.bat
+generator_schematow_SVC/generowanie_schematy_SVC -- noconsole.exe
+generator_schematow_SVC/schemat.docx
+generator_schematow_SVC/wygenerowany.png
+generator_schematow_SVC/schemat_testowe.cdr
+generator_schematow_SVC/schemat.pdf
+generator_schematow_SVC/Kopia_zapasowa_schemat_testowe.cdr
+dist
+main_schematy.exe
+generator_schematow_SVC.zip
+generator_schematow_SVC.bat
+_internal
 
