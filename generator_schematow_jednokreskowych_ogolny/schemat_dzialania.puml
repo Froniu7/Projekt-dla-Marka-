@@ -1,0 +1,22 @@
+@startuml
+:towrzymy layout;
+:layout.addWidget(QLabel("Przekrój przewodu kablowego:"))
+tworzymy widget - z tekstem- ktory jest umieszczony w layout;
+:self.cable_combo = QComboBox()
+tworzymy liste rozwijaną - narazie pustą;
+:self.cable_combo.addItem("-- wybierz --")
+ustawiamy informacje wyswietlaną - początkową;
+:self.cable_combo.addItems(self.cable_cross_sections)
+funkcja uzupelniajaca wyswietlaną liste;
+:self.cable_combo.setStyleSheet("color: red;")
+ładujemy kol dla zawartości;
+:   self.cable_combo.currentIndexChanged.connect(lambda i: self.update_combo_style(self.cable_combo, i))
+
+ „Jak tylko użytkownik coś wybierze z tej listy rozwijanej,
+to sprawdź, czy to już nie jest ta domyślna opcja
+(ta czerwona – ‘-- wybierz --’). Jeśli użytkownik faktycznie
+coś wybrał, to zmień kolor tekstu w tej liście na czarny.”;
+: layout.addWidget(self.cable_combo)
+funkcja ktora umieszcza liste w layout;
+
+@enduml
