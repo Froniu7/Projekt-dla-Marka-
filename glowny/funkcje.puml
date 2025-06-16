@@ -1,0 +1,22 @@
+@startuml
+:resource_path(relative_path);
+:        if getattr(sys, 'frozen', False):
+            base_path = os.path.dirname(sys.executable);
+note right
+sprawdzenie czy plik z programem jest jako exe, pobieramy sciezke z programem
+end note
+:            else:
+        base_path_all = os.path.dirname(os.path.abspath(__file__))
+        base_path = os.path.dirname(base_path_all));
+note right
+program jest w pliku python, pobieramy sciezke z programem
+====
+podczas działania programu w formie pliku py - pierwsza zmienna przechowuje sciezke do katalogu z plikiem funkcji,
+ale że nie chodzi nam o to , to kolejna wycina ostatni fragment sciezki
+end note
+:return os.path.join(base_path, relative_path);
+
+
+
+
+@enduml
