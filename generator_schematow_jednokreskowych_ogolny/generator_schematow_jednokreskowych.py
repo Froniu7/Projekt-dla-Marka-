@@ -2,12 +2,14 @@ import sys
 from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QLabel, QComboBox, QPushButton
 )
-from funkcje import generuj_grafiki_do_schematu, generowanie_schematu_jednokreskowego
+from funkcje import generuj_plik_docx, generuj_grafiki_do_schematu, generowanie_schematu_jednokreskowego, generowanie_schematu_podlaczenia
 
 class CableSelector(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Wybór przekrojów przewodów")
+        #sterowniki
+        self.sterowniki = ["Novar", "Tense"]
 
         # Dane - przekroje przewodów
         self.cable_cross_sections = [
@@ -25,6 +27,15 @@ class CableSelector(QWidget):
 
         # Tworzenie widżetów
         layout = QVBoxLayout()
+
+        layout.addWidget(QLabel("Sterownik:"))
+
+        self.sterownik_combo = QComboBox()
+        self.sterownik_combo.addItem("-- wybierz --")
+        self.sterownik_combo.addItems(self.sterowniki)
+        self.sterownik_combo.setStyleSheet("color: red;")
+        self.sterownik_combo.currentIndexChanged.connect(lambda i: self.update_combo_style(self.sterownik_combo, i))
+        layout.addWidget(self.sterownik_combo)
 
         layout.addWidget(QLabel("Przekrój przewodu kablowego:"))
 
@@ -88,6 +99,7 @@ class CableSelector(QWidget):
         control = "7x"+control
         przekladnik = self.przekladniki_combo.currentText()
         zabezpieczenie = self.zabezpieczenie_combo.currentText()
+        sterownik = self.sterownik_combo.currentText()
 
         rodzaj_zab=self.zab_rodzaj_combo.currentText()
 
@@ -101,6 +113,8 @@ class CableSelector(QWidget):
 
         generuj_grafiki_do_schematu(cable=cable,control=control,przekladnik=przekladnik,zabezpieczenie=zabezpieczenie)
         generowanie_schematu_jednokreskowego(rodzaj_zab)
+        generowanie_schematu_podlaczenia(rodzaj_zab,sterownik)
+        generuj_plik_docx("schemat_jednokreskowy.png","schemat_ogolny.png","dokument_schematy.docx", przekladnik, cable, control, rodzaj_zab=rodzaj_zab, ampery=zabezpieczenie)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
