@@ -1,4 +1,4 @@
-import sys
+import sys, os, json
 from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QLabel, QComboBox, QPushButton
 )
@@ -115,6 +115,22 @@ class CableSelector(QWidget):
         generowanie_schematu_jednokreskowego(rodzaj_zab)
         generowanie_schematu_podlaczenia(rodzaj_zab,sterownik)
         generuj_plik_docx("schemat_jednokreskowy.png","schemat_ogolny.png","dokument_schematy.docx", przekladnik, cable, control, rodzaj_zab=rodzaj_zab, ampery=zabezpieczenie)
+        self.zapisz_wybor_do_json("dane_wejsciowe.json")  # 💾 zapis do json
+
+    def zapisz_wybor_do_json(self, sciezka_pliku="wynik.json"):
+        dane = {
+            "przewod_kablowy": self.cable_combo.currentText(),
+            "przewod_sterowniczy": "7x" + self.control_combo.currentText(),
+            "przekladnik": self.przekladniki_combo.currentText(),
+            "rodzaj_zabezpieczenia": self.zab_rodzaj_combo.currentText(),
+            "zabezpieczenie": self.zabezpieczenie_combo.currentText(),
+            "sterownik": self.sterownik_combo.currentText()
+        }
+
+        with open(sciezka_pliku, "w", encoding="utf-8") as f:
+            json.dump(dane, f, indent=4, ensure_ascii=False)
+
+        print(f"🔧 Zapisano dane do pliku: {os.path.abspath(sciezka_pliku)}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
