@@ -1,8 +1,8 @@
 {
-    "przewod_kablowy": "4 mm²",
-    "przewod_sterowniczy": "7x0.5 mm²",
-    "przekladnik": "100/5, okno 36, moc 1 VA",
-    "rodzaj_zabezpieczenia": "typ S Cx A",
+    "przewod_kablowy": "2.5 mm2",
+    "przewod_sterowniczy": "7xBit500 | 7G | 7x4mm2",
+    "przekladnik": "SCT03TS | 150 | 5 | 1",
+    "rodzaj_zabezpieczenia": "wkładki gG",
     "zabezpieczenie": "2A",
-    "sterownik": "Tense"
+    "sterownik": "Novar 2400"
 }

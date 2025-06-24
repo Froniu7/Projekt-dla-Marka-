@@ -13,6 +13,16 @@ import sys, os
 import subprocess
 from glowny.funkcje import resource_path, resource_path_all
 
+from datetime import datetime
+import json
+
+ścieżka_json = "komunikacja.json"
+
+def generuj_nazwe_json(prefix="schemat", suffix=".json"):
+    teraz = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    return f"{prefix}_{teraz}{suffix}"
+
+
 def utworz_tabele_z_csv(sciezka):
     with open(sciezka, newline='', encoding='utf-8') as csvfile:
         reader = csv.reader(csvfile)
@@ -42,8 +52,6 @@ okno = QTabWidget()
 # Zakładka 1: Generowanie schematów
 widget_generowanie = QWidget()
 layout_generowanie = QVBoxLayout(widget_generowanie)
-
-
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QSpacerItem
 
@@ -87,11 +95,6 @@ kontener_layout.addStretch()  # wypycha wszystko do góry
 layout_generowanie.addWidget(kontener_przyciski)
 layout_generowanie.addStretch()  # wypycha wszystko do góry w zakładce
 
-
-
-
-
-
 okno.addTab(widget_generowanie, "Generowanie schematów")
 
 # Zakładka 2: Dane (z podzakładkami)
@@ -100,9 +103,11 @@ layout_dane = QVBoxLayout(widget_dane)
 tabele_tabs = QTabWidget()
 
 def uruchom_program_generuj():
+    nazwa_pliku = generuj_nazwe_json()
+    print(f"zostanie przekazany argument :  {nazwa_pliku}")
     sciezka2 = resource_path_all(r'generator_schematow_jednokreskowych_ogolny\generator_schematow_jednokreskowych.py')
     sciezka1 = resource_path_all(r'generator_schematow_jednokreskowych_ogolny')
-    subprocess.Popen(["python", sciezka2], cwd=sciezka1)
+    subprocess.Popen(["python", sciezka2, nazwa_pliku], cwd=sciezka1)
 
 def uruchom_program_podglad():
 

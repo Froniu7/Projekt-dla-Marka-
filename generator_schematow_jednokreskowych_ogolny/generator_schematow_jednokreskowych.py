@@ -4,24 +4,70 @@ from PySide6.QtWidgets import (
 )
 from funkcje import generuj_plik_docx, generuj_grafiki_do_schematu, generowanie_schematu_jednokreskowego, generowanie_schematu_podlaczenia
 
+import sys, os, argparse
+
+nazwa_pliku_json = ""
+
+def argumenty():
+    parser = argparse.ArgumentParser(description="Generator pliku JSON z wyborem parametrów.")
+    parser.add_argument("output", nargs="?", help="Nazwa wyjściowego pliku JSON (np. dane.json)")
+    args = parser.parse_args()
+    return args.output  # może być None!
+
+
+def get_sciezka_do_katalogu(nazwa_katalogu):
+    # Jeśli to aplikacja .exe spakowana PyInstallerem
+    if getattr(sys, 'frozen', False):
+        base_path = sys._MEIPASS
+    else:
+        # Normalne uruchomienie z .py
+        base_path = os.path.dirname(os.path.abspath(__file__))
+
+    # Wejdź poziom wyżej
+    nadrzedny_katalog = os.path.dirname(base_path)
+
+    # Dodaj nową końcówkę ścieżki
+    sciezka_docelowa = os.path.join(nadrzedny_katalog, nazwa_katalogu)
+
+    return sciezka_docelowa
+
+def wczytaj_csv(nazwa_pliku, start_from=0, ile_kolumn=1, separator=" | "):
+    import csv
+    katalog_dane = get_sciezka_do_katalogu("dane")
+    sciezka = os.path.join(katalog_dane, nazwa_pliku)
+    dane = []
+    with open(sciezka, newline='', encoding='utf-8') as f:
+        reader = csv.reader(f)
+        for i, row in enumerate(reader):
+            if i < start_from:
+                continue  # pomiń nagłówki
+            if not row or all(cell.strip() == "" for cell in row):
+                continue  # pomiń puste wiersze
+
+            # Uzupełnij brakujące kolumny pustymi stringami, jeśli ich brakuje
+            row += [""] * (ile_kolumn - len(row))
+
+            # Połącz kolumny w jeden string
+            row_str = separator.join(row[:ile_kolumn])
+
+            dane.append(row_str)
+    return dane
+
 class CableSelector(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Wybór przekrojów przewodów")
         #sterowniki
-        self.sterowniki = ["Novar", "Tense"]
+        self.sterowniki = wczytaj_csv("sterowniki.csv", 1)
 
         # Dane - przekroje przewodów
-        self.cable_cross_sections = [
-            "1.5 mm²", "2.5 mm²", "4 mm²", "6 mm²", "10 mm²", "16 mm²", "25 mm²"
-        ]
-        self.control_cross_sections = [
-            "0.22 mm²", "0.34 mm²", "0.5 mm²", "0.75 mm²", "1 mm²", "1.5 mm²"
-        ]
+        self.cable_cross_sections = wczytaj_csv("Przekroje_zasilajace.csv", 1, ile_kolumn=1)
 
-        self.przekladniki = ["100/5, okno 36, moc 1 VA", "100/5, okno 24, moc 1 VA", "50/5, okno 24, moc 1 VA"]
+        self.control_cross_sections = wczytaj_csv("przewody_sterownicze.csv", 1, ile_kolumn=3)
 
-        self.rodzaj_zabezpieczenia = ["typ S Cx A", "wkładki gG", "brak zab. głównego zewnętrznego"]
+        self.przekladniki = wczytaj_csv("przekladniki.csv", 1, ile_kolumn=4)
+
+        self.rodzaj_zabezpieczenia = wczytaj_csv("Rodzaje zabezpieczenia głównego zew.csv", 1)
 
         self.zabezpiecznia_gG = ["2A", "6A", "10A"]
 
@@ -117,7 +163,7 @@ class CableSelector(QWidget):
         generuj_plik_docx("schemat_jednokreskowy.png","schemat_ogolny.png","dokument_schematy.docx", przekladnik, cable, control, rodzaj_zab=rodzaj_zab, ampery=zabezpieczenie)
         self.zapisz_wybor_do_json("dane_wejsciowe.json")  # 💾 zapis do json
 
-    def zapisz_wybor_do_json(self, sciezka_pliku="wynik.json"):
+    def zapisz_wybor_do_json(self, sciezka_pliku=nazwa_pliku_json):
         dane = {
             "przewod_kablowy": self.cable_combo.currentText(),
             "przewod_sterowniczy": "7x" + self.control_combo.currentText(),
@@ -133,6 +179,15 @@ class CableSelector(QWidget):
         print(f"🔧 Zapisano dane do pliku: {os.path.abspath(sciezka_pliku)}")
 
 if __name__ == "__main__":
+
+    nazwa_pliku_json = argumenty()
+
+    if not nazwa_pliku_json:
+        # Tu możesz wygenerować np. nazwę z datą
+        print(f"📄 Przekazana nazwa dla pliku json: {nazwa_pliku_json}")
+    else:
+        print(f"📄 Przekazana nazwa dla pliku json: {nazwa_pliku_json}")
+
     app = QApplication(sys.argv)
     window = CableSelector()
     window.show()
