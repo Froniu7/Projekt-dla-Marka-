@@ -81,8 +81,10 @@ class PDFViewer:
         if jest_schemat == 1:
             print("otwieramy plik pdf")
 
+
         elif (teraz - mtime) <= 30:
             print("otwieramy plik pdf")
+
 
         elif (mtime == self.last_mtime) and (modyfikacja_scale==False):
             print("nie nastapiła zmiana")

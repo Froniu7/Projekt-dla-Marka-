@@ -275,6 +275,10 @@ def podglad_obrazu(program, czy_schemat_gotowy):
     print(exe_path)
     subprocess.Popen([exe_path, "--schemat_ready", argument])
 
+def zamien_przecinek_na_kropke(tekst):
+    if "," in tekst:
+        return tekst.replace(",", ".")
+    return tekst
 
 
 def czy_mozna_na_float_prosty(s):

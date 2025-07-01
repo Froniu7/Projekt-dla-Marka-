@@ -18,8 +18,6 @@ lista_prze_kabl = [2.5,4,6,10,16,25,35,50,70,95,120,150,185,240,300,400,500]
 lista_dostepnych_zabezpieczen_z_A_wybrane_przez_szefa = []
 lista_zabezpieczen = []
 
-
-
 def load_csv_to_list(filename):
     data = []  # Lista, która będzie przechowywać dane z pliku CSV
     try:
@@ -95,7 +93,6 @@ def svg(event):
                           f"kabel zasilający: {kabel_zasilajacy}")
     label_svg.grid(row=3, column=0, columnspan=3)
 
-
 def standard(event):
     global zabezpieczenie, kabel_zasilajacy, entry_moc_standard, label_z_tabeli_standard, label_obliczenia, linia, moc_przekroj_standard, zabezpieczenie, zabezpieczenie_gG
     global wybor_wspolczynik_k, wspolczynik_k, prad_nom_urzadzenia, lista_prze_kabl, wybor_zabezpieczenia_od_szefa, proponowany_przew_kablowy, rodzaj_zabezpieczen_dla_szefa
@@ -119,7 +116,6 @@ def standard(event):
     if "sprawdzenie_warunku" in globals():
         sprawdzenie_warunku.grid_forget()
 
-
     #wybor_przewodu_kablowego.config(values=)
     print(zawartosc)
     dlugosc_listy = len(moc_przekroj_standard)
@@ -134,13 +130,11 @@ def standard(event):
                 zabezpieczenie = "0"
             zabezpieczenie_gG = int(moc_przekroj_standard[i + 1][4])
 
-
     label_z_tabeli_standard.config(text="Z tabeli (ustalone z szefem):\n"
                                         f"Kabel o przekroju: {kabel_zasilajacy} mm2\n"
                                         f"Zabezieczenie główne typu C: {zabezpieczenie}\n"
                                         f"Zabezpieczenie główne typu gG: {zabezpieczenie_gG}")
     label_z_tabeli_standard.grid(row=3, column=0)
-
 
     linia.create_line(2, 0, 2, 800, width=2, fill="black")
     linia.grid(row=3, rowspan=7, column=1)

@@ -1,7 +1,7 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 from tkinter import messagebox
-from generowanie_grafik import czy_mozna_na_float_prosty_z_minus_obowiazkowo, czy_mozna_na_float_prosty, podglad_obrazu, ToolTip, generuj_grafike_z_tekstem, generuj_plik_docx, konwertuj_docx_na_pdf, zapisz_plik_do_katalogu, show_non_blocking_message, close_message_window
+from generowanie_grafik import czy_mozna_na_float_prosty_z_minus_obowiazkowo, zamien_przecinek_na_kropke, czy_mozna_na_float_prosty, podglad_obrazu, ToolTip, generuj_grafike_z_tekstem, generuj_plik_docx, konwertuj_docx_na_pdf, zapisz_plik_do_katalogu, show_non_blocking_message, close_message_window
 import os
 
 #***********************************************************************************************************************
@@ -129,7 +129,7 @@ def pokaz_wybor2():
     # Jeśli wybrano "dodatkowe stopnie", tworzymy nowe widgety
     if wybor2.get() == "dodatkowe stopnie":
 
-        # Usowanie nawet jezeli nie istnieją bo jak klikniesz przez przypadek to powstanie dwa razy ten sam kontener 
+        # Usowanie nawet jezeli nie istnieją bo jak klikniesz przez przypadek to powstanie dwa razy ten sam kontener
         if sekcja2b:
             sekcja2b.destroy()
             sekcja2b = None
@@ -163,7 +163,7 @@ def pokaz_wybor2():
         dodatkowe_stopnie_jednfazowe.grid(row=0, column=0, columnspan=11, sticky="w")
         pusty_label_pod_dodatkowe_stopnie_jednofazowe = tk.Label(sekcja2c, text=" ", bg="red", font=("Vernada", 10))
         pusty_label_pod_dodatkowe_stopnie_jednofazowe.grid(row=1, column=0)
-        tooltip_dodatkowe_stopnie_jednofazowe = ToolTip(dodatkowe_stopnie_jednfazowe, "Podane wartości stopni będą na schemacie.\nPodanie wartości z minusem oznacza dławik.\n Wartości z częścią ułamkową oddzielamy przecinkiem.", delay=1000)
+        tooltip_dodatkowe_stopnie_jednofazowe = ToolTip(dodatkowe_stopnie_jednfazowe, "Podane wartości stopni będą na schemacie.\nPodanie wartości z minusem oznacza dławik.\n Wartości z częścią ułamkową oddzielamy przecinkiem lub kropką.", delay=1000)
 
         L1 = tk.Label(sekcja2c, text="L1: ", bg="red")
         L1.grid(row=2,column=0)
@@ -177,7 +177,7 @@ def pokaz_wybor2():
         stopien5 = tk.Entry(sekcja2c, width=10)
         stopien5.grid(row=3, column=1)
 
-        L3 = tk.Label(sekcja2c, text="L2: ", bg="red")
+        L3 = tk.Label(sekcja2c, text="L3: ", bg="red")
         L3.grid(row=4, column=0)
 
         stopien6 = tk.Entry(sekcja2c, width=10)
@@ -315,14 +315,17 @@ def pobierz_dane():
     #BLOK - pobierz_dane - przypisywanie do zmiennych od podzespoly - tu pobieramy wartości dla wszystkich mozliwych podzespolów - czyli dłaików i kondensatorów , mogą tez byc puste zmienne - czyli pusty string -> ""
 
     d1 = dlawik1.get()
+    d1 = zamien_przecinek_na_kropke(d1)
     print(f"d1 = {d1}")
     pierwszy_dlawik = czy_mozna_na_float_prosty_z_minus_obowiazkowo(d1)
     print(pierwszy_dlawik)
     d2 = dlawik2.get()
+    d2 = zamien_przecinek_na_kropke(d2)
     print(f"d2 = {d2}")
     drugi_dlawik = czy_mozna_na_float_prosty_z_minus_obowiazkowo(d2)
     print(drugi_dlawik)
     d3 = dlawik3.get()
+    d3 = zamien_przecinek_na_kropke(d3)
     print(f"d3 = {d3}")
     trzeci_dlawik = czy_mozna_na_float_prosty_z_minus_obowiazkowo(d3)
     print(trzeci_dlawik)
@@ -330,39 +333,51 @@ def pobierz_dane():
     if sekcja2b:
 
         s4 = stopien4.get()
+        s4 =  zamien_przecinek_na_kropke(s4)
         print(f"s4 = {s4}")
         dodatkowe_stopnie[0] = s4
         s5 = stopien5.get()
+        s5 = zamien_przecinek_na_kropke(s5)
         print(f"s5 = {s5}")
         dodatkowe_stopnie[1] = s5
         s6 = stopien6.get()
+        s6 = zamien_przecinek_na_kropke(s6)
         print(f"s6 = {s6}")
         dodatkowe_stopnie[2] = s6
         s7 = stopien7.get()
+        s7 = zamien_przecinek_na_kropke(s7)
         print(f"s7 = {s7}")
         dodatkowe_stopnie[3] = s7
         s8 = stopien8.get()
+        s8 = zamien_przecinek_na_kropke(s8)
         print(f"s8 = {s8}")
         dodatkowe_stopnie[4] = s8
         s9 = stopien9.get()
+        s9 = zamien_przecinek_na_kropke(s9)
         print(f"s9 = {s9}")
         dodatkowe_stopnie[5] = s9
         s10 = stopien10.get()
+        s10 = zamien_przecinek_na_kropke(s10)
         print(f"s10 = {s10}")
         dodatkowe_stopnie[6] = s10
         s11 = stopien11.get()
+        s11 = zamien_przecinek_na_kropke(s11)
         print(f"s11 = {s11}")
         dodatkowe_stopnie[7] = s11
         s12 = stopien12.get()
+        s12 = zamien_przecinek_na_kropke(s12)
         print(f"s12 = {s12}")
         dodatkowe_stopnie[8] = s12
         s13 = stopien13.get()
+        s13 = zamien_przecinek_na_kropke(s13)
         print(f"s13 = {s13}")
         dodatkowe_stopnie[9] = s13
         s14 = stopien14.get()
+        s14 = zamien_przecinek_na_kropke(s14)
         print(f"s14 = {s14}")
         dodatkowe_stopnie[10] = s14
         s15 = stopien15.get()
+        s15 = zamien_przecinek_na_kropke(s15)
         print(f"s15 = {s15}")
         dodatkowe_stopnie[11] = s15
     # BLOK - pobierz_dane - schemat podstawowy
@@ -413,6 +428,7 @@ def pobierz_dane():
     if podzespoly_dodatkowe == "dodatkowe stopnie":
         policz_dodatkowe_stopnie()
     global ilosc_stopni
+    print("jezeli sa dodatkowe stopnie i uzupelnione 3 dlawiki to wchodzimy")
     if (podzespoly_dodatkowe == "dodatkowe stopnie") and ilosc_stopni > 0 and (pierwszy_dlawik == True) and (drugi_dlawik == True) and (trzeci_dlawik == True):
 
         print(f"mamy stopni {ilosc_stopni}")
@@ -724,7 +740,7 @@ def pobierz_dane():
 
                             opis_stopien2 = Image.open(
                                 f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni+1}.png")
-                            w_o_s2, h_o_s2 = opis_stopien1.size
+                            w_o_s2, h_o_s2 = opis_stopien2.size
                             ilosc_umieszczonych_stopni += 1
 
                             obraz_do_wygenerowania.paste(opis_stopien2, (szerokosc_wstawianie_sciezki,
@@ -734,7 +750,7 @@ def pobierz_dane():
                             opis_moc_stopien = Image.open(nazwa_pliku)
                             obraz_do_wygenerowania.paste(opis_moc_stopien,
                                                          (szerokosc_wstawianie_sciezki,
-                                                          height_podstawowy + height_sciezki_stopien_1 + h_s2 + h_o_s2))
+                                                          height_podstawowy + height_sciezki_stopien_2 + h_s2 + h_o_s2))
                             #...
 
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_2
@@ -760,7 +776,7 @@ def pobierz_dane():
 
                             opis_stopien3 = Image.open(
                                 f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni + 1}.png")
-                            w_o_s3, h_o_s3 = opis_stopien1.size
+                            w_o_s3, h_o_s3 = opis_stopien3.size
                             ilosc_umieszczonych_stopni += 1
 
                             obraz_do_wygenerowania.paste(opis_stopien3, (szerokosc_wstawianie_sciezki,
@@ -771,7 +787,7 @@ def pobierz_dane():
                             opis_moc_stopien = Image.open(nazwa_pliku)
                             obraz_do_wygenerowania.paste(opis_moc_stopien,
                                                          (szerokosc_wstawianie_sciezki,
-                                                          height_podstawowy + height_sciezki_stopien_1 + h_s3 + h_o_s3))
+                                                          height_podstawowy + height_sciezki_stopien_3 + h_s3 + h_o_s3))
                             # ...
 
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_3
@@ -797,7 +813,7 @@ def pobierz_dane():
 
                             opis_stopien4 = Image.open(
                                 f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni + 1}.png")
-                            w_o_s4, h_o_s4 = opis_stopien1.size
+                            w_o_s4, h_o_s4 = opis_stopien4.size
                             ilosc_umieszczonych_stopni += 1
 
                             obraz_do_wygenerowania.paste(opis_stopien4, (szerokosc_wstawianie_sciezki,
@@ -807,7 +823,7 @@ def pobierz_dane():
                             opis_moc_stopien = Image.open(nazwa_pliku)
                             obraz_do_wygenerowania.paste(opis_moc_stopien,
                                                          (szerokosc_wstawianie_sciezki,
-                                                          height_podstawowy + height_sciezki_stopien_1 + h_s4 + h_o_s4))
+                                                          height_podstawowy + height_sciezki_stopien_4 + h_s4 + h_o_s4))
                             # ...
 
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_4
@@ -833,7 +849,7 @@ def pobierz_dane():
 
                             opis_stopien5 = Image.open(
                                 f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni + 1}.png")
-                            w_o_s5, h_o_s5 = opis_stopien1.size
+                            w_o_s5, h_o_s5 = opis_stopien5.size
                             ilosc_umieszczonych_stopni += 1
 
                             obraz_do_wygenerowania.paste(opis_stopien5, (szerokosc_wstawianie_sciezki,
@@ -844,7 +860,7 @@ def pobierz_dane():
                             opis_moc_stopien = Image.open(nazwa_pliku)
                             obraz_do_wygenerowania.paste(opis_moc_stopien,
                                                          (szerokosc_wstawianie_sciezki,
-                                                          height_podstawowy + height_sciezki_stopien_1 + h_s5 + h_o_s5))
+                                                          height_podstawowy + height_sciezki_stopien_5 + h_s5 + h_o_s5))
                             # ...
 
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_5
@@ -870,10 +886,10 @@ def pobierz_dane():
 
                             opis_stopien6 = Image.open(
                                 f"pod_3_stopnie_uniwersalny/schematy_dodatkowe_stopnie/oznaczenia_stopnie/Q{ilosc_umieszczonych_stopni + 1}.png")
-                            w_o_s6, h_o_s6 = opis_stopien1.size
+                            w_o_s6, h_o_s6 = opis_stopien6.size
                             ilosc_umieszczonych_stopni += 1
 
-                            obraz_do_wygenerowania.paste(opis_stopien1, (szerokosc_wstawianie_sciezki,
+                            obraz_do_wygenerowania.paste(opis_stopien6, (szerokosc_wstawianie_sciezki,
                                                                          height_podstawowy + height_sciezki_stopien_6 + h_s6))
 
                             # ...
@@ -881,7 +897,7 @@ def pobierz_dane():
                             opis_moc_stopien = Image.open(nazwa_pliku)
                             obraz_do_wygenerowania.paste(opis_moc_stopien,
                                                          (szerokosc_wstawianie_sciezki,
-                                                          height_podstawowy + height_sciezki_stopien_1 + h_s6 + h_o_s6))
+                                                          height_podstawowy + height_sciezki_stopien_6 + h_s6 + h_o_s6))
                             # ...
 
                             szerokosc_wstawianie_sciezki = szerokosc_wstawianie_sciezki + width_sciezki_stopien_6
@@ -1140,13 +1156,22 @@ def pobierz_dane():
         #---------------------------------------------------------------------------------------------------------------
         #BLOK - pobierz_dane - dodatkowe stopnie -> nie generujemy schematu , wyswietlamy komunikat
         else :
+            print(f"jestesmy w ostatni else - funkcja pobierz_dane()")
             messagebox.showinfo("Informacja", "Przekroczono ilosc stopni , aplikacja pozwala na max 6\nbądz stopnie wpisane niepoprawnie.")
             print("przekroczona ilosc stopni")
             print(dodatkowe_stopnie)
             ilosc_stopni = 0
 
+    elif (podzespoly_dodatkowe == "dodatkowe stopnie") and ilosc_stopni > 0 and ((pierwszy_dlawik == False) or (drugi_dlawik == False) or (trzeci_dlawik == False)):
+        print(f"jestesmy w przed ostatni elif - funkcja pobierz_dane()")
+        messagebox.showinfo("Informacja", "Brak wpisanych stopni od dławików (podłączonych do łącznika), \n bądz stopnie wpisane niepoprawnie.")
+        ilosc_stopni = 0
+
+
     elif (podzespoly_dodatkowe == "dodatkowe stopnie") and ilosc_stopni == 0:
+        print(f"jestesmy w ostatni elif - funkcja pobierz_dane()")
         messagebox.showinfo("Informacja", "Brak wpisanych dodatkowych stopni,\nbądz stopnie wpisane niepoprawnie.")
+        ilosc_stopni = 0
 
 def policz_dodatkowe_stopnie():
     global ilosc_stopni, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, dodatkowe_stopnie
@@ -1208,17 +1233,13 @@ def generuj_grafike():
 
     threading.Thread(target=watek, daemon=True).start()
 
-obraz_przycisk_generuj = Image.open("grafiki_GUI/strzalka.png")
-obraz_przycisk_generuj = obraz_przycisk_generuj.resize((24,24))
-ikonka1 = ImageTk.PhotoImage(obraz_przycisk_generuj)
-
 sekcja0 = tk.Frame(root, width =480, height=33)
 sekcja0.grid(row=0, column=0)
 sekcja0.grid_propagate(False)
 
 generuj_schemat = tk.Button(sekcja0, text="Generuj schemat", compound="left", command=generuj_grafike, font=("Helvetica", 8), padx=5, pady=5)
 generuj_schemat.grid(row=0, column=0, sticky="w")
-tooltip0 = ToolTip(generuj_schemat, "Zostanie wygenerowany schemat na podstawie wybranych opcji.\nMożesz też nacisnąć enter na klawiaturze - aby wygenerować schemat.\nPamiętaj aby wypełnić pola.", delay=1000, image_path="grafiki_GUI/enter.png")
+tooltip0 = ToolTip(generuj_schemat, "Zostanie wygenerowany schemat na podstawie wybranych opcji.\nMożesz też nacisnąć enter na klawiaturze - aby wygenerować schemat.\nPamiętaj aby wypełnic pola.", delay=1000, image_path="grafiki_GUI/enter.png")
 
 podglad = tk.Button(sekcja0, text="Podglad", command= lambda : podglad_obrazu("podglad_pdf.exe", czy_schemat_jest_wygenerowany), font=("Helvetica", 8), padx=5, pady=5)
 podglad.grid(row=0, column=1, sticky="w")

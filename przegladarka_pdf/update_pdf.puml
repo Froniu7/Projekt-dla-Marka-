@@ -1,0 +1,7 @@
+@startuml
+:update_pdf;
+if (jest_schemat ==1)
+:cos zrob;
+elseif (jest_schemat == 0))
+:pass;
+@enduml

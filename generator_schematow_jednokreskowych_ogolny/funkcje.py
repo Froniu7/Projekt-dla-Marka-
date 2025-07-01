@@ -1,4 +1,5 @@
 from PIL import Image
+import sys , os
 
 
 
@@ -35,12 +36,16 @@ def generuj_grafike_z_tekstem(tekst, szerokosc, wysokosc, rozmiar_fonta, nazwa_p
 def generuj_grafiki_do_schematu(cable, control, przekladnik, zabezpieczenie):
     generuj_grafike_z_tekstem(tekst=cable, szerokosc=300, wysokosc=80, rozmiar_fonta=50,
                               nazwa_pliku="przewod_kablowy.png")
-    generuj_grafike_z_tekstem(tekst=control, szerokosc=400, wysokosc=100, rozmiar_fonta=50,
+    print(f"cable: {cable}")
+    generuj_grafike_z_tekstem(tekst=control, szerokosc=530, wysokosc=100, rozmiar_fonta=50,
                               nazwa_pliku="przewod_sterowniczy.png")
+    print(f"control: {control}")
     generuj_grafike_z_tekstem(tekst=przekladnik, szerokosc=600, wysokosc=100, rozmiar_fonta=50,
                               nazwa_pliku="przekladnik.png")
+    print(f"przekladniki: {przekladnik}")
     generuj_grafike_z_tekstem(tekst=zabezpieczenie, szerokosc=100, wysokosc=100, rozmiar_fonta=50,
                               nazwa_pliku="zabezpiecznie.png")
+    print(f"zabezpieczenie: {zabezpieczenie}")
 
 
 def generowanie_schematu_jednokreskowego(rodzaj_zab):
@@ -62,7 +67,7 @@ def generowanie_schematu_jednokreskowego(rodzaj_zab):
     obraz_do_wygenerowania = Image.new("RGBA", (width_schemat, height_schemat))
     obraz_do_wygenerowania.paste(schemat_jednokreskowy, (0, 0))
     obraz_do_wygenerowania.paste(przewod_kablowy, (2300, 980))
-    obraz_do_wygenerowania.paste(przewod_sterowniczy,(1300,1000))
+    obraz_do_wygenerowania.paste(przewod_sterowniczy,(1200,1000))
     obraz_do_wygenerowania.paste(przekladnik, (1230, 100))
     obraz_do_wygenerowania.paste(zabezpieczenie,(3000,800))
 
@@ -98,7 +103,7 @@ def generowanie_schematu_podlaczenia(rodzaj_zab, sterownik):
     #Przewod - Zasilanie
     obraz_do_wygenerowania.paste(przewod_kablowy, (2100, 980))
     #Sterowniczy
-    obraz_do_wygenerowania.paste(przewod_sterowniczy, (200, 600))
+    obraz_do_wygenerowania.paste(przewod_sterowniczy, (150, 600))
     #Przekladniki
     obraz_do_wygenerowania.paste(przekladnik, (610, 120))
     #Zabezpiecznie
@@ -197,7 +202,34 @@ def generuj_plik_docx(sciezka_jednokreskowy, sciezka_ogolny, nazwa_pliku, przekl
     print("zapisujemy plik")
     doc.save(nazwa_pliku)
 
-#generuj_plik_docx("schemat_jednokreskowy.png","schemat_ogolny.png","dokument_schematy.docx")
+def resource_path_all(relative_path):
+    if getattr(sys, 'frozen', False):  # [1]
+        base_path = os.path.dirname(sys.executable)  # [2]
+
+    else:
+        base_path_all = os.path.dirname(os.path.abspath(__file__))  # [3]
+        base_path = os.path.dirname(base_path_all)
+
+    return  os.path.join(base_path, relative_path) # [4]
+
+def konwertuj_docx_na_pdf(sciezka_docx):
+    import subprocess
+    import os
+    sciezka_docx = os.path.abspath(sciezka_docx)
+    katalog_wyjscia = os.path.dirname(sciezka_docx)
+
+    # PEŁNA ŚCIEŻKA do LibreOffice w Windows
+    libreoffice_path = r"C:\Program Files\LibreOffice\program\soffice.exe"
+
+    subprocess.run([
+        libreoffice_path,
+        "--headless",
+        "--convert-to", "pdf",
+        "--outdir", katalog_wyjscia,
+        sciezka_docx
+    ], check=True)
+
+    print(f"PDF zapisany w katalogu: {katalog_wyjscia}")
 
 
 
