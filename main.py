@@ -105,9 +105,11 @@ tabele_tabs = QTabWidget()
 def uruchom_program_generuj():
     nazwa_pliku = generuj_nazwe_json()
     print(f"zostanie przekazany argument :  {nazwa_pliku}")
+
     sciezka2 = resource_path_all(r'generator_schematow_jednokreskowych_ogolny\generator_schematow_jednokreskowych.py')
     sciezka1 = resource_path_all(r'generator_schematow_jednokreskowych_ogolny')
     subprocess.Popen(["python", sciezka2, nazwa_pliku], cwd=sciezka1)
+
 
 def uruchom_program_podglad():
 
