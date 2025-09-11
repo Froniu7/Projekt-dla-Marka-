@@ -6,6 +6,7 @@ from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, Q
     QGroupBox, QTabWidget, QTableWidget, QTableWidgetItem, QHeaderView, QPushButton, QAbstractItemView, QRadioButton, \
     QButtonGroup, QLineEdit, QDialog
 from PySide6.QtCore import QThread, Signal
+from PySide6.QtGui import QPixmap
 from pymodbus.client.sync import ModbusSerialClient
 import struct
 import time
@@ -13,6 +14,16 @@ import time
 # Stałe używane do obliczeń
 VOLTAGE_1_PHASE = 230  # V
 FREQUENCY = 50  # Hz
+
+#zmienne globalne
+global_u1 = 0.0
+global_u2 = 0.0
+global_u3 = 0.0
+global_u12 = 0.0
+global_u23 = 0.0
+global_u31 = 0.0
+global_u_avg = 0.0
+
 
 
 # Funkcja do wczytywania CSV
@@ -128,30 +139,50 @@ class ModbusReader(QThread):
         except Exception:
             return None
 
+class StartWindow(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Proces Testowania")
+        self.setGeometry(300, 300, 300, 200)
+        layout = QVBoxLayout()
+        label = QLabel("Start testowanie podzespołu")
+        layout.addWidget(label)
+        self.setLayout(layout)
 
 # --- KLASA DEDYKOWANA DLA OKNA DODAWANIA NOWEGO ELEMENTU ---
+# --- KLASA DEDYKOWANA DLA OKNA DODAWANIA NOWEGO ELEMENTU ---
 class AddElementWindow(QDialog):
-    # Lista standardowych wartości mocy w kvar dla dławików 1-fazowych
+    # Lista standardowych wartosci mocy w kvar dla dlawikow 1-fazowych
     STANDARD_KVAR_VALUES_1P = sorted(list(set([
         0.02, 0.04, 0.05, 0.08, 0.1, 0.12, 0.15, 0.2, 0.25, 0.3, 0.33, 0.35, 0.4, 0.45, 0.5, 0.6, 0.7, 0.75, 0.8, 0.9,
         1.0, 1.25, 1.3, 1.5, 1.66, 1.75, 2.0, 2.25, 2.5, 3.0, 3.25, 3.33, 3.5, 4.0, 5.0, 6.66, 10.0
     ])))
 
-    # Lista standardowych wartości mocy w kvar dla dławików 3-fazowych
+    # Lista standardowych wartosci mocy w kvar dla dlawikow 3-fazowych
     STANDARD_KVAR_VALUES_3P = sorted(list(set([
         0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 7.5, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 40.0, 50.0, 60.0, 75.0,
         100.0, 125.0, 150.0, 200.0, 250.0, 300.0
     ])))
 
-    # Lista standardowych wartości mocy w kvar dla kondensatorów 1-fazowych
+    # Lista standardowych wartosci mocy w kvar dla kondensatorow 1-fazowych
     STANDARD_KVAR_VALUES_CAP_1P = sorted(list(set([
-        0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 7.5, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 40.0, 50.0
+        0.25, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 7.5, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 40.0, 50.0
     ])))
 
-    # Lista standardowych wartości mocy w kvar dla kondensatorów 3-fazowych
-    STANDARD_KVAR_VALUES_CAP_3P = sorted(list(set([
-        2.5, 5.0, 7.5, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 40.0, 50.0, 60.0, 75.0, 80.0, 100.0
-    ])))
+    # Nowa lista z parami wartosci (400V, 440V)
+    STANDARD_KVAR_VALUES_CAP_3P = sorted(
+        [[1, 1.25], [2, 2.5], [2.5, 3], [3, 3.75], [4, 5], [5.0, 6.25], [6.25, 7.5], [8, 10], [10.0, 12.5],
+         [12.5, 15.0], [15.0, 18.2], [16, 20], [20.0, 25], [23, 28], [25.0, 30.0], [32, 40.0], [40.0, 50.0]],
+        key=lambda x: x[0]
+    )
+
+    # Slownik z producentami dla poszczegolnych typow komponentow
+    PRODUCENTS_MAP = {
+        "dławik 1 fazowy": ["Inducto", "Tense", "<inne - będę mugł dodać do listy w kodzie>"],
+        "dławik 3 fazowy": ["Inducto", "Tense", "<inne - będę mugł dodać do listy w kodzie>"],
+        "kondensator 1 fazowy": ["Circutor", "GRUPPO ENERGIA", "ZEZ", "Shrem", "<inne - będę mugł dodać do listy w kodzie>"],
+        "kondensator 3 fazowy": ["Circutor", "GRUPPO ENERGIA", "ZEZ", "Shrem", "<inne - będę mugł dodać do listy w kodzie>"]
+    }
 
     def __init__(self, parent=None, tab_name=""):
         super().__init__(parent)
@@ -160,6 +191,7 @@ class AddElementWindow(QDialog):
         self.tab_name = tab_name
         self.input_fields = {}
         self.radio_buttons = {}
+        self.producer_combo = QComboBox()
 
         main_layout = QVBoxLayout(self)
 
@@ -179,10 +211,17 @@ class AddElementWindow(QDialog):
         self.fields_container = QWidget()
         self.fields_layout = QVBoxLayout(self.fields_container)
 
+        # Layout dla sekcji producenta
+        producer_layout = QHBoxLayout()
+        producer_layout.addWidget(QLabel("Producent:"))
+        producer_layout.addWidget(self.producer_combo)
+        self.fields_layout.addLayout(producer_layout)
+
         def update_fields(button):
             self.clear_fields_layout()
             if button.isChecked():
                 self.create_input_fields(button.text())
+                self.update_producer_combo(button.text())
 
         for name, file_name in self.radio_buttons_map.items():
             radio_button = QRadioButton(name)
@@ -203,106 +242,78 @@ class AddElementWindow(QDialog):
         add_to_list_button.clicked.connect(self.add_item_to_list)
         main_layout.addWidget(add_to_list_button)
 
-        # Inicjalne wstawienie pól na podstawie domyślnie zaznaczonego przycisku
         initial_component_type = list(self.radio_buttons_map.keys())[
             list(self.radio_buttons_map.values()).index(self.tab_name)]
         self.create_input_fields(initial_component_type)
+        self.update_producer_combo(initial_component_type)
 
     def add_item_to_list(self):
         print("Funkcja 'add_item_to_list' została wywołana.")
+        selected_producer = self.producer_combo.currentText()
+        if not selected_producer:
+            print("Nie można dodać elementu: nie wybrano producenta.")
+            return
 
         # Dławik 1-fazowy
         if self.radio_buttons["dławik 1 fazowy"].isChecked():
             try:
-                # Pobierz wartości z pól tekstowych
                 calculated_power = self.input_fields["Moc obliczona"].text()
                 manufacturer_power = self.input_fields["Moc podana przez producenta"].text()
                 inductance = self.input_fields["Indukcyjność"].text()
-
-                # Sprawdź, czy wartości są poprawne
                 if not calculated_power or not manufacturer_power or not inductance or "Błąd" in calculated_power:
                     print("Nie można dodać elementu: brak danych lub błąd w obliczeniach.")
                     return
-
-                # Utwórz listę wartości do zapisania w pliku CSV
-                new_item = [manufacturer_power, inductance, calculated_power]
-
-                # Zapisz do pliku i odśwież widoki
+                new_item = [selected_producer, manufacturer_power, inductance, calculated_power]
                 file_path = "ind_1f.csv"
                 self.parent().add_and_refresh(file_path, new_item)
-
             except KeyError:
                 print("Błąd: Prawdopodobnie brak wymaganych pól do pobrania.")
 
         # Dławik 3-fazowy
         elif self.radio_buttons["dławik 3 fazowy"].isChecked():
             try:
-                # Pobierz wartości z pól tekstowych
                 calculated_power = self.input_fields["Moc obliczona"].text()
                 manufacturer_power = self.input_fields["Moc podana przez producenta"].text()
                 inductance = self.input_fields["Indukcyjność"].text()
-
-                # Sprawdź, czy wartości są poprawne
                 if not calculated_power or not manufacturer_power or not inductance or "Błąd" in calculated_power:
                     print("Nie można dodać elementu: brak danych lub błąd w obliczeniach.")
                     return
-
-                # Utwórz listę wartości do zapisania w pliku CSV
-                new_item = [manufacturer_power, inductance, calculated_power]
-
-                # Zapisz do pliku i odśwież widoki
+                new_item = [selected_producer, manufacturer_power, inductance, calculated_power]
                 file_path = "ind_3f.csv"
                 self.parent().add_and_refresh(file_path, new_item)
-
             except KeyError:
                 print("Błąd: Prawdopodobnie brak wymaganych pól do pobrania.")
 
         # Kondensator 1-fazowy
         elif self.radio_buttons["kondensator 1 fazowy"].isChecked():
             try:
-                # Pobierz wartości z pól tekstowych
                 calculated_power = self.input_fields["Moc obliczona"].text()
                 manufacturer_power = self.input_fields["Moc podana przez producenta"].text()
                 capacitance = self.input_fields["Pojemność"].text()
-
-                # Sprawdź, czy wartości są poprawne
                 if not calculated_power or not manufacturer_power or not capacitance or "Błąd" in calculated_power:
                     print("Nie można dodać elementu: brak danych lub błąd w obliczeniach.")
                     return
-
-                # Utwórz listę wartości do zapisania w pliku CSV
-                new_item = [manufacturer_power, capacitance, calculated_power]
-
-                # Zapisz do pliku i odśwież widoki
+                new_item = [selected_producer, manufacturer_power, capacitance, calculated_power]
                 file_path = "cond_1f.csv"
                 self.parent().add_and_refresh(file_path, new_item)
-
             except KeyError:
                 print("Błąd: Prawdopodobnie brak wymaganych pól do pobrania.")
 
         # Kondensator 3-fazowy
         elif self.radio_buttons["kondensator 3 fazowy"].isChecked():
             try:
-                # Pobierz wartości z pól tekstowych
                 capacitance = self.input_fields["Pojemność"].text()
                 manufacturer_power_400V = self.input_fields["Moc podana przez producenta przy 400V"].text()
                 calculated_power_400V = self.input_fields["Moc obliczona przy 400V"].text()
                 manufacturer_power_440V = self.input_fields["Moc podana przez producenta przy 440V"].text()
                 calculated_power_440V = self.input_fields["Moc obliczona przy 440V"].text()
-
-                # Sprawdź, czy wartości są poprawne
                 if not capacitance or "Błąd" in calculated_power_400V or "Błąd" in calculated_power_440V:
                     print("Nie można dodać elementu: brak danych lub błąd w obliczeniach.")
                     return
-
-                # Utwórz listę wartości do zapisania w pliku CSV
-                new_item = [capacitance, manufacturer_power_400V, calculated_power_400V, manufacturer_power_440V,
-                            calculated_power_440V]
-
-                # Zapisz do pliku i odśwież widoki
+                new_item = [selected_producer, manufacturer_power_440V, manufacturer_power_400V, capacitance,
+                            calculated_power_400V, calculated_power_440V]
                 file_path = "cond_3f.csv"
                 self.parent().add_and_refresh(file_path, new_item)
-
             except KeyError:
                 print("Błąd: Prawdopodobnie brak wymaganych pól do pobrania.")
 
@@ -314,12 +325,23 @@ class AddElementWindow(QDialog):
                 item.widget().deleteLater()
             elif item.layout():
                 self.clear_layout(item.layout())
+        # Dodaj na nowo layout dla producenta po wyczyszczeniu
+        producer_layout = QHBoxLayout()
+        producer_layout.addWidget(QLabel("Producent:"))
+        producer_layout.addWidget(self.producer_combo)
+        self.fields_layout.addLayout(producer_layout)
 
     def clear_layout(self, layout):
         while layout.count():
             item = layout.takeAt(0)
             if item.widget():
                 item.widget().deleteLater()
+
+    def update_producer_combo(self, component_type):
+        """Aktualizuje zawartosc QComboBox na podstawie wybranego typu komponentu."""
+        self.producer_combo.clear()
+        if component_type in self.PRODUCENTS_MAP:
+            self.producer_combo.addItems(self.PRODUCENTS_MAP[component_type])
 
     def create_input_fields(self, component_type):
         fields_map = {
@@ -329,7 +351,6 @@ class AddElementWindow(QDialog):
             "kondensator 3 fazowy": ["Pojemność", "Moc obliczona przy 400V", "Moc podana przez producenta przy 400V",
                                      "Moc obliczona przy 440V", "Moc podana przez producenta przy 440V"]
         }
-
         if component_type in fields_map:
             for field_name in fields_map[component_type]:
                 h_layout = QHBoxLayout()
@@ -338,8 +359,6 @@ class AddElementWindow(QDialog):
                 h_layout.addWidget(line_edit)
                 self.input_fields[field_name] = line_edit
                 self.fields_layout.addLayout(h_layout)
-
-            # Połączenie sygnałów
             if component_type == "dławik 1 fazowy":
                 self.input_fields["Indukcyjność"].returnPressed.connect(self.calculate_power_from_inductance)
                 self.input_fields["Moc obliczona"].returnPressed.connect(self.calculate_inductance_from_power)
@@ -357,43 +376,15 @@ class AddElementWindow(QDialog):
                     self.calculate_all_3phase_capacitor_capacitances_from_440V)
 
     def calculate_three_phase_inductor_power(self, L_mH, U, fn):
-        """
-        Oblicza całkowitą moc bierną dławika trójfazowego,
-        zakładając połączenie w gwiazdę.
-        """
-        # Przeliczenie indukcyjności z mH na H
         L_H = L_mH * 1e-3
-
-        # Obliczenie reaktancji na fazę
         XL = 2 * math.pi * fn * L_H
-
-        # Obliczenie napięcia fazowego (dla połączenia w gwiazdę)
         U_phase = U / math.sqrt(3)
-
-        # Obliczenie mocy na fazę
         Q_phase = (U_phase ** 2) / XL
-
-        # Obliczenie całkowitej mocy (razy 3 fazy)
         Q_total = 3 * Q_phase
-
-        # Przeliczenie na kVar
         Q_total_kvar = Q_total / 1000
-
         return Q_total_kvar
 
     def calculate_three_phase_capacitor_power(self, C_uF, U, fn):
-        """
-        Oblicza całkowitą moc kondensatora w połączeniu w trójkąt, przyjmując pojemność w µF.
-        Zgodnie z wzorem podanym przez użytkownika, który jest z książki o kompensacji mocy biernej.
-
-        Args:
-          C_uF (float): Pojemność pojedynczego kondensatora w mikrofaradach (µF).
-          U (float): Napięcie międzyfazowe w woltach (V).
-          fn (float): Częstotliwość w hercach (Hz).
-
-        Returns:
-          float: Całkowita moc kondensatora w kilovoltamperach reaktywnych (kVar).
-        """
         C_F = C_uF * 1e-6
         Qc = 3 * C_F * (U ** 2) * 2 * math.pi * fn
         Qc_kvar = Qc / 1000
@@ -402,18 +393,15 @@ class AddElementWindow(QDialog):
     def calculate_all_3phase_capacitor_powers(self):
         try:
             C_uF = float(self.input_fields["Pojemność"].text().replace(',', '.'))
-
             Qc_400V_kvar = self.calculate_three_phase_capacitor_power(C_uF, 400, FREQUENCY)
             Qc_440V_kvar = self.calculate_three_phase_capacitor_power(C_uF, 440, FREQUENCY)
-
-            rounded_kvar_400V = find_nearest_standard_value(Qc_400V_kvar, self.STANDARD_KVAR_VALUES_CAP_3P)
-            rounded_kvar_440V = find_nearest_standard_value(Qc_440V_kvar, self.STANDARD_KVAR_VALUES_CAP_3P)
-
+            closest_pair = min(self.STANDARD_KVAR_VALUES_CAP_3P, key=lambda x: abs(x[1] - Qc_440V_kvar))
+            rounded_kvar_400V = closest_pair[0]
+            rounded_kvar_440V = closest_pair[1]
             self.input_fields["Moc obliczona przy 400V"].setText(f"{Qc_400V_kvar:.2f}")
             self.input_fields["Moc podana przez producenta przy 400V"].setText(f"{rounded_kvar_400V}")
             self.input_fields["Moc obliczona przy 440V"].setText(f"{Qc_440V_kvar:.2f}")
             self.input_fields["Moc podana przez producenta przy 440V"].setText(f"{rounded_kvar_440V}")
-
         except ValueError:
             self.input_fields["Moc obliczona przy 400V"].setText("Błąd!")
             self.input_fields["Moc obliczona przy 440V"].setText("Błąd!")
@@ -422,10 +410,6 @@ class AddElementWindow(QDialog):
             self.input_fields["Moc obliczona przy 440V"].setText("0")
 
     def calculate_capacitance_from_3phase_power(self, Qc_kvar, U, fn):
-        """
-        Oblicza pojemność kondensatora 3-fazowego na podstawie mocy,
-        używając wzoru odwrotnego do podanego przez użytkownika.
-        """
         Qc = Qc_kvar * 1000
         C_F = Qc / (3 * (U ** 2) * 2 * math.pi * fn)
         C_uF = C_F * 1e6
@@ -435,17 +419,14 @@ class AddElementWindow(QDialog):
         try:
             Qc_400V_kvar = float(self.input_fields["Moc obliczona przy 400V"].text().replace(',', '.'))
             C_uF = self.calculate_capacitance_from_3phase_power(Qc_400V_kvar, 400, FREQUENCY)
-
             Qc_440V_kvar = self.calculate_three_phase_capacitor_power(C_uF, 440, FREQUENCY)
-
-            rounded_kvar_400V = find_nearest_standard_value(Qc_400V_kvar, self.STANDARD_KVAR_VALUES_CAP_3P)
-            rounded_kvar_440V = find_nearest_standard_value(Qc_440V_kvar, self.STANDARD_KVAR_VALUES_CAP_3P)
-
+            closest_pair = min(self.STANDARD_KVAR_VALUES_CAP_3P, key=lambda x: abs(x[0] - Qc_400V_kvar))
+            rounded_kvar_400V = closest_pair[0]
+            rounded_kvar_440V = closest_pair[1]
             self.input_fields["Pojemność"].setText(f"{C_uF:.2f}")
             self.input_fields["Moc podana przez producenta przy 400V"].setText(f"{rounded_kvar_400V}")
             self.input_fields["Moc obliczona przy 440V"].setText(f"{Qc_440V_kvar:.2f}")
             self.input_fields["Moc podana przez producenta przy 440V"].setText(f"{rounded_kvar_440V}")
-
         except ValueError:
             self.input_fields["Pojemność"].setText("Błąd!")
             self.input_fields["Moc podana przez producenta przy 400V"].setText("Błąd!")
@@ -461,17 +442,14 @@ class AddElementWindow(QDialog):
         try:
             Qc_440V_kvar = float(self.input_fields["Moc obliczona przy 440V"].text().replace(',', '.'))
             C_uF = self.calculate_capacitance_from_3phase_power(Qc_440V_kvar, 440, FREQUENCY)
-
             Qc_400V_kvar = self.calculate_three_phase_capacitor_power(C_uF, 400, FREQUENCY)
-
-            rounded_kvar_400V = find_nearest_standard_value(Qc_400V_kvar, self.STANDARD_KVAR_VALUES_CAP_3P)
-            rounded_kvar_440V = find_nearest_standard_value(Qc_440V_kvar, self.STANDARD_KVAR_VALUES_CAP_3P)
-
+            closest_pair = min(self.STANDARD_KVAR_VALUES_CAP_3P, key=lambda x: abs(x[1] - Qc_440V_kvar))
+            rounded_kvar_400V = closest_pair[0]
+            rounded_kvar_440V = closest_pair[1]
             self.input_fields["Pojemność"].setText(f"{C_uF:.2f}")
             self.input_fields["Moc obliczona przy 400V"].setText(f"{Qc_400V_kvar:.2f}")
             self.input_fields["Moc podana przez producenta przy 400V"].setText(f"{rounded_kvar_400V}")
             self.input_fields["Moc podana przez producenta przy 440V"].setText(f"{rounded_kvar_440V}")
-
         except ValueError:
             self.input_fields["Pojemność"].setText("Błąd!")
             self.input_fields["Moc obliczona przy 400V"].setText("Błąd!")
@@ -484,19 +462,14 @@ class AddElementWindow(QDialog):
             self.input_fields["Moc podana przez producenta przy 440V"].setText("0")
 
     def calculate_power_from_capacitance(self):
-        """Oblicza moc kondensatora jednofazowego na podstawie pojemności."""
         try:
             C_uF = float(self.input_fields["Pojemność"].text().replace(',', '.'))
-
             C_F = C_uF * 1e-6
             Qc = C_F * (VOLTAGE_1_PHASE ** 2) * 2 * math.pi * FREQUENCY
             Qc_kvar = Qc / 1000
-
             rounded_kvar = find_nearest_standard_value(Qc_kvar, self.STANDARD_KVAR_VALUES_CAP_1P)
-
             self.input_fields["Moc obliczona"].setText(f"{Qc_kvar:.2f}")
             self.input_fields["Moc podana przez producenta"].setText(f"{rounded_kvar}")
-
         except ValueError:
             self.input_fields["Moc obliczona"].setText("Błąd!")
             self.input_fields["Moc podana przez producenta"].setText("Błąd!")
@@ -505,19 +478,14 @@ class AddElementWindow(QDialog):
             self.input_fields["Moc podana przez producenta"].setText("0")
 
     def calculate_capacitance_from_power(self):
-        """Oblicza pojemność kondensatora jednofazowego na podstawie mocy."""
         try:
             Qc_kvar = float(self.input_fields["Moc obliczona"].text().replace(',', '.'))
-
             Qc = Qc_kvar * 1000
             C_F = Qc / ((VOLTAGE_1_PHASE ** 2) * 2 * math.pi * FREQUENCY)
             C_uF = C_F * 1e6
-
             rounded_kvar = find_nearest_standard_value(Qc_kvar, self.STANDARD_KVAR_VALUES_CAP_1P)
-
             self.input_fields["Pojemność"].setText(f"{C_uF:.2f}")
             self.input_fields["Moc podana przez producenta"].setText(f"{rounded_kvar}")
-
         except ValueError:
             self.input_fields["Pojemność"].setText("Błąd!")
             self.input_fields["Moc podana przez producenta"].setText("Błąd!")
@@ -528,18 +496,13 @@ class AddElementWindow(QDialog):
     def calculate_power_from_inductance(self):
         try:
             L_mH = float(self.input_fields["Indukcyjność"].text().replace(',', '.'))
-
-            # Wzór na moc
             L_H = L_mH * 1e-3
             XL = 2 * math.pi * FREQUENCY * L_H
             QL = (VOLTAGE_1_PHASE ** 2) / XL
             QL_kvar = QL / 1000
-
             rounded_kvar = find_nearest_standard_value(QL_kvar, self.STANDARD_KVAR_VALUES_1P)
-
             self.input_fields["Moc obliczona"].setText(f"{QL_kvar:.2f}")
             self.input_fields["Moc podana przez producenta"].setText(f"{rounded_kvar}")
-
         except ValueError:
             self.input_fields["Moc obliczona"].setText("Błąd!")
             self.input_fields["Moc podana przez producenta"].setText("Błąd!")
@@ -550,18 +513,11 @@ class AddElementWindow(QDialog):
     def calculate_power_from_3phase_inductor(self):
         try:
             L_mH = float(self.input_fields["Indukcyjność"].text().replace(',', '.'))
-
-            # Parametry obliczeniowe dla dławika 3-fazowego
-            U_LINE = 400  # Napięcie międzyfazowe 400V
-
-            # Wykorzystanie twojej funkcji
+            U_LINE = 400
             QL_kvar = self.calculate_three_phase_inductor_power(L_mH, U_LINE, FREQUENCY)
-
             rounded_kvar = find_nearest_standard_value(QL_kvar, self.STANDARD_KVAR_VALUES_3P)
-
             self.input_fields["Moc obliczona"].setText(f"{QL_kvar:.2f}")
             self.input_fields["Moc podana przez producenta"].setText(f"{rounded_kvar}")
-
         except ValueError:
             self.input_fields["Moc obliczona"].setText("Błąd!")
             self.input_fields["Moc podana przez producenta"].setText("Błąd!")
@@ -572,17 +528,12 @@ class AddElementWindow(QDialog):
     def calculate_inductance_from_power(self):
         try:
             QL_kvar = float(self.input_fields["Moc obliczona"].text().replace(',', '.'))
-
-            # Wzór na indukcyjność
             QL = QL_kvar * 1000
             L_H = (VOLTAGE_1_PHASE ** 2) / (2 * math.pi * FREQUENCY * QL)
             L_mH = L_H * 1000
-
             rounded_kvar = find_nearest_standard_value(QL_kvar, self.STANDARD_KVAR_VALUES_1P)
-
             self.input_fields["Indukcyjność"].setText(f"{L_mH:.2f}")
             self.input_fields["Moc podana przez producenta"].setText(f"{rounded_kvar}")
-
         except ValueError:
             self.input_fields["Indukcyjność"].setText("Błąd!")
             self.input_fields["Moc podana przez producenta"].setText("Błąd!")
@@ -593,29 +544,16 @@ class AddElementWindow(QDialog):
     def calculate_inductance_from_3phase_power(self):
         try:
             QL_kvar = float(self.input_fields["Moc obliczona"].text().replace(',', '.'))
-
-            # Parametry obliczeniowe dla dławika 3-fazowego
-            U_LINE = 400  # Napięcie międzyfazowe 400V
+            U_LINE = 400
             QL = QL_kvar * 1000
-
-            # Przeliczenie napięcia fazowego (dla połączenia w gwiazdę)
             U_phase = U_LINE / math.sqrt(3)
-
-            # Obliczenie mocy na fazę
             Q_phase = QL / 3
-
-            # Wzór na reaktancję: XL = U^2 / Q
             XL = (U_phase ** 2) / Q_phase
-
-            # Wzór na indukcyjność: L = XL / (2 * pi * fn)
             L_H = XL / (2 * math.pi * FREQUENCY)
             L_mH = L_H * 1000
-
             rounded_kvar = find_nearest_standard_value(QL_kvar, self.STANDARD_KVAR_VALUES_3P)
-
             self.input_fields["Indukcyjność"].setText(f"{L_mH:.2f}")
             self.input_fields["Moc podana przez producenta"].setText(f"{rounded_kvar}")
-
         except ValueError:
             self.input_fields["Indukcyjność"].setText("Błąd!")
             self.input_fields["Moc podana przez producenta"].setText("Błąd!")
@@ -645,6 +583,7 @@ class TesterGUI(QWidget):
         self.setLayout(main_layout)
 
     def create_tester_tab(self):
+        global last_selected_item  # deklaracja zmiennej globalnej
         tester_tab = QWidget()
         main_layout = QHBoxLayout(tester_tab)
 
@@ -653,22 +592,30 @@ class TesterGUI(QWidget):
         left_layout.addWidget(self.selected_label)
 
         self.combo_cond_1f_tester = QComboBox()
-        self.combo_cond_1f_tester.addItems(self.convert_list_to_strings(load_csv("cond_1f.csv")))
+        self.combo_cond_1f_tester.addItem("brak")  # dodajemy brak jako pierwszą pozycję
+        self.combo_cond_1f_tester.addItems(
+            self.convert_list_to_strings_for_combo(load_csv("cond_1f.csv"), "cond_1f.csv"))
         left_layout.addWidget(QLabel("Kondensatory 1-fazowe:"))
         left_layout.addWidget(self.combo_cond_1f_tester)
 
         self.combo_cond_3f_tester = QComboBox()
-        self.combo_cond_3f_tester.addItems(self.convert_list_to_strings(load_csv("cond_3f.csv")))
+        self.combo_cond_3f_tester.addItem("brak")
+        self.combo_cond_3f_tester.addItems(
+            self.convert_list_to_strings_for_combo(load_csv("cond_3f.csv"), "cond_3f.csv"))
         left_layout.addWidget(QLabel("Kondensatory 3-fazowe:"))
         left_layout.addWidget(self.combo_cond_3f_tester)
 
         self.combo_ind_1f_tester = QComboBox()
-        self.combo_ind_1f_tester.addItems(self.convert_list_to_strings(load_csv("ind_1f.csv")))
+        self.combo_ind_1f_tester.addItem("brak")
+        self.combo_ind_1f_tester.addItems(
+            self.convert_list_to_strings_for_combo(load_csv("ind_1f.csv"), "ind_1f.csv"))
         left_layout.addWidget(QLabel("Dławiki 1-fazowe:"))
         left_layout.addWidget(self.combo_ind_1f_tester)
 
         self.combo_ind_3f_tester = QComboBox()
-        self.combo_ind_3f_tester.addItems(self.convert_list_to_strings(load_csv("ind_3f.csv")))
+        self.combo_ind_3f_tester.addItem("brak")
+        self.combo_ind_3f_tester.addItems(
+            self.convert_list_to_strings_for_combo(load_csv("ind_3f.csv"), "ind_3f.csv"))
         left_layout.addWidget(QLabel("Dławiki 3-fazowe:"))
         left_layout.addWidget(self.combo_ind_3f_tester)
 
@@ -678,12 +625,23 @@ class TesterGUI(QWidget):
         self.testers_combos["cond_1f.csv"] = self.combo_cond_1f_tester
         self.testers_combos["cond_3f.csv"] = self.combo_cond_3f_tester
 
+        # Funkcja pomocnicza do ustawienia globalnej zmiennej
+        def _update_last_selected(text, category):
+            global last_selected_item
+            last_selected_item = text
+            print("zawartość zmiennej globalnej->last_selected_item:")
+            print(last_selected_item)
+            self.show_selected_from_Tester(text, category)
+
+        # Połączenie sygnałów z funkcją globalną
         self.combo_cond_1f_tester.currentTextChanged.connect(
-            lambda text: self.show_selected(text, "Kondensatory 1-fazowe"))
+            lambda text: _update_last_selected(text, "Kondensatory 1-fazowe"))
         self.combo_cond_3f_tester.currentTextChanged.connect(
-            lambda text: self.show_selected(text, "Kondensatory 3-fazowe"))
-        self.combo_ind_1f_tester.currentTextChanged.connect(lambda text: self.show_selected(text, "Dławiki 1-fazowe"))
-        self.combo_ind_3f_tester.currentTextChanged.connect(lambda text: self.show_selected(text, "Dławiki 3-fazowe"))
+            lambda text: _update_last_selected(text, "Kondensatory 3-fazowe"))
+        self.combo_ind_1f_tester.currentTextChanged.connect(
+            lambda text: _update_last_selected(text, "Dławiki 1-fazowe"))
+        self.combo_ind_3f_tester.currentTextChanged.connect(
+            lambda text: _update_last_selected(text, "Dławiki 3-fazowe"))
 
         # Linia pionowa
         line = QFrame()
@@ -768,6 +726,84 @@ class TesterGUI(QWidget):
         main_layout.addWidget(line)
         main_layout.addLayout(right_layout)
 
+        # --- Druga pionowa linia po prawej stronie ---
+        line2 = QFrame()
+        line2.setFrameShape(QFrame.VLine)
+        line2.setFrameShadow(QFrame.Sunken)
+        main_layout.addWidget(line2)
+
+        # --- Dodatkowa sekcja z tekstem po prawej stronie od nowej linii ---
+        extra_group = QGroupBox("Informacje dodatkowe")
+        extra_layout = QVBoxLayout()
+
+        # Etykieta z instrukcją
+        extra_label = QLabel("Wybierz port COM dla Testera")
+        extra_label.setStyleSheet("font-size: 14px; color: purple;")
+        extra_label.setWordWrap(True)  # aby tekst się zawijał
+        extra_layout.addWidget(extra_label)
+
+        # --- Rozwijana lista portów COM wewnątrz ramki ---
+        self.combo_com_extra = QComboBox()
+        self.combo_com_extra.addItem("brak")  # domyślnie brak
+
+        # Pobranie dostępnych portów COM
+        ports = [port.device for port in serial.tools.list_ports.comports()]
+        self.combo_com_extra.addItems(ports)
+
+        # Dodanie do layoutu ramki
+        extra_layout.addWidget(self.combo_com_extra)
+
+        # Funkcja wywoływana przy zmianie wyboru
+        def on_combo_com_extra_changed(index):
+            selected_port = self.combo_com_extra.currentText()
+            print("Wybrany port COM (extra):", selected_port)
+
+        # Podłączenie sygnału zmiany wyboru
+        self.combo_com_extra.currentIndexChanged.connect(on_combo_com_extra_changed)
+
+        # --- Przycisk Start pod listą ---
+        start_button = QPushButton("Start")
+        extra_layout.addWidget(start_button)
+
+        # Funkcja do otwarcia nowego okna
+        def open_start_window():
+            self.start_window = StartWindow()  # zapisujemy w self
+            self.start_window.exec()  # otwiera okno modalnie w PySide6
+
+        start_button.clicked.connect(open_start_window)
+
+        extra_group.setLayout(extra_layout)
+
+        # Dodanie całej sekcji do głównego layoutu
+        main_layout.addWidget(extra_group)
+
+        # --- Logika resetowania pozostałych list ---
+        def reset_other_combos(changed_combo):
+            # sprawdzamy, czy wybrano coś innego niż "brak"
+            if changed_combo.currentIndex() > 0:
+                combos = [
+                    self.combo_cond_1f_tester,
+                    self.combo_cond_3f_tester,
+                    self.combo_ind_1f_tester,
+                    self.combo_ind_3f_tester,
+                ]
+                for combo in combos:
+                    if combo is not changed_combo:
+                        combo.setCurrentIndex(0)  # ustawiamy na "brak"
+
+        self.combo_cond_1f_tester.currentIndexChanged.connect(
+            lambda: reset_other_combos(self.combo_cond_1f_tester)
+        )
+        self.combo_cond_3f_tester.currentIndexChanged.connect(
+            lambda: reset_other_combos(self.combo_cond_3f_tester)
+        )
+        self.combo_ind_1f_tester.currentIndexChanged.connect(
+            lambda: reset_other_combos(self.combo_ind_1f_tester)
+        )
+        self.combo_ind_3f_tester.currentIndexChanged.connect(
+            lambda: reset_other_combos(self.combo_ind_3f_tester)
+        )
+
         return tester_tab
 
     def create_components_tab(self):
@@ -802,8 +838,8 @@ class TesterGUI(QWidget):
             elif file_path == "cond_3f.csv":
                 table.setColumnCount(5)
                 table.setHorizontalHeaderLabels(
-                    ["Pojemność [uF]", "Moc producenta przy 400V [kVAr]", "Moc obliczona przy 400V [kVAr]",
-                     "Moc producenta przy 440V [kVAr]", "Moc obliczona przy 440V [kVAr]"])
+                    ["Moc producenta przy 440V [kVAr]", "Moc producenta przy 400V [kVAr]", "Pojemność [uF]",
+                     "Moc obliczona przy 400V [kVAr]", "Moc obliczona przy 440V [kVAr]"])
             elif items:
                 table.setColumnCount(len(items[0]))
                 table.setHorizontalHeaderLabels([f"Kolumna {i + 1}" for i in range(table.columnCount())])
@@ -823,7 +859,7 @@ class TesterGUI(QWidget):
 
             self.tables[file_path] = table
 
-            table.cellClicked.connect(lambda row, col: self.show_selected(table.item(row, col), tab_name))
+            table.cellClicked.connect(lambda row, col: self.show_selected(table.item(row, col).text(), tab_name))
 
             delete_button.clicked.connect(lambda: self.delete_selected_item(table, file_path, tab_name))
             add_button.clicked.connect(lambda: self.open_add_window(tab_name))
@@ -896,8 +932,8 @@ class TesterGUI(QWidget):
             elif file_path == "cond_3f.csv":
                 table.setColumnCount(5)
                 table.setHorizontalHeaderLabels(
-                    ["Pojemność [uF]", "Moc producenta przy 400V [kVAr]", "Moc obliczona przy 400V [kVAr]",
-                     "Moc producenta przy 440V [kVAr]", "Moc obliczona przy 440V [kVAr]"])
+                    ["Moc producenta przy 440V [kVAr]", "Moc producenta przy 400V [kVAr]", "Pojemność [uF]",
+                     "Moc obliczona przy 400V [kVAr]", "Moc obliczona przy 440V [kVAr]"])
             elif items:
                 table.setColumnCount(len(items[0]))
                 table.setHorizontalHeaderLabels([f"Kolumna {i + 1}" for i in range(table.columnCount())])
@@ -915,10 +951,35 @@ class TesterGUI(QWidget):
         if file_path in self.testers_combos:
             combo = self.testers_combos[file_path]
             combo.clear()
-            combo.addItems(self.convert_list_to_strings(items))
+            # Użycie nowej funkcji do formatowania stringów
+            combo.addItems(self.convert_list_to_strings_for_combo(items, file_path))
 
-    def convert_list_to_strings(self, items_list):
-        return [", ".join(map(str, item)) for item in items_list]
+    def convert_list_to_strings_for_combo(self, items_list, file_path):
+        formatted_list = []
+        if file_path == "cond_1f.csv":
+            for item in items_list:
+                if len(item) >= 2:
+                    formatted_list.append(f"{item[0]} [kVAr], {item[1]} [uF]")
+                else:
+                    formatted_list.append(", ".join(item))
+        elif file_path == "cond_3f.csv":
+            for item in items_list:
+                if len(item) >= 3:
+                    formatted_list.append(f"{item[0]} [kVAr] 440 V, {item[1]} [kVAr] 400 V, {item[2]} [uF]")
+                else:
+                    formatted_list.append(", ".join(item))
+        elif file_path == "ind_1f.csv" or file_path == "ind_3f.csv":
+            for item in items_list:
+                if len(item) >= 2:
+                    formatted_list.append(f"{item[0]} [kVAr], {item[1]} [mH]")
+                else:
+                    formatted_list.append(", ".join(item))
+        else:
+            # Domyślne zachowanie dla innych plików
+            for item in items_list:
+                formatted_list.append(", ".join(item))
+
+        return formatted_list
 
     def open_add_window(self, tab_name):
         self.add_window = AddElementWindow(self, tab_name)
@@ -939,7 +1000,7 @@ class TesterGUI(QWidget):
 
         self.refresh_ui(file_path)
 
-        self.show_selected("Brak wybranego podzespołu", "")
+        self.show_selected("", "")
 
     def handle_com_selection(self, port_name):
         if self.modbus_thread and self.modbus_thread.isRunning():
@@ -957,6 +1018,11 @@ class TesterGUI(QWidget):
             self.clear_data_display()
 
     def update_data_display(self, data):
+        global global_u1, global_u2, global_u3
+        global global_u12, global_u23, global_u31, global_u_avg
+        global global_i1, global_i2, global_i3
+        global global_q1, global_q2, global_q3
+
         for name, value in data.items():
             label = self.data_labels.get(name)
             if label:
@@ -965,17 +1031,45 @@ class TesterGUI(QWidget):
                 else:
                     label.setText("N/A")
 
+        # zapis prądów do zmiennych globalnych
+        if all(k in data and data[k] is not None for k in ["I1", "I2", "I3"]):
+            global_i1 = data["I1"]
+            global_i2 = data["I2"]
+            global_i3 = data["I3"]
+            print(f"Prądy zapisane globalnie: I1={global_i1}, I2={global_i2}, I3={global_i3}")
+
+        # zapis mocy biernej do zmiennych globalnych
+        if all(k in data and data[k] is not None for k in ["Q1", "Q2", "Q3"]):
+            global_q1 = data["Q1"]
+            global_q2 = data["Q2"]
+            global_q3 = data["Q3"]
+            print(f"Moc bierna zapisana globalnie: Q1={global_q1}, Q2={global_q2}, Q3={global_q3}")
+
         if all(key in data and data[key] is not None for key in ["U1", "U2", "U3"]):
             try:
                 u1 = data["U1"]
                 u2 = data["U2"]
                 u3 = data["U3"]
 
+                # zapis do zmiennych globalnych
+                global_u1 = u1
+                global_u2 = u2
+                global_u3 = u3
+                print(f"zapisano do zmiennych globalnych wartości napięć : U1: {u1} V, U2: {u2}V, U3: {u3}V")
+
                 u12 = math.sqrt(u1 ** 2 + u2 ** 2 + u1 * u2)
                 u23 = math.sqrt(u2 ** 2 + u3 ** 2 + u2 * u3)
                 u31 = math.sqrt(u3 ** 2 + u1 ** 2 + u3 * u1)
 
+                # zapis wyników obliczeń do globalnych
+                global_u12 = u12
+                global_u23 = u23
+                global_u31 = u31
+                print(f"zapisano do zmiennych globalnych wartości napięć : U1-2: {u12} V, U2-3: {u23}V, U3-1: {u31}V")
+
                 u_avg = (u12 + u23 + u31) / 3
+                global_u_avg = u_avg
+                print(f"zapisano do zmiennych globalnych wartość średniego napięcia międzyfazowego : {u_avg}V")
 
                 self.data_labels["U12"].setText(f"{u12:.2f}")
                 self.data_labels["U23"].setText(f"{u23:.2f}")
@@ -991,15 +1085,21 @@ class TesterGUI(QWidget):
         for label in self.data_labels.values():
             label.setText("---")
 
-    def show_selected(self, item, list_name):
-        if isinstance(item, str):
-            text = item
-        elif item:
-            text = item.text()
+    def show_selected(self, text, list_name):
+        # Sprawdzenie, czy wybrany tekst nie jest pusty
+        if text.strip():
+            #self.selected_label.setText(f"Wybrano: {text} z listy: {list_name}")
+            print(f"zaznaczono element : {text} , w tabeli : {list_name}")
         else:
-            text = "Brak wybranego podzespołu"
+            self.selected_label.setText("Brak wybranego podzespołu")
+            pass
 
-        self.selected_label.setText(f"Wybrano: {text} z listy: {list_name}")
+
+    def show_selected_from_Tester(self, text, list_name):
+        global last_selected_item
+        if text.strip() and text != "brak":
+            last_selected_item = text
+        self.selected_label.setText(f"Wybrano: {last_selected_item}")
 
     def closeEvent(self, event):
         if self.modbus_thread and self.modbus_thread.isRunning():
