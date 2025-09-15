@@ -1,0 +1,28 @@
+
+==================================================
+        PROTOKÓŁ Z POMIARU IMPEDANCJI PĘTLI ZWARCIA
+==================================================
+Data wykonania: 2025-09-15
+Lokalizacja pomiaru: kanapa
+Rodzaj sieci: TN-C
+Typ pomiaru: L-PEN
+
+--- Dane zabezpieczenia ---
+Typ zabezpieczenia: GG100
+Prąd znamionowy In: 100 A
+Prąd zadziałania Ia: 500 A
+Dopuszczalny czas wyłączenia Ta: 0.4 s
+
+--- Wyniki pomiaru ---
+Impedancja zmierzona Zz: 0.30 Ω
+Impedancja dopuszczalna Zd: 0.46 Ω
+Obliczeniowy prąd zwarcia Isc: 766.67 A
+(wymagana wartość >= 500 A)
+
+--- Ocena ---
+Pomiar pomyślny? TAK
+Uwagi: Pomiar poprawny.
+
+--- Weryfikacja ---
+Weryfikacja typu pomiaru: Pomiar zgodny z układem sieci.
+
