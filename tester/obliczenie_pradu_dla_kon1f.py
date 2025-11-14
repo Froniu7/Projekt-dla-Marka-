@@ -46,8 +46,8 @@ def calculate_line_current(C_uF, U, fn):
 
 
 # Przykład użycia z tabeli (wiersz 6, pojemność 3 x 27,4 µF, 400 V, 50 Hz)
-C_uF_example = 41.1
-U_example = 440
+C_uF_example = 40.3
+U_example = 408
 fn_example = 50
 
 line_current = calculate_line_current(C_uF_example, U_example, fn_example)

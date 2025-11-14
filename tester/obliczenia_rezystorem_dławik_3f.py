@@ -3,6 +3,7 @@ import math
 
 def oblicz_parametry_RL_trojfazowy_gwiazda(indukcyjnosc_mH, rezystancja_ohm, napiecie_miedzyfazowe_V,
                                            czestotliwosc_Hz=50):
+    import math
     """
     Funkcja obliczajaca parametry dla obwodu 3-fazowego R-L w ukladzie gwiazdy.
 

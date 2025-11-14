@@ -1,28 +1,54 @@
 import serial
 import time
 
-# ustaw swój port (np. "COM3" na Windows albo "/dev/ttyUSB0" na Linux)
-PORT = "COM5"
-BAUDRATE = 9600
+# --- KONFIGURACJA PORTU UART ---
+PORT = 'COM5'           # <-- ZMIEŃ na swój port COM (np. COM4, COM5 itd.)
+BAUDRATE = 9600         # prędkość transmisji
+TIMEOUT = 1             # czas oczekiwania na odpowiedź w sekundach
 
-# otwarcie portu
-ser = serial.Serial(PORT, BAUDRATE, timeout=1)
+# --- OTWARCIE PORTU ---
+def open_serial():
+    try:
+        ser = serial.Serial(PORT, BAUDRATE, timeout=TIMEOUT)
+        print(f"✅ Połączono z {PORT} ({BAUDRATE} bps)")
+        return ser
+    except serial.SerialException as e:
+        print(f"❌ Błąd otwarcia portu: {e}")
+        return None
 
-time.sleep(2)  # chwilka na reset Arduino po otwarciu portu
+# --- WYSYŁANIE KOMENDY ---
+def send_command(ser, command):
+    if not ser:
+        print("⚠️ Port nie jest otwarty.")
+        return
+    ser.write((command + '\r\n').encode())  # CR+LF na końcu
+    print(f"➡️ Wysłano: {command}")
 
-try:
+# --- ODBIÓR ODPOWIEDZI ---
+def read_response(ser):
+    if not ser:
+        return None
+    time.sleep(0.1)  # chwila na odpowiedź
+    response = ser.read_all().decode(errors='ignore').strip()
+    if response:
+        print(f"⬅️ Otrzymano: {response}")
+    return response
+
+# --- GŁÓWNY PROGRAM ---
+if __name__ == "__main__":
+    ser = open_serial()
+    if not ser:
+        input("Naciśnij Enter, aby zakończyć...")
+        exit()
+
+    print("💡 Wpisz komendę do wysłania (lub 'exit' aby zakończyć):")
+
     while True:
-        # wyślij '1'
-        ser.write(b"1")
+        cmd = input("> ")
+        if cmd.lower() == 'exit':
+            break
+        send_command(ser, cmd)
+        read_response(ser)
 
-        # odbierz odpowiedź
-        response = ser.readline().decode("utf-8").strip()
-
-        if response:
-            print("Odpowiedź Arduino:", response)
-
-        time.sleep(1)  # wysyłaj co 1 sekundę
-except KeyboardInterrupt:
-    print("Zatrzymano")
-finally:
     ser.close()
+    print("🔌 Połączenie zakończone.")

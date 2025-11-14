@@ -1,0 +1,55 @@
+@startuml
+:Przyciskam "Start";
+
+
+
+if (odczyt wybranych parametrów:
+-port COM (dla testera
+-wybrany podzespol
+-z ktorej listy wybrany) then
+    :brak - parametrów
+     okno informacyjne;
+    stop
+endif
+
+#palegreen:jest wybrany podzespol
+są pozostałe parametry;
+:test portu COM;
+if (wysyłamy słowo "test"
+) then
+    :nie zwrucono komunikatu:
+    Nieznana komenda;
+    stop
+endif
+:Port COM odpowiada - Nieznan komenda
+-zostawiamy otwarty port COM;
+:(4) Uruchamiamy podzespol z rezystorem na 2s
+(równolegle apka z GUI ma czas na zapis do pliku csv);
+
+if ((5) Czekamy na informacje zwrotną z McU
+) then
+    :nie wruciła poprawna;
+    stop
+endif
+:poprawna informacja z McU;
+
+:(6) Wyciągamy wartości z zmiennej
+funkcja_do_otczytywania.py;
+:(7) Liczymy jaki prad powinien płynąć przy rezystorze;
+:Wypisanie wartosci;
+switch(obliczenie pradu z rezystorem)
+case(kon_1f)
+:zalaczamy z rezystorem na 1s;
+:sprawdzamy napiecie;
+case(kon_3f)
+:zalaczamy z rezystorem na 1s;
+:sprawdzamy napiecie;
+case(dlawik_1f)
+:zalaczamy z rezystorem na 1s;
+:sprawdzamy napiecie;
+case(dlawik_3f)
+:zalaczamy z rezystorem na 1s;
+:sprawdzamy napiecie;
+endswitch
+
+@enduml

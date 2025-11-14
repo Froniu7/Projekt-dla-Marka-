@@ -1,0 +1,19 @@
+{
+    "data_modyfikacji": "2025-11-12 08:07:56",
+    "moc_zamowiona": 120000.0,
+    "moc_max": 100000.0,
+    "uzwojenie_pierwotne": 100,
+    "uzwojenie_wtorne": 5,
+    "VA": 1.0,
+    "przekroj_przewod": 2.5,
+    "dlugosc_przewod": 4.0,
+    "asymetria": 20.0,
+    "strona": 2,
+    "przekladnia": 20.0,
+    "prad_przy_moc_zamowiona": 208.69565217391303,
+    "prad_przy_moc_wystepujaca": 173.91304347826087,
+    "moc_strat_przy_moc_zamowiona": 6.006950472589793,
+    "moc_strat_przy_moc_wystepujaca": 4.171493383742911,
+    "warunek_dla_moc_zamowiona": false,
+    "warunek_dla_moc_wystepujaca": false
+}

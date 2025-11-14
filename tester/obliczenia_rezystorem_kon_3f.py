@@ -2,6 +2,7 @@ import math
 
 
 def oblicz_parametry_RC_trojfazowy(pojemnosc_uF, rezystancja_ohm, napiecie_miedzyfazowe_V, czestotliwosc_Hz=50):
+    import math
     """
     Funkcja obliczajaca parametry dla obwodu 3-fazowego R-C w ukladzie trojkata.
 
@@ -53,7 +54,7 @@ if __name__ == "__main__":
     try:
         # Pytamy uzytkownika o wartosci
         pojemnosc = float(input("Podaj pojemnosc kondensatora w mikrofaradach (uF): "))
-        rezystor = 7.33  # Stala wartosc oporu rezystora
+        rezystor = 33  # Stala wartosc oporu rezystora
         napiecie_miedzyfazowe = float(input("Podaj napiecie miedzyfazowe (V, np. 400): "))
 
         # Wywolanie funkcji i przechwycenie wynikow

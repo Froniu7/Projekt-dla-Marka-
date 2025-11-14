@@ -1,0 +1,2 @@
+"to jest tekst przykladowy"
+"wuswietlamy go dla testow"

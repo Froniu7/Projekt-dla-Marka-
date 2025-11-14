@@ -2,6 +2,7 @@ import math
 
 
 def oblicz_parametry_RL(indukcyjnosc_mH, napiecie_V, rezystancja_ohm, czestotliwosc_Hz=50):
+    import math
     """
     Funkcja obliczajaca prad, napiecia i moc w obwodzie R-L.
 

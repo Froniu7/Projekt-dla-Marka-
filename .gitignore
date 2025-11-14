@@ -11,6 +11,7 @@ generator_schematow_SVC/schemat_testowe.cdr
 generator_schematow_SVC/schemat.pdf
 generator_schematow_SVC/Kopia_zapasowa_schemat_testowe.cdr
 generator_schematow_SVC/podglad_pdf.exe
+generator_schematow_SVC/launcher.exe
 dist
 main_schematy.exe
 generator_schematow_SVC.zip
@@ -19,6 +20,18 @@ _internal
 protokoły_pomiary/dist
 protokoły_pomiary/Kevin Korus.png
 protokoły_pomiary/protokol_pomiaru
+
+laczenie_po_ssh/config_WAN.json
+laczenie_po_ssh/key_wan_lan
+laczenie_po_ssh/key_wan_lan.txt
+tester/kondensatory1fazowe_dobre.csv
+tester/kondensatory1fazowe_zle.csv
+tester/kondensatory3fazowe_dobre.csv
+tester/kondensatory3fazowe_zle.csv
+tester/dlawiki1fazowe_dobre.csv
+tester/dlawiki1fazowe_zle.csv
+tester/dlawiki3fazowe_zle.csv
+
 
 
 

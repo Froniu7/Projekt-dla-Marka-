@@ -5,7 +5,7 @@ import math
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QComboBox, QLabel, QFrame, QGridLayout, \
     QGroupBox, QTabWidget, QTableWidget, QTableWidgetItem, QHeaderView, QPushButton, QAbstractItemView, QRadioButton, \
     QButtonGroup, QLineEdit, QDialog, QTextEdit, QMessageBox
-from PySide6.QtCore import QThread, Signal
+from PySide6.QtCore import QThread, Signal, QTimer
 from PySide6.QtGui import QPixmap
 from pymodbus.client.sync import ModbusSerialClient
 import struct
@@ -14,6 +14,16 @@ from PySide6.QtCore import QTimer
 import sys
 import serial
 import serial.tools.list_ports
+from funkcja_do_otczytywania import extract_reactive_value
+from obliczenia_rezystorem_kon_1f import oblicz_parametry_RC
+from obliczenia_rezystorem_kon_3f import oblicz_parametry_RC_trojfazowy
+from obliczenia_rezystorem_dlawik_1f import oblicz_parametry_RL
+from obliczenia_rezystorem_dławik_3f import oblicz_parametry_RL_trojfazowy_gwiazda
+import subprocess
+
+from tester.testowanie import widelki_dolne, widelki_gorne
+
+#from PyQt6.QtWidgets import QDialog, QMessageBox
 
 # Stałe używane do obliczeń
 VOLTAGE_1_PHASE = 230  # V
@@ -27,12 +37,29 @@ global_u12 = 0.0
 global_u23 = 0.0
 global_u31 = 0.0
 global_u_avg = 0.0
+global_i1 = 0.0
+global_i2 = 0.0
+global_i3 = 0.0
+global_q1 = 0.0
+global_q2 = 0.0
+global_q3 = 0.0
+global_qn = 0.0
 
 # Zmienna globalna dla COM drugiego urządzenia
 COM = None
 polaczono_z_Novar = None
 
+lista1 = 1.0
+lista1b = 1.0
+lista2 = 1.0
+lista2b = 1.0
+lista3 = 1.0
+lista3b = 1.0
+lista4 = 1.0
+lista4b = 1.0
 
+last_selected_item = ""
+selected_list = ""
 
 # Funkcja do wczytywania CSV
 def load_csv(file_path):
@@ -100,7 +127,11 @@ class ModbusReader(QThread):
         # Rejestry dla wartości aktualnych
         self.volt_regs = {"U1": 4352, "U2": 4354, "U3": 4356}
         self.curr_regs = {"I1": 4608, "I2": 4610, "I3": 4612}
-        self.reactive_regs = {"Q1": 4868, "Q2": 4870, "Q3": 4872}
+        self.reactive_regs = {"Q1": 4904, "Q2": 4906, "Q3": 4908}
+        #self.reactive_regs_all = {"Qn": 4910}
+        self.volts_phases = {"U1-2": 4360, "U2-3": 4362, "U3-1": 4364}
+
+
 
     def run(self):
         global polaczono_z_Novar
@@ -125,6 +156,10 @@ class ModbusReader(QThread):
                     for name, addr in self.curr_regs.items():
                         data[name] = self.read_float(addr)
                     for name, addr in self.reactive_regs.items():
+                        data[name] = self.read_float(addr)
+                    #for name, addr in self.reactive_regs_all.items():
+                        #data[name] = self.read_float(addr)
+                    for name, addr in self.volts_phases.items():
                         data[name] = self.read_float(addr)
                     self.data_ready.emit(data)
                 except Exception as e:
@@ -154,73 +189,48 @@ class ModbusReader(QThread):
         except Exception:
             return None
 
-class StartWindow(QDialog):
+
+
+class StartWindow():
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Proces Testowania")
-        self.setGeometry(300, 300, 400, 300)
 
-        layout = QVBoxLayout()
+        global COM, selected_list, last_selected_item, lista1, lista1b, lista2, lista2b, lista3, lista3b, lista4, lista4b
+        widelki_dolne = 0
+        widelki_gorne = 0
 
-        label = QLabel("Start testowanie podzespołu")
-        layout.addWidget(label)
-
-        # Pole do wyświetlania logów (wysyłane i odbierane komendy)
-        self.log_text = QTextEdit()
-        self.log_text.setReadOnly(True)
-        layout.addWidget(self.log_text)
-
-        # Przyciski do wysyłania komend
-        self.btn_start1 = QPushButton("Wyślij 'start1'")
-        self.btn_start1.clicked.connect(lambda: self.send_command("start1"))
-        layout.addWidget(self.btn_start1)
-
-        self.btn_stop1 = QPushButton("Wyślij 'stop1'")
-        self.btn_stop1.clicked.connect(lambda: self.send_command("stop1"))
-        layout.addWidget(self.btn_stop1)
-
-        self.btn_start2 = QPushButton("Wyślij 'start2'")
-        self.btn_start2.clicked.connect(lambda: self.send_command("start2"))
-        layout.addWidget(self.btn_start2)
-
-        self.btn_stop2 = QPushButton("Wyślij 'stop2'")
-        self.btn_stop2.clicked.connect(lambda: self.send_command("stop2"))
-        layout.addWidget(self.btn_stop2)
-
-        self.setLayout(layout)
-
-        # Serial
-        self.ser = None
-        self.open_serial()
-
-        # Timer do odbioru danych
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.read_serial)
-        self.timer.start(100)  # co 100 ms sprawdzaj port
-
-    def open_serial(self):
-        global COM
         try:
-            self.ser = serial.Serial(COM, 9600, timeout=0.1)
-            self.log_text.append(f"Połączono z portem {COM}")
+            # przykład dla Windows (cmd.exe)
+            if selected_list != "" or last_selected_item != "":
+                if selected_list == '1':
+                    widelki_dolne = str(lista1)
+                    widelki_gorne = str(lista1b)
+                elif  selected_list == '2':
+                    widelki_dolne = str(lista2)
+                    widelki_gorne = str(lista2b)
+                elif selected_list == '3':
+                    widelki_dolne = str(lista3)
+                    widelki_gorne = str(lista3b)
+                else:
+                    widelki_dolne = str(lista4)
+                    widelki_gorne = str(lista4b)
+
+                subprocess.Popen(
+                    ["cmd.exe", "/c", "python", "testowanie.py", COM, selected_list, last_selected_item, widelki_dolne, widelki_gorne],  # /k = zostawia okno otwarte po uruchomieniu
+                    creationflags=subprocess.CREATE_NEW_CONSOLE  # nowy terminal
+                )
+            else:
+                QMessageBox.critical(None, "Błąd", "Należy wybrać podzespół")
+
+                print("Nie wybrano podzespolu")
+
         except Exception as e:
-            self.log_text.append(f"Nie udało się otworzyć portu {COM}: {e}")
+            QMessageBox.critical(None, "Błąd", f"Nie udało się uruchomić programu:\n{e}")
 
-    def send_command(self, cmd):
-        if self.ser and self.ser.is_open:
-            self.ser.write((cmd + "\n").encode())  # wysyłanie z końcem linii
-            self.log_text.append(f"Wysłano komendę: {cmd}")
-        else:
-            self.log_text.append("Port nieotwarty!")
 
-    def read_serial(self):
-        if self.ser and self.ser.in_waiting:
-            try:
-                data = self.ser.readline().decode().strip()
-                if data:
-                    self.log_text.append(f"Odebrano: {data}")
-            except Exception as e:
-                self.log_text.append(f"Błąd odczytu: {e}")
+
+
+
 
 # --- KLASA DEDYKOWANA DLA OKNA DODAWANIA NOWEGO ELEMENTU ---
 class AddElementWindow(QDialog):
@@ -238,7 +248,7 @@ class AddElementWindow(QDialog):
 
     # Lista standardowych wartości mocy w kvar dla kondensatorów 1-fazowych
     STANDARD_KVAR_VALUES_CAP_1P = sorted(list(set([
-        0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0, 7.5, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 40.0, 50.0
+        0.25, 0.5, 1.0, 1.5, 2.0, 2.5, 2.75, 3.0, 4.0, 5.0, 6.0, 7.5, 10.0, 12.5, 15.0, 20.0, 25.0, 30.0, 40.0, 50.0
     ])))
 
     # Nowa lista z parami wartości (400V, 440V)
@@ -252,8 +262,8 @@ class AddElementWindow(QDialog):
     MANUFACTURERS_MAP = {
         "dławik 1 fazowy": ["ABB", "Siemens", "Schneider"],
         "dławik 3 fazowy": ["ABB", "Schneider", "Eaton"],
-        "kondensator 1 fazowy": ["Wima", "EPCOS", "Kemet"],
-        "kondensator 3 fazowy": ["EPCOS", "Kemet", "Legrand"]
+        "kondensator 1 fazowy": ["Gruppo", "Circutor", "Shreem", "MIFLEX", "ELECTRONICON", ],
+        "kondensator 3 fazowy": ["EPCOS", "Kemet", "Legrand","CIRCUTOR_CLZ-FPT"]
     }
 
     def __init__(self, parent=None, tab_name=""):
@@ -324,7 +334,6 @@ class AddElementWindow(QDialog):
                 calculated_power = self.input_fields["Moc obliczona"].text()
                 manufacturer_power = self.input_fields["Moc podana przez producenta"].text()
                 inductance = self.input_fields["Indukcyjność"].text()
-
 
                 # Sprawdź, czy wartości są poprawne
                 if not calculated_power or not manufacturer_power or not inductance or "Błąd" in calculated_power:
@@ -761,7 +770,6 @@ class AddElementWindow(QDialog):
             self.input_fields["Moc podana przez producenta"].setText("0")
 
 
-
 # --- KLASA GŁÓWNA GUI ---
 class TesterGUI(QWidget):
     def __init__(self):
@@ -825,13 +833,25 @@ class TesterGUI(QWidget):
         self.testers_combos["cond_1f.csv"] = self.combo_cond_1f_tester
         self.testers_combos["cond_3f.csv"] = self.combo_cond_3f_tester
 
+        # --- PODŁĄCZENIE SYGNAŁU Z PRZEKAZANIEM NUMERU LISTY ---
+        # Używamy funkcji lambda, aby przekazać numer listy jako dodatkowy argument
+        # do slotu set_list_selection.
+
+        self.combo_cond_1f_tester.currentIndexChanged.connect(lambda index: self.set_list_selection(1, index))
+        self.combo_cond_3f_tester.currentIndexChanged.connect(lambda index: self.set_list_selection(2, index))
+        self.combo_ind_1f_tester.currentIndexChanged.connect(lambda index: self.set_list_selection(3, index))
+        self.combo_ind_3f_tester.currentIndexChanged.connect(lambda index: self.set_list_selection(4, index))
+
+
+
         # Funkcja pomocnicza do ustawienia globalnej zmiennej
         def _update_last_selected(text, category):
             global last_selected_item
             last_selected_item = text
-            print("zawartość zmiennej globalnej->last_selected_item:")
-            print(last_selected_item)
-            self.show_selected_from_Tester(text, category)
+            if not last_selected_item=="brak":
+                print("zawartość zmiennej globalnej->last_selected_item:")
+                print(last_selected_item)
+                self.show_selected_from_Tester(text, category)
 
         # Połączenie sygnałów z funkcją globalną
         self.combo_cond_1f_tester.currentTextChanged.connect(
@@ -883,7 +903,7 @@ class TesterGUI(QWidget):
         # Nagłówki wierszy i etykiety dla wartości aktualnych
         row_params = [("U [V]", ["U1", "U2", "U3"]),
                       ("I [A]", ["I1", "I2", "I3"]),
-                      ("Q [var]", ["Q1", "Q2", "Q3"])]
+                      ("Q [kVAr]", ["Q1", "Q2", "Q3"])]
 
         for row, (row_name, params) in enumerate(row_params):
             label = QLabel(row_name)
@@ -898,7 +918,7 @@ class TesterGUI(QWidget):
         right_layout.addWidget(data_group)
 
         # Sekcja dla obliczonych napięć międzyfazowych
-        volt_ll_group = QGroupBox("Obliczone napięcia międzyfazowe [V]")
+        volt_ll_group = QGroupBox("Napięcia międzyfazowe [V]")
         volt_ll_layout = QGridLayout()
         volt_ll_params = ["U12", "U23", "U31"]
         for col, param in enumerate(volt_ll_params):
@@ -933,7 +953,7 @@ class TesterGUI(QWidget):
         main_layout.addWidget(line2)
 
         # --- Dodatkowa sekcja z tekstem po prawej stronie od nowej linii ---
-        extra_group = QGroupBox("Informacje dodatkowe")
+        extra_group = QGroupBox("Tester")
         extra_layout = QVBoxLayout()
 
         # Etykieta z instrukcją
@@ -953,11 +973,169 @@ class TesterGUI(QWidget):
         # Dodanie do layoutu ramki
         extra_layout.addWidget(self.combo_com_extra)
 
+        lista_procenty = ["1", "2", "3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20"]
+
+
+        # --- Cztery puste listy w sekcji Tester ---
+
+        # --- Dwa listy obok siebie z procentami ---
+        extra_layout.addWidget(QLabel("widełki kondensatory 1f:"))
+        hbox1 = QHBoxLayout()
+
+        # Pierwsza lista
+        self.combo_list1 = QComboBox()
+        self.combo_list1.addItems(lista_procenty)
+        hbox1.addWidget(self.combo_list1)
+
+        label_percent1 = QLabel("%")
+        label_percent1.setStyleSheet("font-weight: bold; font-size: 14px;")
+        hbox1.addWidget(label_percent1)
+
+        # Druga lista
+        self.combo_list1b = QComboBox()
+        self.combo_list1b.addItems(lista_procenty)
+        hbox1.addWidget(self.combo_list1b)
+
+        label_percent1b = QLabel("%")
+        label_percent1b.setStyleSheet("font-weight: bold; font-size: 14px;")
+        hbox1.addWidget(label_percent1b)
+
+        # Dodajemy cały hbox do layoutu głównego
+        extra_layout.addLayout(hbox1)
+
+        extra_layout.addWidget(QLabel("widełki kondensatory 3f:"))
+        hbox2 = QHBoxLayout()
+
+        # Pierwsza lista w tej grupie
+        self.combo_list2 = QComboBox()
+        self.combo_list2.addItems(lista_procenty)
+        hbox2.addWidget(self.combo_list2)
+
+        label_percent2 = QLabel("%")
+        label_percent2.setStyleSheet("font-weight: bold; font-size: 14px;")
+        hbox2.addWidget(label_percent2)
+
+        # Druga lista w tej grupie
+        self.combo_list2b = QComboBox()
+        self.combo_list2b.addItems(lista_procenty)
+        hbox2.addWidget(self.combo_list2b)
+
+        label_percent2b = QLabel("%")
+        label_percent2b.setStyleSheet("font-weight: bold; font-size: 14px;")
+        hbox2.addWidget(label_percent2b)
+
+        extra_layout.addLayout(hbox2)
+
+        # --- Grupa: widełki dławiki 1f ---
+        extra_layout.addWidget(QLabel("widełki dławiki 1f:"))
+        hbox3 = QHBoxLayout()
+
+        self.combo_list3 = QComboBox()
+        self.combo_list3.addItems(lista_procenty)
+        hbox3.addWidget(self.combo_list3)
+
+        label_percent3 = QLabel("%")
+        label_percent3.setStyleSheet("font-weight: bold; font-size: 14px;")
+        hbox3.addWidget(label_percent3)
+
+        self.combo_list3b = QComboBox()
+        self.combo_list3b.addItems(lista_procenty)
+        hbox3.addWidget(self.combo_list3b)
+
+        label_percent3b = QLabel("%")
+        label_percent3b.setStyleSheet("font-weight: bold; font-size: 14px;")
+        hbox3.addWidget(label_percent3b)
+
+        extra_layout.addLayout(hbox3)
+
+        # --- Grupa: widełki dławiki 3f ---
+        extra_layout.addWidget(QLabel("widełki dławiki 3f:"))
+        hbox4 = QHBoxLayout()
+
+        self.combo_list4 = QComboBox()
+        self.combo_list4.addItems(lista_procenty)
+        hbox4.addWidget(self.combo_list4)
+
+        label_percent4 = QLabel("%")
+        label_percent4.setStyleSheet("font-weight: bold; font-size: 14px;")
+        hbox4.addWidget(label_percent4)
+
+        self.combo_list4b = QComboBox()
+        self.combo_list4b.addItems(lista_procenty)
+        hbox4.addWidget(self.combo_list4b)
+
+        label_percent4b = QLabel("%")
+        label_percent4b.setStyleSheet("font-weight: bold; font-size: 14px;")
+        hbox4.addWidget(label_percent4b)
+
+        extra_layout.addLayout(hbox4)
+
+        self.combo_list1.currentTextChanged.connect(
+            lambda text: self.update_widelki("lista1", text)
+        )
+        self.combo_list1b.currentTextChanged.connect(
+            lambda text: self.update_widelki("lista1b", text)
+        )
+
+        self.combo_list2.currentTextChanged.connect(
+            lambda text: self.update_widelki("lista2", text)
+        )
+        self.combo_list2b.currentTextChanged.connect(
+            lambda text: self.update_widelki("lista2b", text)
+        )
+
+        self.combo_list3.currentTextChanged.connect(
+            lambda text: self.update_widelki("lista3", text)
+        )
+        self.combo_list3b.currentTextChanged.connect(
+            lambda text: self.update_widelki("lista3b", text)
+        )
+
+        self.combo_list4.currentTextChanged.connect(
+            lambda text: self.update_widelki("lista4", text)
+        )
+        self.combo_list4b.currentTextChanged.connect(
+            lambda text: self.update_widelki("lista4b", text)
+        )
+
+        # --- Przycisk Testuj ---
+        test_button = QPushButton("Lista")
+        extra_layout.addWidget(test_button)
+
+        # Funkcja, która ma być wywołana po kliknięciu
+        def run_test_function():
+            import subprocess
+            import sys
+            from pathlib import Path
+            import os
+
+            # Ścieżka katalogu, w którym jest ten skrypt
+            project_dir = Path(__file__).parent
+
+            # Nazwa skryptu do uruchomienia (w tym samym katalogu)
+            script_name = "wyswietlanie_zawartosci_plikow_csv.py"
+
+            # Flaga, aby nie otwierało się okno konsoli (Windows)
+            CREATE_NO_WINDOW = 0x08000000
+
+            try:
+                subprocess.Popen(
+                    [sys.executable, script_name],
+                    cwd=project_dir,
+                    creationflags=CREATE_NO_WINDOW
+                )
+                print("Program uruchomiony")
+            except Exception as e:
+                print("Błąd uruchamiania programu:", e)
+
+        # Podłączenie przycisku do funkcji
+        test_button.clicked.connect(run_test_function)
+
         # Funkcja wywoływana przy zmianie wyboru
         def on_combo_com_extra_changed(index):
             global COM
             selected_port = self.combo_com_extra.currentText()
-            print("Wybrany port COM (extra):", selected_port)
+            print("Wybrany port COM dla Testera (extra):", selected_port)
             COM = selected_port  # zapisanie wybranego portu do zmiennej globalnej
 
         # Podłączenie sygnału zmiany wyboru
@@ -975,7 +1153,8 @@ class TesterGUI(QWidget):
             if COM is not None and polaczono_z_Novar is not None:
                 # Wszystko OK, otwieramy okno
                 self.start_window = StartWindow()  # zapisujemy w self
-                self.start_window.exec()  # otwiera okno modalnie
+                #self.start_window.exec()  # otwiera okno modalnie
+
             else:
                 # Któraś zmienna jest None, pokazujemy komunikat
                 msg_box = QMessageBox()
@@ -1020,6 +1199,29 @@ class TesterGUI(QWidget):
         )
 
         return tester_tab
+
+    def set_list_selection(self, list_number, index):
+        """Ustawia zmienną globalną na numer listy, jeśli wybrano cokolwiek poza 'brak'."""
+        global selected_list
+
+        if selected_list == index:
+            pass
+        # Sprawdzamy, czy wybrany indeks jest większy niż 0 (czyli nie jest to "brak")
+        elif index > 0:
+            selected_list = str(list_number)
+        #elif index == 0:
+            # Opcjonalnie: Ustawienie na "brak" lub resetowanie
+            #selected_list = "brak"
+            print(f"Zmienna globalna selected_list ustawiona na: {selected_list}")
+
+    def update_widelki(self, var_name, value):
+        global lista1, lista1b, lista2, lista2b, lista3, lista3b, lista4, lista4b
+        try:
+            value_float = float(value)  # rzutujemy na float
+        except ValueError:
+            value_float = 0.0  # jeśli nie da się rzutować, ustawiamy 0.0
+        globals()[var_name] = value_float
+        print(f"{var_name} = {value_float}")
 
     def create_components_tab(self):
         components_tab = QWidget()
@@ -1237,8 +1439,9 @@ class TesterGUI(QWidget):
         global global_u1, global_u2, global_u3
         global global_u12, global_u23, global_u31, global_u_avg
         global global_i1, global_i2, global_i3
-        global global_q1, global_q2, global_q3
+        global global_q1, global_q2, global_q3, global_qn
 
+        '''
         for name, value in data.items():
             label = self.data_labels.get(name)
             if label:
@@ -1246,6 +1449,67 @@ class TesterGUI(QWidget):
                     label.setText(f"{value:.2f}")
                 else:
                     label.setText("N/A")
+        '''
+        # 1. Przetwarzanie i konwersja danych Q (Moc bierna: VAr -> kVAr)
+        q_data_present = False
+        for name in ["Q1", "Q2", "Q3"]:
+            if name in data and data[name] is not None:
+
+
+                q_data_present = True
+                # Konwersja z VAr na kVAr (podzielenie przez 1000)
+                q_kvar = data[name] / 1000.0
+
+                # Aktualizacja wyświetlania
+                label = self.data_labels.get(name)
+                if label:
+                    label.setText(f"{q_kvar:.2f}")
+
+                # Zapis do zmiennych globalnych (w var)
+                if name == "Q1": global_q1 = q_kvar
+                if name == "Q2": global_q2 = q_kvar
+                if name == "Q3": global_q3 = q_kvar
+
+
+        if q_data_present:
+            print(
+                f"Moc bierna zapisana globalnie: Q1={global_q1:.2f} kVAr, Q2={global_q2:.2f} kVAr, Q3={global_q3:.2f} kVAr")
+
+            global_qn = global_q1 + global_q2 + global_q3
+
+            print(f"suma dla mocy biernej : {global_qn}")
+
+        '''
+        # 1a. Odczyt i zapis całkowitej mocy biernej (Qn)
+        if "Qn" in data and data["Qn"] is not None:
+            qn_kvar = data["Qn"] / 1000.0  # konwersja na kVAr
+            print(f"test: {qn_kvar}")
+            global_qn = qn_kvar
+
+            # Jeśli masz label w interfejsie np. o nazwie "Qn"
+            label = self.data_labels.get("Qn")
+            if label:
+                label.setText(f"{qn_kvar:.2f}")
+
+            print(f"Całkowita moc bierna (Qn): {global_qn:.2f} kVAr")
+        
+        '''
+
+        # 2. Aktualizacja wyświetlania dla reszty danych (U i I)
+        for name, value in data.items():
+            label = self.data_labels.get(name)
+            # Pomijamy Q1, Q2, Q3 (bo zostały już obsłużone)
+            if label and name not in ["Q1", "Q2", "Q3"]:
+                if value is not None:
+                    # Dodano jednostki dla przejrzystości wyświetlania
+                    #unit = "V" if name.startswith("U") else "A"
+                    label.setText(f"{value:.2f}")
+                else:
+                    label.setText("N/A")
+
+        # POZOSTAW BEZ ZMIAN: zapis prądów do zmiennych globalnych (następuje od razu po tym bloku)
+        # POZOSTAW BEZ ZMIAN: obliczenia napięć międzyfazowych (następują na końcu)
+
 
         # zapis prądów do zmiennych globalnych
         if all(k in data and data[k] is not None for k in ["I1", "I2", "I3"]):
@@ -1254,12 +1518,14 @@ class TesterGUI(QWidget):
             global_i3 = data["I3"]
             print(f"Prądy zapisane globalnie: I1={global_i1}, I2={global_i2}, I3={global_i3}")
 
+        '''
         # zapis mocy biernej do zmiennych globalnych
         if all(k in data and data[k] is not None for k in ["Q1", "Q2", "Q3"]):
             global_q1 = data["Q1"]
             global_q2 = data["Q2"]
             global_q3 = data["Q3"]
             print(f"Moc bierna zapisana globalnie: Q1={global_q1}, Q2={global_q2}, Q3={global_q3}")
+        '''
 
         if all(key in data and data[key] is not None for key in ["U1", "U2", "U3"]):
             try:
@@ -1273,9 +1539,15 @@ class TesterGUI(QWidget):
                 global_u3 = u3
                 print(f"zapisano do zmiennych globalnych wartości napięć : U1: {u1} V, U2: {u2}V, U3: {u3}V")
 
+                '''
                 u12 = math.sqrt(u1 ** 2 + u2 ** 2 + u1 * u2)
                 u23 = math.sqrt(u2 ** 2 + u3 ** 2 + u2 * u3)
                 u31 = math.sqrt(u3 ** 2 + u1 ** 2 + u3 * u1)
+                '''
+                u12 = data["U1-2"]
+                u23 = data["U2-3"]
+                u31 = data["U3-1"]
+
 
                 # zapis wyników obliczeń do globalnych
                 global_u12 = u12
@@ -1296,6 +1568,36 @@ class TesterGUI(QWidget):
                 self.data_labels["U23"].setText("Err")
                 self.data_labels["U31"].setText("Err")
                 self.data_labels["U_avg"].setText("Err")
+
+        try:
+            # Słownik zmiennych do zapisu
+            variables_to_save = {
+                "U1": global_u1,
+                "U2": global_u2,
+                "U3": global_u3,
+                "U12": global_u12,
+                "U23": global_u23,
+                "U31": global_u31,
+                "U_avg": global_u_avg,
+                "I1": global_i1,
+                "I2": global_i2,
+                "I3": global_i3,
+                "Q1": global_q1,
+                "Q2": global_q2,
+                "Q3": global_q3,
+                "Qn": global_qn
+            }
+
+            # Zapis do pliku CSV (nadpisanie przy każdym zapisie)
+            with open("dane_globalne.csv", mode="w", newline="") as csv_file:
+                writer = csv.writer(csv_file)
+                for var_name, value in variables_to_save.items():
+                    writer.writerow([var_name, value])
+
+            print("Zmienna globalne zapisane do dane_globalne.csv")
+
+        except Exception as e:
+            print(f"Błąd podczas zapisu do CSV: {e}")
 
     def clear_data_display(self):
         for label in self.data_labels.values():
