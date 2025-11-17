@@ -28,7 +28,9 @@ def run_db_via_tunnel():
     key_path = ssh_auth["key_path"]
     passphrase = ssh_auth.get("passphrase") or None
 
+
     if not os.path.exists(key_path):
+
         print(f"❌ Błąd: nie znaleziono klucza SSH pod ścieżką: {key_path}")
         sys.exit(1)
 
