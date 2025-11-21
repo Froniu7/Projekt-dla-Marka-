@@ -32,6 +32,7 @@ tester/dlawiki1fazowe_dobre.csv
 tester/dlawiki1fazowe_zle.csv
 tester/dlawiki3fazowe_zle.csv
 laczenie_po_ssh/key_wan_lan.pem
+laczenie_z_baza_lokalnie/config.json
 
 
 
